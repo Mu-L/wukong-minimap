@@ -5,7 +5,7 @@
 
 注意：该项目为免费开源工具请勿用作商业用途，作者不承担任何责任。
 
-![image](./assets/minmap.png) 
+![image](./docs/images/minmap.png) 
 
 ## 使用方法
 
@@ -23,15 +23,15 @@
   - jas_minimap.dll - 地图插件
   - assets - 地图资源文件
 
-![image](./assets/files.png) 
+![image](./docs/images/files.png) 
 
 ### 3. 运行游戏，会看到游戏左下角出现文字信息表示地图插件已加载
 
-![image](./assets/loadinfo.png) 
+![image](./docs/images/loadinfo.png) 
 
 ### 4. 游戏中按 `M` 键可开启大地图
 
-![image](./assets/bigmap.png) 
+![image](./docs/images/bigmap.png) 
 
 
 ## 完善地图数据
@@ -43,4 +43,4 @@
 
 如果本插件对你有帮助，请作者喝杯咖啡吧
 
-<img src="./assets/donate.png" alt="打赏" style="width: 200px;" />
+<img src="./docs/images/donate.png" alt="打赏" style="width: 200px;" />
