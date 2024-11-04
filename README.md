@@ -9,7 +9,9 @@
 
 ## 使用方法
 
-### 1. 下载并安装压缩包 
+### 1. 下载插件 
+
+[下载地址](https://github.com/jaskang/black-myth-map/releases)
 
 ### 2. 将文件解压到游戏目录
 
