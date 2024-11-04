@@ -43,4 +43,6 @@
 
 如果本插件对你有帮助，请作者喝杯咖啡吧
 
-<img src="./docs/images/donate.png" alt="打赏" style="width: 200px;" />
+<div align="">
+<img src="./docs/images/donate.jpg" alt="打赏" style="width: 200px;" />
+</div>
