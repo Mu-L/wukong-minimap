@@ -3,7 +3,7 @@
 
 该插件为是我学习 Rust 的练手项目，基于[imgui](https://github.com/ocornut/imgui) 和 [hudhook](https://github.com/veeenu/hudhook?from=jaskang)库开发。
 
-注意：该项目为免费工具请勿用作商业用途，作者不承担任何责任。
+注意：该项目为免费开源工具请勿用作商业用途，作者不承担任何责任。
 
 ![image](./assets/minmap.png) 
 
