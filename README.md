@@ -8,7 +8,7 @@
 
 ### 1. 下载插件
 
-githua 下载: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
+github 下载: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
 
 nexusmods 下载: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
