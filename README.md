@@ -43,9 +43,11 @@ nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexu
 ## 常见问题
 
 - version.dll
+  
   version.dll 本身不包含任何功能逻辑仅仅用来加载 jas_minimap.dll，所以您完全可以使用其他任何方式注入 jas_minimap.dll。
   
 - CSharpLoader 冲突
+  
   CSharpLoader 同样使用了 version.dll 作为入口，它对 version.dll 冲突做了兼容：
   将 jas_minimap.dll 和 assets 文件夹 一起放到CSharpLoader/Plugins/目录里，CSharpLoader 会一起加载这些插件。这样本插件的 version.dll 就不需要了。
 ﻿  相关文档：[CSharpLoader 相关文档链接](https://github.com/czastack/B1CSharpLoader?tab=readme-ov-file#%E4%B8%8E%E5%85%B6%E4%BB%96%E6%8F%92%E4%BB%B6%E7%9A%84%E5%85%BC%E5%AE%B9)
