@@ -26,7 +26,7 @@ public sealed class MyMod : ICSharpMod
     public string Name => ModName;
     public string Version => ModVersion;
 
-    public System.Timers.Timer timer = new System.Timers.Timer(3000);
+    public System.Timers.Timer timer = new System.Timers.Timer(200);
 
 
     public void Init()
@@ -38,9 +38,6 @@ public sealed class MyMod : ICSharpMod
         timer.Elapsed += (Object source, ElapsedEventArgs e) => Loop();
         timer.AutoReset = true;
         timer.Enabled = true;
-
-
-       
         // hook
         // harmony.PatchAll();
     }
@@ -56,44 +53,7 @@ public sealed class MyMod : ICSharpMod
     }
     public void Toggle()
     {
-        var player = MyUtils.GetControlledPawn();
-        if (player != null)
-        {
-            var controller = MyUtils.GetPlayerController();
-            if (controller != null)
-            {
-                var paused = controller.ShowMouseCursor;
-                var levelName = MyUtils.GetWorld().GetCurrentLevelName(true);
-                
-                var x = player.GetActorLocation().X;
-                var y = player.GetActorLocation().Y;
-                var z = player.GetActorLocation().Z;
-
-                // 身躯只能左右转动
-                var yaw = player.GetActorRotation().Yaw;
-
-                var maps = new Dictionary<string, int>(){
-                {"HFS01_PersistentLevel",10},
-                {"HFM02_PersistentLevel",20},
-                {"HFM_DuJiaoXian_Persist",25},
-                {"LYS_PersistentLevel",30},
-                {"PSD_PersistentLevel",40},
-                {"ZYS01_persistentlevel",80},
-                {"HYS_PersistentLevel",50},
-                {"BYS_persistentlevel",98},
-                {"BSD01_Guide",70}
-                };
-                // 从字典中获取对应的 mapid，如果不存在则返回 0
-                var mapid = maps.TryGetValue(levelName, out int id) ? id : 0;
-                MyMod.SetMapStatus(mapid, paused, x, y, z, yaw);
-
-            }
-            else
-            {
-                MyMod.SetMapStatus(0, true, 0, 0, 0, 0);
-            }
-
-        }
+        MyMod.toggle();
     }
     public void Loop()
     {

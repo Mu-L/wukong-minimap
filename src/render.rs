@@ -3,20 +3,21 @@ use hudhook::imgui::{
     sys::{ImFontAtlas_AddFontFromFileTTF, ImFontAtlas_GetGlyphRangesChineseFull},
 };
 
-use crate::widgets::Widget;
 use crate::widgets::{info, map};
 use crate::wukong::Wukong;
+use crate::{game::Game, widgets::Widget};
 use hudhook::*;
 
+pub static mut game: std::sync::LazyLock<std::sync::Mutex<Game>> =
+    std::sync::LazyLock::new(|| std::sync::Mutex::new(Game::new()));
+
 pub struct MapHud {
-    wukong: Wukong,
     widgets: Vec<Box<dyn Widget>>,
     pause: bool,
 }
 
 impl MapHud {
     pub fn new() -> Self {
-        let wukong = Wukong::new();
         let widgets: Vec<Box<dyn Widget>> = vec![
             Box::new(map::MapHud::new(&wukong.areas)),
             Box::new(info::Info::new()),
@@ -55,7 +56,7 @@ impl ImguiRenderLoop for MapHud {
         ctx: &mut imgui::Context,
         render_context: &'a mut dyn RenderContext,
     ) {
-        let map_key = self.wukong.refresh();
+        let map_key = unsafe { game.lock().unwrap().map_id };
         for widget in self.widgets.iter_mut() {
             widget.before_render(ctx, render_context, map_key);
         }

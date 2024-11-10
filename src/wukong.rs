@@ -34,8 +34,8 @@ pub struct Icon {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AreaInfo {
-    pub id: u32,
-    pub map: u32,
+    pub id: i32,
+    pub map: i32,
     pub code: String,
     pub name: String,
     pub image: String,
@@ -195,7 +195,7 @@ impl Wukong {
             .iter()
             .rfind(|m| {
                 if self.scene >= 10
-                    && m.map == self.scene
+                    && m.map == self.scene as i32
                     && self.position.x >= m.range_x[0]
                     && self.position.x <= m.range_x[1]
                     && self.position.y >= m.range_y[0]
@@ -233,7 +233,7 @@ impl Wukong {
             // let map_y = map.size[1] as f32 - map_y;
 
             Some(MiniMap {
-                key: area.id,
+                key: area.id as u32,
                 x,
                 y,
                 angle: self.position.angle,

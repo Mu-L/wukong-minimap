@@ -1,11 +1,11 @@
 use hudhook::hooks::dx12::ImguiDx12Hooks;
 use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH};
 
+mod game;
 mod memedit;
 mod render;
 mod tools;
 mod widgets;
-mod wukong;
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn SetMapStatus(
@@ -21,12 +21,17 @@ pub unsafe extern "stdcall" fn SetMapStatus(
         "SetMapStatus {:?} {:?} {:?} {:?} {:?}  {:?}",
         map_key, status, x, y, z, angle
     );
+    render::game
+        .lock()
+        .unwrap()
+        .update(map_key, status, x, y, z, angle);
 }
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn toggle() {
     // 实现设置玩家生命值的逻辑
     println!("toggle");
+    render::game.lock().unwrap().toggle();
 }
 
 #[no_mangle]

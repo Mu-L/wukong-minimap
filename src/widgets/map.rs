@@ -10,7 +10,7 @@ use crate::tools::load_image;
 use crate::widgets::{ImageTexture, Widget};
 use crate::wukong::{AreaInfo, Wukong};
 
-static mut MAP_IMAGES: OnceCell<HashMap<u32, RgbaImage>> = OnceCell::new();
+static mut MAP_IMAGES: OnceCell<HashMap<i32, RgbaImage>> = OnceCell::new();
 
 // 小地图视窗大小, 对应游戏坐标
 const MAP_VIEWPORT: f32 = 20000.0;
@@ -37,8 +37,8 @@ pub struct MapHud {
     open: bool,
 }
 
-fn load_map_data(areas: &Vec<AreaInfo>) -> HashMap<u32, RgbaImage> {
-    let mut maps: HashMap<u32, RgbaImage> = HashMap::new();
+fn load_map_data(areas: &Vec<AreaInfo>) -> HashMap<i32, RgbaImage> {
+    let mut maps: HashMap<i32, RgbaImage> = HashMap::new();
     for area in areas {
         let image_data = load_image(&area.image);
         maps.insert(area.id, image_data);
@@ -100,7 +100,7 @@ impl MapHud {
     fn get_texture_id(&self, name: &str) -> Option<TextureId> {
         self.textures.get(name).map(|t| t.id.unwrap())
     }
-    fn get_map_image(&self, key: u32) -> Option<&RgbaImage> {
+    fn get_map_image(&self, key: i32) -> Option<&RgbaImage> {
         unsafe { MAP_IMAGES.get().unwrap().get(&key) }
     }
     fn is_icon_checked(&self, key: &str) -> bool {
@@ -350,7 +350,7 @@ impl Widget for MapHud {
         &mut self,
         ctx: &mut imgui::Context,
         render_ctx: &mut dyn RenderContext,
-        map_key: Option<u32>,
+        map_key: Option<i32>,
     ) {
         ctx.io_mut().mouse_draw_cursor = self.open;
 

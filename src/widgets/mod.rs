@@ -11,7 +11,7 @@ pub trait Widget: Send + Sync {
         &mut self,
         _ctx: &mut imgui::Context,
         _render_ctx: &mut dyn RenderContext,
-        _map_key: Option<u32>,
+        _map_key: Option<i32>,
     ) {
     }
     fn render(&mut self, _ui: &imgui::Ui, _wukong: &Wukong);
