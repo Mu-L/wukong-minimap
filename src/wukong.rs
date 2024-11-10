@@ -1,9 +1,18 @@
+#![feature(naked_functions)]
+
+use std::arch::asm;
+use std::thread;
+use std::time::Duration;
+
 use hudhook::tracing::debug;
 use hudhook::windows::Win32::System::LibraryLoader::GetModuleHandleA;
-use serde::{Deserialize, Serialize};
+use ilhook::x64::{CallbackOption, HookFlags, HookType, Hooker, Registers};
+use minhook::MinHook;
 
 use crate::memedit::PointerChain;
 use crate::tools::{load_json, point_inside, vector_to_angle};
+use mem_rs::{helpers, process::Process};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct MemPosition {
@@ -77,14 +86,90 @@ pub struct Wukong {
     pub minimap: Option<MiniMap>,
 }
 
+static mut map_id: u64 = 0;
+static mut map_jmp_back: u64 = 0;
+
+unsafe extern "win64" fn map_id_hook(reg: *mut Registers, _: usize) {
+    println!("map chang: {}", (*reg).rsi);
+    map_id = (*reg).rsi as u64;
+}
+
 impl Wukong {
     pub fn new() -> Self {
         let base_address = unsafe { GetModuleHandleA(None).unwrap() }.0 as usize;
 
         let areas: Vec<AreaInfo> = load_json("areas.json");
+        // 125E8130
+        // 19085B89B - 89 B7 E4000000        - mov [rdi+000000E4],esi
+        // 19085B8A1 - 48 8B CF              - mov rcx,rdi
+        // 19085B8A4 - 66 90                 - nop 2
+        // 19085B8A6 - 49 BB E03DF88D01000000 - mov r11,000000018DF83DE0 { (-326416299) }
+        // 19085B8B0 - 41 FF D3              - call r11
+        // 19085B8B3 - 85 C0                 - test eax,eax
+        // 19085B8B5 - 0F85 10010000         - jne 19085B9CB
 
+        // 464547F0 + E4
+        // qword ptr ss:[rsp+70]=[00000039398FB200 &"85 C0 0F 85 27 00 00 00 B8 01 00 00 00"]=0000014947FA1788 "85 C0 0F 85 27 00 00 00 B8 01 00 00 00"
+
+        // 1FEA13D47 - 00 70 AB              - add [rax-55],dh
+        // 1FEA13D4A - FF 44 02 00           - inc [rdx+rax+00]
+        // 1FEA13D4E - 00 00                 - add [rax],al
+        // 1FEA13D50 - 90                    - nop
+        // 1FEA13D51 - AB                    - stosd
+        // 1FEA13D52 - FF 44 02 00           - inc [rdx+rax+00]
+        // 1FEA13D56 - 00 00                 - add [rax],al
+        // 1FEA13D58 - B0 AB                 - mov al,-55 { 171 }
+        // 1FEA13D5A - FF 44 02 00           - inc [rdx+rax+00]
+        // 1FEA13D5E - 00 00                 - add [rax],al
+        // 1FEA13D60 - 3F                    - db 3F
+        // 1FEA13D61 - 00 00                 - add [rax],al
+        // 1FEA13D63 - 00 3E                 - add [rsi],bh
+        // 1FEA13D65 - AB                    - stosd
+        // 1FEA13D66 - 04 00                 - add al,00 { 0 }
+        // 1FEA13D68 - 35 AB040000           - xor eax,000004AB { 1195 }
+        // 1FEA13D6D - 00 00                 - add [rax],al
+        // 1FEA13D6F - 00 00                 - add [rax],al
+        // 1FEA13D71 - 00 00                 - add [rax],al
+        // 1FEA13D73 - 00 62 00              - add [rdx+00],ah
+        // 1FEA13D76 - 00 00                 - add [rax],al
+        // 1FEA13D78 - 0A 00                 - or al,[rax] 这里可以读取到地图的 status
+
+        // loadPluginDlls : pluginsPath=[CSharpLoader\Plugins]
+        // loadPluginDlls : load CSharpLoader\Plugins\jas_minimap.dll
+        // CSharpLoader enableJit: 0
+        // CSharpLoader wait for init.
+        // map lp_address: 8B47FFFEC0E4B789
+
+        let mut b1 = Process::new("b1-Win64-Shipping.exe");
+
+        b1.refresh().unwrap();
+        let pointer = b1
+            .scan_abs("Error message", "89 B7 E4 00 00 00 48 8B CF", 0, vec![])
+            .unwrap();
+        let lp_address = pointer.get_base_address();
+        // 十六进制
+        println!("map lp_address: {:X}", lp_address);
+
+        // Create a hook for the return_0 function, detouring it to return_1
+
+        // 创建一个线程 10s 后执行 hook
+        let handle = thread::spawn(move || {
+            thread::sleep(Duration::from_secs(20));
+            println!("hook");
+            let hooker = Hooker::new(
+                lp_address,
+                HookType::JmpBack(map_id_hook),
+                CallbackOption::None,
+                0,
+                HookFlags::empty(),
+            );
+            unsafe {
+                hooker.hook().expect("hook failed");
+            }
+        });
         Self {
             playing_chain: PointerChain::new(&[base_address + 0x1D9EF970, 0x0, 0x30, 0x48]),
+            // C8 DC07 88 01 00 00 00 00 00 00 00 00 00 00 00 D0 29 CC EA
             scene_chain: PointerChain::new(&[base_address + 0x1DB02B20, 0x8, 0x68, 0x148, 0x40]),
             position_chain: PointerChain::new(&[
                 base_address + 0x1D9EDCE0,
