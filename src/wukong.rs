@@ -89,11 +89,6 @@ pub struct Wukong {
 static mut map_id: u64 = 0;
 static mut map_jmp_back: u64 = 0;
 
-unsafe extern "win64" fn map_id_hook(reg: *mut Registers, _: usize) {
-    println!("map chang: {}", (*reg).rsi);
-    map_id = (*reg).rsi as u64;
-}
-
 impl Wukong {
     pub fn new() -> Self {
         let base_address = unsafe { GetModuleHandleA(None).unwrap() }.0 as usize;
@@ -153,20 +148,7 @@ impl Wukong {
         // Create a hook for the return_0 function, detouring it to return_1
 
         // 创建一个线程 10s 后执行 hook
-        let handle = thread::spawn(move || {
-            thread::sleep(Duration::from_secs(20));
-            println!("hook");
-            let hooker = Hooker::new(
-                lp_address,
-                HookType::JmpBack(map_id_hook),
-                CallbackOption::None,
-                0,
-                HookFlags::empty(),
-            );
-            unsafe {
-                hooker.hook().expect("hook failed");
-            }
-        });
+
         Self {
             playing_chain: PointerChain::new(&[base_address + 0x1D9EF970, 0x0, 0x30, 0x48]),
             // C8 DC07 88 01 00 00 00 00 00 00 00 00 00 00 00 D0 29 CC EA

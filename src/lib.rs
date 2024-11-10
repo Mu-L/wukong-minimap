@@ -8,6 +8,28 @@ mod widgets;
 mod wukong;
 
 #[no_mangle]
+pub unsafe extern "stdcall" fn SetMapStatus(
+    map_key: i32,
+    status: bool,
+    x: f32,
+    y: f32,
+    z: f32,
+    angle: f32,
+) {
+    // 实现设置玩家生命值的逻辑
+    println!(
+        "SetMapStatus {:?} {:?} {:?} {:?} {:?}  {:?}",
+        map_key, status, x, y, z, angle
+    );
+}
+
+#[no_mangle]
+pub unsafe extern "stdcall" fn toggle() {
+    // 实现设置玩家生命值的逻辑
+    println!("toggle");
+}
+
+#[no_mangle]
 pub unsafe extern "stdcall" fn DllMain(
     hmodule: HINSTANCE,
     reason: u32,
