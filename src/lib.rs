@@ -9,9 +9,9 @@ mod tools;
 mod widgets;
 
 #[no_mangle]
-pub unsafe extern "stdcall" fn SetMapStatus(
+pub unsafe extern "stdcall" fn update(
     level: i32,
-    status: bool,
+    paused: bool,
     x: f32,
     y: f32,
     z: f32,
@@ -20,9 +20,9 @@ pub unsafe extern "stdcall" fn SetMapStatus(
     // 实现设置玩家生命值的逻辑
     println!(
         "SetMapStatus {:?} {:?} {:?} {:?} {:?}  {:?}",
-        level, status, x, y, z, angle
+        level, paused, x, y, z, angle
     );
-    Game::update(level, status, x, y, z, angle);
+    Game::update(level, paused, x, y, z, angle);
 }
 
 #[no_mangle]

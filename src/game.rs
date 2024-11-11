@@ -7,7 +7,7 @@ pub struct Game {
     pub enable: bool,
     pub open: bool,
     pub level: i32,
-    pub status: bool,
+    pub paused: bool,
     pub x: f32,
     pub y: f32,
     pub z: f32,
@@ -18,10 +18,10 @@ pub struct Game {
 impl Game {
     fn new() -> Self {
         Self {
-            enable: false,
+            enable: true,
             open: false,
             level: 0,
-            status: false,
+            paused: false,
             x: 0.0,
             y: 0.0,
             z: 0.0,
@@ -56,15 +56,15 @@ impl Game {
         GAME_STATE.get().unwrap().lock().unwrap().clone()
     }
     // 使用 modify 重写 update
-    pub fn update(level: i32, status: bool, x: f32, y: f32, z: f32, angle: f32) {
+    pub fn update(level: i32, paused: bool, x: f32, y: f32, z: f32, angle: f32) {
         Self::modify(|game| {
+            game.prev_level = game.level;
             game.level = level;
-            game.status = status;
+            game.paused = paused;
             game.x = x;
             game.y = y;
             game.z = z;
             game.angle = angle;
-            game.prev_level = game.level;
         });
         println!("game: {:?}", Self::get_game());
     }

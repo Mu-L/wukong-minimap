@@ -195,7 +195,7 @@ impl MapHud {
     }
     fn render_mini_map(&mut self, ui: &imgui::Ui) {
         let game = Game::get_game();
-        if game.level >= 10 && game.enable {
+        if game.level >= 10 && game.enable && !game.paused {
             let display_size = ui.io().display_size;
             let window_size = display_size[1] * MINI_MAP_SIZE;
             let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
@@ -276,7 +276,7 @@ impl MapHud {
 
     fn render_main_map(&mut self, ui: &imgui::Ui) {
         let game = Game::get_game();
-        if game.level >= 10 && game.enable {
+        if game.level >= 10 && game.enable && game.open && !game.paused {
             if self.open {
                 let display_size = ui.io().display_size;
                 let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
@@ -425,7 +425,7 @@ impl Widget for MapHud {
         });
     }
     fn before_render(&mut self, ctx: &mut imgui::Context, render_ctx: &mut dyn RenderContext) {
-        ctx.io_mut().mouse_draw_cursor = self.open;
+        // ctx.io_mut().mouse_draw_cursor = self.open;
         let game = Game::get_game();
         if game.level != game.prev_level {
             let map_texture = self.textures.get("map").unwrap();

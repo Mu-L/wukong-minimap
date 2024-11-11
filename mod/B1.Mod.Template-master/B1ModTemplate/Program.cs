@@ -10,9 +10,9 @@ public sealed class MyMod : ICSharpMod
 {
     // 导入 SetMapStatus 函数
     [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
-    public static extern void SetMapStatus(
-        int mapKey,    // u32
-        bool status,   // u64
+    public static extern void update(
+        int level,    // u32
+        bool paused,   // u64
         float x,        // u64
         float y,        // u64
         float z,        // u64
@@ -59,12 +59,12 @@ public sealed class MyMod : ICSharpMod
     {
         var controller = MyUtils.GetPlayerController();
         if(controller is null){
-            MyMod.SetMapStatus(0, true, 0, 0, 0, 0);
+            MyMod.update(0, true, 0, 0, 0, 0);
             return;
         }
         var player = MyUtils.GetControlledPawn();
         if (player is null){
-            MyMod.SetMapStatus(0, true, 0, 0, 0, 0);
+            MyMod.update(0, true, 0, 0, 0, 0);
             return;
         }
               
@@ -91,6 +91,6 @@ public sealed class MyMod : ICSharpMod
         };
             // 从字典中获取对应的 mapid，如果不存在则返回 0
         var mapid = maps.TryGetValue(levelName, out int id) ? id : 0;
-        MyMod.SetMapStatus(mapid, paused, x, y, z, yaw);
+        MyMod.update(mapid, paused, x, y, z, yaw);
     }
 }
