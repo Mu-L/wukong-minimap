@@ -3,30 +3,19 @@ use hudhook::imgui::{
     sys::{ImFontAtlas_AddFontFromFileTTF, ImFontAtlas_GetGlyphRangesChineseFull},
 };
 
-use crate::widgets::{info, map};
-use crate::wukong::Wukong;
-use crate::{game::Game, widgets::Widget};
-use hudhook::*;
+use crate::widgets::map;
 
-pub static mut game: std::sync::LazyLock<std::sync::Mutex<Game>> =
-    std::sync::LazyLock::new(|| std::sync::Mutex::new(Game::new()));
+use crate::widgets::Widget;
+use hudhook::*;
 
 pub struct MapHud {
     widgets: Vec<Box<dyn Widget>>,
-    pause: bool,
 }
 
 impl MapHud {
     pub fn new() -> Self {
-        let widgets: Vec<Box<dyn Widget>> = vec![
-            Box::new(map::MapHud::new(&wukong.areas)),
-            Box::new(info::Info::new()),
-        ];
-        Self {
-            wukong,
-            widgets,
-            pause: false,
-        }
+        let widgets: Vec<Box<dyn Widget>> = vec![Box::new(map::MapHud::new())];
+        Self { widgets }
     }
 }
 
@@ -56,14 +45,13 @@ impl ImguiRenderLoop for MapHud {
         ctx: &mut imgui::Context,
         render_context: &'a mut dyn RenderContext,
     ) {
-        let map_key = unsafe { game.lock().unwrap().map_id };
         for widget in self.widgets.iter_mut() {
-            widget.before_render(ctx, render_context, map_key);
+            widget.before_render(ctx, render_context);
         }
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
         self.widgets.iter_mut().for_each(|widget| {
-            widget.render(ui, &self.wukong);
+            widget.render(ui);
         });
     }
     fn message_filter(&self, _io: &imgui::Io) -> MessageFilter {

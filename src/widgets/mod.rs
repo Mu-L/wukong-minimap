@@ -1,20 +1,14 @@
-use crate::{tools::load_image, wukong::Wukong};
+use crate::tools::load_image;
 use hudhook::{imgui, RenderContext};
 use image::RgbaImage;
 
-pub(crate) mod info;
+// pub(crate) mod info
 pub(crate) mod map;
 
 pub trait Widget: Send + Sync {
     fn initialize(&mut self, _ctx: &mut imgui::Context, _render_ctx: &mut dyn RenderContext) {}
-    fn before_render(
-        &mut self,
-        _ctx: &mut imgui::Context,
-        _render_ctx: &mut dyn RenderContext,
-        _map_key: Option<i32>,
-    ) {
-    }
-    fn render(&mut self, _ui: &imgui::Ui, _wukong: &Wukong);
+    fn before_render(&mut self, _ctx: &mut imgui::Context, _render_ctx: &mut dyn RenderContext) {}
+    fn render(&mut self, _ui: &imgui::Ui);
 }
 
 pub struct ImageTexture {

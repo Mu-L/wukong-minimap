@@ -1,3 +1,4 @@
+use game::Game;
 use hudhook::hooks::dx12::ImguiDx12Hooks;
 use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH};
 
@@ -9,7 +10,7 @@ mod widgets;
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn SetMapStatus(
-    map_key: i32,
+    level: i32,
     status: bool,
     x: f32,
     y: f32,
@@ -19,19 +20,23 @@ pub unsafe extern "stdcall" fn SetMapStatus(
     // 实现设置玩家生命值的逻辑
     println!(
         "SetMapStatus {:?} {:?} {:?} {:?} {:?}  {:?}",
-        map_key, status, x, y, z, angle
+        level, status, x, y, z, angle
     );
-    render::game
-        .lock()
-        .unwrap()
-        .update(map_key, status, x, y, z, angle);
+    Game::update(level, status, x, y, z, angle);
 }
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn toggle() {
     // 实现设置玩家生命值的逻辑
     println!("toggle");
-    render::game.lock().unwrap().toggle();
+    Game::toggle();
+}
+
+#[no_mangle]
+pub unsafe extern "stdcall" fn toggle_big_map() {
+    // 实现设置玩家生命值的逻辑
+    println!("toggle_big_map");
+    Game::toggle_big_map();
 }
 
 #[no_mangle]
@@ -41,6 +46,7 @@ pub unsafe extern "stdcall" fn DllMain(
     _: *mut ::std::ffi::c_void,
 ) {
     if reason == DLL_PROCESS_ATTACH {
+        Game::init();
         // tools::setup_tracing();
         ::hudhook::tracing::trace!("DllMain()");
         ::std::thread::spawn(move || {

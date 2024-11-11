@@ -4,11 +4,12 @@ use std::collections::HashMap;
 use hudhook::imgui::{self, Condition, ImColor32, Image, Key, TextureId, WindowFlags};
 use hudhook::RenderContext;
 use image::{EncodableLayout, RgbaImage};
+use serde::{Deserialize, Serialize};
 use tracing::debug;
 
-use crate::tools::load_image;
+use crate::game::Game;
+use crate::tools::{load_image, load_json, point_inside};
 use crate::widgets::{ImageTexture, Widget};
-use crate::wukong::{AreaInfo, Wukong};
 
 static mut MAP_IMAGES: OnceCell<HashMap<i32, RgbaImage>> = OnceCell::new();
 
@@ -19,22 +20,56 @@ const MINI_MAP_SIZE: f32 = 0.2;
 // 大地图窗口大小
 const MAIN_MAP_SIZE: f32 = 0.8;
 
+#[derive(Debug, Default, Clone)]
+pub struct Position {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+    pub angle: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Icon {
+    pub name: String,
+    pub category: String,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
+
 #[derive(Debug, Clone, Copy)]
-struct Icon {
+struct IconCheckbox {
     key: &'static str,
     name: &'static str,
     checked: bool,
 }
-impl Icon {
+impl IconCheckbox {
     fn new(key: &'static str, name: &'static str, checked: bool) -> Self {
-        Icon { key, name, checked }
+        IconCheckbox { key, name, checked }
     }
 }
 
-pub struct MapHud {
-    textures: HashMap<String, ImageTexture>,
-    icons: Vec<Icon>,
-    open: bool,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AreaInfo {
+    pub id: i32,
+    pub map: i32,
+    pub code: String,
+    pub name: String,
+    pub image: String,
+    pub range_x: [f32; 2],
+    pub range_y: [f32; 2],
+    pub range_z: [f32; 2],
+    pub range_side: Option<[f32; 4]>,
+    pub points: Vec<Icon>,
+}
+
+impl AreaInfo {
+    pub fn width(&self) -> f32 {
+        self.range_x[1] - self.range_x[0]
+    }
+    pub fn height(&self) -> f32 {
+        self.range_y[1] - self.range_y[0]
+    }
 }
 
 fn load_map_data(areas: &Vec<AreaInfo>) -> HashMap<i32, RgbaImage> {
@@ -46,35 +81,43 @@ fn load_map_data(areas: &Vec<AreaInfo>) -> HashMap<i32, RgbaImage> {
     maps
 }
 
+pub struct MapHud {
+    textures: HashMap<String, ImageTexture>,
+    icons: Vec<IconCheckbox>,
+    areas: Vec<AreaInfo>,
+    open: bool,
+}
+
 impl MapHud {
-    pub fn new(areas: &Vec<AreaInfo>) -> Self {
-        let icons: Vec<Icon> = vec![
-            Icon::new("teleport", "传送点", true),
-            Icon::new("start", "入口", true),
-            Icon::new("end", "出口", true),
-            Icon::new("pass-route", "捷径", true),
-            Icon::new("hidden", "隐藏点", true),
-            Icon::new("boss", "妖王", true),
-            Icon::new("toumu", "头目", true),
-            Icon::new("renwu", "人物", true),
-            Icon::new("zhixian", "支线", true),
-            Icon::new("dazuo", "打坐", true),
-            Icon::new("baoxiang", "宝箱", false),
-            Icon::new("bianhua", "变化", false),
-            Icon::new("fabao", "法宝", false),
-            Icon::new("pigua", "披挂", false),
-            Icon::new("zhenwan", "珍玩", false),
-            Icon::new("hulu", "葫芦", false),
-            Icon::new("xiandan", "仙丹", false),
-            Icon::new("yongpin", "用品", false),
-            Icon::new("yaopin", "药品", false),
-            Icon::new("jiushi", "酒食", false),
-            Icon::new("cailiao", "材料", false),
-            Icon::new("jingpo", "精魄", false),
-            Icon::new("yaocai", "药材", false),
-            Icon::new("luojia", "落伽香藤", false),
-            Icon::new("sandongchong", "三冬虫", false),
-            Icon::new("lingyun", "灵蕴", false),
+    pub fn new() -> Self {
+        let areas: Vec<AreaInfo> = load_json("areas.json");
+        let icons: Vec<IconCheckbox> = vec![
+            IconCheckbox::new("teleport", "传送点", true),
+            IconCheckbox::new("start", "入口", true),
+            IconCheckbox::new("end", "出口", true),
+            IconCheckbox::new("pass-route", "捷径", true),
+            IconCheckbox::new("hidden", "隐藏点", true),
+            IconCheckbox::new("boss", "妖王", true),
+            IconCheckbox::new("toumu", "头目", true),
+            IconCheckbox::new("renwu", "人物", true),
+            IconCheckbox::new("zhixian", "支线", true),
+            IconCheckbox::new("dazuo", "打坐", true),
+            IconCheckbox::new("baoxiang", "宝箱", false),
+            IconCheckbox::new("bianhua", "变化", false),
+            IconCheckbox::new("fabao", "法宝", false),
+            IconCheckbox::new("pigua", "披挂", false),
+            IconCheckbox::new("zhenwan", "珍玩", false),
+            IconCheckbox::new("hulu", "葫芦", false),
+            IconCheckbox::new("xiandan", "仙丹", false),
+            IconCheckbox::new("yongpin", "用品", false),
+            IconCheckbox::new("yaopin", "药品", false),
+            IconCheckbox::new("jiushi", "酒食", false),
+            IconCheckbox::new("cailiao", "材料", false),
+            IconCheckbox::new("jingpo", "精魄", false),
+            IconCheckbox::new("yaocai", "药材", false),
+            IconCheckbox::new("luojia", "落伽香藤", false),
+            IconCheckbox::new("sandongchong", "三冬虫", false),
+            IconCheckbox::new("lingyun", "灵蕴", false),
         ];
 
         let mut textures = HashMap::new();
@@ -94,22 +137,65 @@ impl MapHud {
         Self {
             textures,
             icons,
+            areas,
             open: false,
         }
     }
     fn get_texture_id(&self, name: &str) -> Option<TextureId> {
         self.textures.get(name).map(|t| t.id.unwrap())
     }
-    fn get_map_image(&self, key: i32) -> Option<&RgbaImage> {
-        unsafe { MAP_IMAGES.get().unwrap().get(&key) }
+    fn get_map_image(&self, level: i32) -> Option<&RgbaImage> {
+        unsafe { MAP_IMAGES.get().unwrap().get(&level) }
     }
     fn is_icon_checked(&self, key: &str) -> bool {
         self.icons
             .iter()
             .any(|icon| icon.checked && icon.key == key)
     }
-    fn render_mini_map(&mut self, ui: &imgui::Ui, wukong: &Wukong) {
-        if wukong.scene >= 10 && wukong.playing {
+    fn get_area(&self, map_id: i32, position: &[f32; 3]) -> Option<AreaInfo> {
+        let area = self
+            .areas
+            .iter()
+            .rfind(|m| {
+                if map_id >= 10
+                    && m.map == map_id
+                    && position[0] >= m.range_x[0]
+                    && position[0] <= m.range_x[1]
+                    && position[1] >= m.range_y[0]
+                    && position[1] <= m.range_y[1]
+                    && position[0] != 0.0
+                    && position[1] != 0.0
+                {
+                    if let Some(range_side) = &m.range_side {
+                        let inside = point_inside(
+                            [range_side[0], range_side[1]],
+                            [range_side[2], range_side[3]],
+                            [position[0], position[1]],
+                        );
+                        debug!("inside: {:?}", inside);
+                        if inside {
+                            return true;
+                        }
+                    }
+                    if position[2] >= m.range_z[0] && position[2] <= m.range_z[1] {
+                        return true;
+                    }
+                }
+                false
+            })
+            .map(|m| m.clone());
+        area
+    }
+
+    // 转换游戏坐标转为坐标百分比
+    pub fn point_to_percent(&self, point: [f32; 2], area: &AreaInfo) -> [f32; 2] {
+        let x = (point[0] - area.range_x[0]) / area.width();
+        let y = (point[1] - area.range_y[0]) / area.height();
+        [x, y]
+    }
+    fn render_mini_map(&mut self, ui: &imgui::Ui) {
+        let game = Game::get_game();
+        if game.level >= 10 && game.enable {
             let display_size = ui.io().display_size;
             let window_size = display_size[1] * MINI_MAP_SIZE;
             let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
@@ -125,11 +211,17 @@ impl MapHud {
                 .bg_alpha(0.8)
                 .build(|| {
                     let txt_id = self.get_texture_id("map").unwrap();
-                    if let Some(minimap) = &wukong.minimap {
+                    let area = self.get_area(game.level, &[game.x, game.y, game.z]);
+
+                    if let Some(area) = area {
+                        // 将游戏坐标转换为小地图坐标
+                        let minimap_x = (game.x - area.range_x[0]) / area.width();
+                        let minimap_y = (game.y - area.range_y[0]) / area.height();
+
                         debug!("draw_minimap");
                         let [uv0, uv1] = self.point_to_minimap_uv(
-                            [minimap.x, minimap.y],
-                            [minimap.area.width(), minimap.area.height()],
+                            [minimap_x, minimap_y],
+                            [area.width(), area.height()],
                             window_size,
                         );
 
@@ -138,22 +230,16 @@ impl MapHud {
                             .uv1(uv1)
                             .build(ui);
 
-                        wukong
-                            .area
-                            .as_ref()
-                            .unwrap()
-                            .points
+                        area.points
                             .iter()
                             .filter(|p| self.is_icon_checked(p.category.as_str()))
                             .for_each(|p| {
                                 if let Some(tid) = self.get_texture_id(p.category.as_str()) {
                                     // 计算位置后 画传送点图标。
                                     let scale = window_size / MAP_VIEWPORT;
-                                    let [x, y] = wukong.point_to_percent([p.x, p.y]);
-                                    let [minimap_width, minimap_height] = [
-                                        minimap.area.width() * scale,
-                                        minimap.area.height() * scale,
-                                    ];
+                                    let [x, y] = self.point_to_percent([p.x, p.y], &area);
+                                    let [minimap_width, minimap_height] =
+                                        [area.width() * scale, area.height() * scale];
                                     let [x, y] = [
                                         (x - uv0[0]) * minimap_width,
                                         (y - uv0[1]) * minimap_height,
@@ -171,7 +257,7 @@ impl MapHud {
                             position_x + window_size / 2.0,
                             position_y + window_size / 2.0,
                         ];
-                        let [p0, p1, p2, p3] = self.arrow_to_p4(ui, center, 32.0, minimap.angle);
+                        let [p0, p1, p2, p3] = self.arrow_to_p4(ui, center, 32.0, game.angle);
 
                         // 使用 add_image_quad 方法角色箭头图标
                         draw_list
@@ -188,12 +274,9 @@ impl MapHud {
         }
     }
 
-    fn render_main_map(&mut self, ui: &imgui::Ui, wukong: &Wukong) {
-        if !ui.io().want_capture_keyboard && ui.is_key_pressed_no_repeat(Key::M) {
-            self.open = !self.open;
-        }
-
-        if wukong.scene >= 10 {
+    fn render_main_map(&mut self, ui: &imgui::Ui) {
+        let game = Game::get_game();
+        if game.level >= 10 && game.enable {
             if self.open {
                 let display_size = ui.io().display_size;
                 let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
@@ -212,23 +295,20 @@ impl MapHud {
                     .build(|| {
                         let txt_id = self.get_texture_id("map").unwrap();
                         ui.set_cursor_pos([0.0, 0.0]);
-                        if let Some(minimap) = &wukong.minimap {
+                        let area = self.get_area(game.level, &[game.x, game.y, game.z]);
+                        if let Some(area) = area {
                             debug!("draw_mainmap");
                             Image::new(txt_id, [window_size, window_size]).build(ui);
 
                             let draw_list = ui.get_window_draw_list();
 
-                            wukong
-                                .area
-                                .as_ref()
-                                .unwrap()
-                                .points
+                            area.points
                                 .iter()
                                 .filter(|p| self.is_icon_checked(p.category.as_str()))
                                 .for_each(|p| {
                                     if let Some(tid) = self.get_texture_id(p.category.as_str()) {
                                         // 计算位置后 画传送点图标。
-                                        let [x, y] = wukong.point_to_percent([p.x, p.y]);
+                                        let [x, y] = self.point_to_percent([p.x, p.y], &area);
                                         let [x, y] = [x * window_size, y * window_size];
                                         ui.set_cursor_pos([x - 18.0, y - 32.0]);
                                         Image::new(tid, [36.0, 48.0]).build(ui);
@@ -236,14 +316,12 @@ impl MapHud {
                                     }
                                 });
 
-                            let location =
-                                wukong.point_to_percent([wukong.position.x, wukong.position.y]);
+                            let location = self.point_to_percent([game.x, game.y], &area);
                             let location = [
                                 position_x + location[0] * window_size,
                                 position_y + location[1] * window_size,
                             ];
-                            let [p0, p1, p2, p3] =
-                                self.arrow_to_p4(ui, location, 32.0, minimap.angle);
+                            let [p0, p1, p2, p3] = self.arrow_to_p4(ui, location, 32.0, game.angle);
 
                             // 使用 add_image_quad 方法角色箭头图标
                             draw_list
@@ -346,19 +424,14 @@ impl Widget for MapHud {
                 .ok();
         });
     }
-    fn before_render(
-        &mut self,
-        ctx: &mut imgui::Context,
-        render_ctx: &mut dyn RenderContext,
-        map_key: Option<i32>,
-    ) {
+    fn before_render(&mut self, ctx: &mut imgui::Context, render_ctx: &mut dyn RenderContext) {
         ctx.io_mut().mouse_draw_cursor = self.open;
-
-        if let Some(map_key) = map_key {
+        let game = Game::get_game();
+        if game.level != game.prev_level {
             let map_texture = self.textures.get("map").unwrap();
-            let data = match map_key {
+            let data = match game.level {
                 0 => map_texture.image.as_bytes(),
-                _ => match self.get_map_image(map_key) {
+                _ => match self.get_map_image(game.level) {
                     Some(data) => data.as_bytes(),
                     None => map_texture.image.as_bytes(),
                 },
@@ -366,8 +439,8 @@ impl Widget for MapHud {
             let _ = render_ctx.replace_texture(map_texture.id.unwrap(), data, 2000, 2000);
         }
     }
-    fn render(&mut self, ui: &imgui::Ui, wukong: &Wukong) {
-        self.render_mini_map(ui, wukong);
-        self.render_main_map(ui, wukong);
+    fn render(&mut self, ui: &imgui::Ui) {
+        self.render_mini_map(ui);
+        self.render_main_map(ui);
     }
 }

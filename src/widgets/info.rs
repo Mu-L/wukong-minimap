@@ -5,7 +5,7 @@ use hudhook::{
     RenderContext,
 };
 
-use crate::{widgets::Widget, wukong::Wukong};
+use crate::{game::Game, widgets::Widget};
 
 pub struct Info;
 
@@ -16,7 +16,7 @@ impl Info {
 }
 
 impl Widget for Info {
-    fn render(&mut self, ui: &imgui::Ui, wukong: &Wukong) {
+    fn render(&mut self, ui: &imgui::Ui) {
         let display_size = ui.io().display_size;
         let [position_x, position_y] = [0.0, display_size[1] - 30.0];
 
