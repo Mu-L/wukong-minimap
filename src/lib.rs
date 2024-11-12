@@ -17,6 +17,8 @@ pub unsafe extern "stdcall" fn update(
     z: f32,
     angle: f32,
 ) {
+    let angle = angle + 180.0 + 90.0;
+    let angle = if angle > 360.0 { angle - 360.0 } else { angle };
     Game::update(level, paused, x, y, z, angle);
 }
 

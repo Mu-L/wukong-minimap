@@ -200,9 +200,9 @@ impl MapHud {
         let y = (point[1] - area.range_y[0]) / area.height();
         [x, y]
     }
-    fn render_mini_map(&mut self, ui: &imgui::Ui) {
+    fn render_map(&mut self, ui: &imgui::Ui) {
         let game = Game::get_game();
-        if game.level >= 10 && game.enable && !game.paused {
+        if game.enable && !game.paused {
             let display_size = ui.io().display_size;
             let window_size = display_size[1] * MINI_MAP_SIZE;
             let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
@@ -264,7 +264,8 @@ impl MapHud {
                             position_x + window_size / 2.0,
                             position_y + window_size / 2.0,
                         ];
-                        let [p0, p1, p2, p3] = self.arrow_to_p4(ui, center, 32.0, game.angle);
+                        let [p0, p1, p2, p3] =
+                            self.arrow_to_p4(ui, center, 32.0, game.angle + 180.0);
 
                         // 使用 add_image_quad 方法角色箭头图标
                         draw_list
@@ -279,94 +280,83 @@ impl MapHud {
                     }
                 });
         }
-    }
 
-    fn render_main_map(&mut self, ui: &imgui::Ui) {
-        let game = Game::get_game();
-        if game.level >= 10 && game.enable && game.open && !game.paused {
-            if self.open {
-                let display_size = ui.io().display_size;
-                let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
+        if game.enable && !game.paused && self.open {
+            let display_size = ui.io().display_size;
+            let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 
-                let [position_x, position_y] = [
-                    (display_size[0] - window_size) / 2.0,
-                    (display_size[1] - window_size) / 2.0,
-                ];
-                ui.window("main_map")
-                    .size([window_size, window_size], Condition::Always)
-                    .position([position_x, position_y], Condition::Always)
-                    .flags(
-                        WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE,
-                    )
-                    .bg_alpha(0.8)
-                    .build(|| {
-                        let txt_id = self.get_texture_id("map").unwrap();
-                        ui.set_cursor_pos([0.0, 0.0]);
+            let [position_x, position_y] = [
+                (display_size[0] - window_size) / 2.0,
+                (display_size[1] - window_size) / 2.0,
+            ];
+            ui.window("main_map")
+                .size([window_size, window_size], Condition::Always)
+                .position([position_x, position_y], Condition::Always)
+                .flags(WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE)
+                .bg_alpha(0.8)
+                .build(|| {
+                    let txt_id = self.get_texture_id("map").unwrap();
+                    ui.set_cursor_pos([0.0, 0.0]);
 
-                        if let Some(area) = &self.area {
-                            debug!("draw_mainmap");
-                            Image::new(txt_id, [window_size, window_size]).build(ui);
+                    if let Some(area) = &self.area {
+                        debug!("draw_mainmap");
+                        Image::new(txt_id, [window_size, window_size]).build(ui);
 
-                            let draw_list = ui.get_window_draw_list();
+                        let draw_list = ui.get_window_draw_list();
 
-                            area.points
-                                .iter()
-                                .filter(|p| self.is_icon_checked(p.category.as_str()))
-                                .for_each(|p| {
-                                    if let Some(tid) = self.get_texture_id(p.category.as_str()) {
-                                        // 计算位置后 画传送点图标。
-                                        let [x, y] = self.point_to_percent([p.x, p.y], &area);
-                                        let [x, y] = [x * window_size, y * window_size];
-                                        ui.set_cursor_pos([x - 18.0, y - 32.0]);
-                                        Image::new(tid, [36.0, 48.0]).build(ui);
-                                        // self.render_centered_text(ui, &p.name, x, y + 24.0);
-                                    }
-                                });
+                        area.points
+                            .iter()
+                            .filter(|p| self.is_icon_checked(p.category.as_str()))
+                            .for_each(|p| {
+                                if let Some(tid) = self.get_texture_id(p.category.as_str()) {
+                                    // 计算位置后 画传送点图标。
+                                    let [x, y] = self.point_to_percent([p.x, p.y], &area);
+                                    let [x, y] = [x * window_size, y * window_size];
+                                    ui.set_cursor_pos([x - 18.0, y - 32.0]);
+                                    Image::new(tid, [36.0, 48.0]).build(ui);
+                                    // self.render_centered_text(ui, &p.name, x, y + 24.0);
+                                }
+                            });
 
-                            let location = self.point_to_percent([game.x, game.y], &area);
-                            let location = [
-                                position_x + location[0] * window_size,
-                                position_y + location[1] * window_size,
-                            ];
-                            let [p0, p1, p2, p3] = self.arrow_to_p4(ui, location, 32.0, game.angle);
+                        let location = self.point_to_percent([game.x, game.y], &area);
+                        let location = [
+                            position_x + location[0] * window_size,
+                            position_y + location[1] * window_size,
+                        ];
+                        let [p0, p1, p2, p3] =
+                            self.arrow_to_p4(ui, location, 32.0, game.angle + 180.0);
 
-                            // 使用 add_image_quad 方法角色箭头图标
-                            draw_list
-                                .add_image_quad(
-                                    self.get_texture_id("arrow").unwrap(),
-                                    p0,
-                                    p1,
-                                    p2,
-                                    p3,
-                                )
-                                .build();
-                        } else {
-                            debug!("draw_nomap");
-                            Image::new(txt_id, [window_size, window_size])
-                                .uv0([0.0, 0.0])
-                                .uv1([1.0, 1.0])
-                                .build(ui);
-                        }
+                        // 使用 add_image_quad 方法角色箭头图标
+                        draw_list
+                            .add_image_quad(self.get_texture_id("arrow").unwrap(), p0, p1, p2, p3)
+                            .build();
+                    } else {
+                        debug!("draw_nomap");
+                        Image::new(txt_id, [window_size, window_size])
+                            .uv0([0.0, 0.0])
+                            .uv1([1.0, 1.0])
+                            .build(ui);
+                    }
+                });
+
+            ui.window("main_control")
+                .size([100.0, window_size], Condition::Always) // 修改位置到右上角
+                .position([position_x - 100.0, position_y], Condition::Always)
+                .flags(
+                    WindowFlags::NO_TITLE_BAR
+                        | WindowFlags::NO_RESIZE
+                        | WindowFlags::NO_MOVE
+                        | WindowFlags::NO_SCROLLBAR,
+                )
+                .build(|| {
+                    // 每个 icon 都是一个 checkbox
+                    self.icons.iter_mut().for_each(|icon| {
+                        ui.checkbox(icon.name, &mut icon.checked);
                     });
-
-                ui.window("main_control")
-                    .size([100.0, window_size], Condition::Always) // 修改位置到右上角
-                    .position([position_x - 100.0, position_y], Condition::Always)
-                    .flags(
-                        WindowFlags::NO_TITLE_BAR
-                            | WindowFlags::NO_RESIZE
-                            | WindowFlags::NO_MOVE
-                            | WindowFlags::NO_SCROLLBAR,
-                    )
-                    .build(|| {
-                        // 每个 icon 都是一个 checkbox
-                        self.icons.iter_mut().for_each(|icon| {
-                            ui.checkbox(icon.name, &mut icon.checked);
-                        });
-                    });
-            }
+                });
         }
     }
+
     /**
      * 获取地图背景图片的偏移值, 人物总是展示在中心位置,不断的调整背景图片的坐标值实现实时小地图功能,
      * 地图视窗大小为 MAP_WINDOW_SIZE, 展示游戏坐标范围为 MAP_VIEWPORT.
@@ -449,7 +439,6 @@ impl Widget for MapHud {
         }
     }
     fn render(&mut self, ui: &imgui::Ui) {
-        self.render_mini_map(ui);
-        self.render_main_map(ui);
+        self.render_map(ui);
     }
 }
