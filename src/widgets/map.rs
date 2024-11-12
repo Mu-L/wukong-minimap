@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use hudhook::RenderContext;
 use hudhook::{
-    imgui::{self, Condition, Image, Key, TextureId, WindowFlags},
+    imgui::{self, Condition, Image, TextureId, WindowFlags},
     tracing::debug,
 };
 use image::{EncodableLayout, RgbaImage};
@@ -413,7 +413,7 @@ impl Widget for MapHud {
                 .ok();
         });
     }
-    fn before_render(&mut self, ctx: &mut imgui::Context, render_ctx: &mut dyn RenderContext) {
+    fn before_render(&mut self, _ctx: &mut imgui::Context, render_ctx: &mut dyn RenderContext) {
         // ctx.io_mut().mouse_draw_cursor = self.open;
         let game = Game::get_game();
         self.area = self.get_area(game.level, &[game.x, game.y, game.z]);
