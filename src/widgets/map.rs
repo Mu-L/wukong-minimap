@@ -1,11 +1,13 @@
 use std::cell::OnceCell;
 use std::collections::HashMap;
 
-use hudhook::imgui::{self, Condition, ImColor32, Image, Key, TextureId, WindowFlags};
 use hudhook::RenderContext;
+use hudhook::{
+    imgui::{self, Condition, Image, Key, TextureId, WindowFlags},
+    tracing::debug,
+};
 use image::{EncodableLayout, RgbaImage};
 use serde::{Deserialize, Serialize};
-use tracing::debug;
 
 use crate::game::Game;
 use crate::tools::{load_image, load_json, point_inside};
@@ -19,14 +21,6 @@ const MAP_VIEWPORT: f32 = 20000.0;
 const MINI_MAP_SIZE: f32 = 0.2;
 // 大地图窗口大小
 const MAIN_MAP_SIZE: f32 = 0.8;
-
-#[derive(Debug, Default, Clone)]
-pub struct Position {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-    pub angle: f32,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Icon {

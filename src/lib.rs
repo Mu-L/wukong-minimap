@@ -3,7 +3,6 @@ use hudhook::hooks::dx12::ImguiDx12Hooks;
 use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH};
 
 mod game;
-mod memedit;
 mod render;
 mod tools;
 mod widgets;
