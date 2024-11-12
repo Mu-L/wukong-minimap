@@ -87,7 +87,6 @@ pub struct MapHud {
     areas: Vec<AreaInfo>,
     area: Option<AreaInfo>,
     pre_area_id: i32,
-    open: bool,
 }
 
 impl MapHud {
@@ -140,7 +139,6 @@ impl MapHud {
             textures,
             icons,
             areas,
-            open: false,
             area: None,
             pre_area_id: 0,
         }
@@ -281,7 +279,7 @@ impl MapHud {
                 });
         }
 
-        if game.enable && !game.paused && self.open {
+        if game.enable && !game.paused && game.open {
             let display_size = ui.io().display_size;
             let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 

@@ -8,6 +8,10 @@ namespace CSharpExample;
 
 public sealed class MyMod : ICSharpMod
 {
+    // 添加 LoadLibrary 的 P/Invoke 声明
+    [DllImport("kernel32.dll")]
+    private static extern IntPtr LoadLibrary(string dllToLoad);
+
     // 导入 SetMapStatus 函数
     [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
     public static extern void update(
@@ -20,11 +24,11 @@ public sealed class MyMod : ICSharpMod
     );
     // 导入 toggle 函数
     [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
-    public static extern void toggle();
+    public static extern void toggle(bool val);
 
     // 导入 toggle 函数
     [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
-    public static extern void toggle_big_map();
+    public static extern void open_big_map(bool val);
 
     // private readonly Harmony harmony;
     public string Name => ModName;
@@ -32,14 +36,32 @@ public sealed class MyMod : ICSharpMod
 
     public System.Timers.Timer timer = new System.Timers.Timer(100);
 
+    public bool is_enabled = true;
+    public bool is_open = false;
 
     public void Init()
     {
         Console.WriteLine($"{Name} Init");
-        Utils.RegisterKeyBind(Key.M, Open);
-        Utils.RegisterKeyBind(ModifierKeys.Control, Key.M, Toggle);
+        Console.WriteLine($"当前目录: {Directory.GetCurrentDirectory()}");
+        // {current_dir}/CSharpLoader/Mods/BlackMythMap/jas_minimap.dll
+        var dllPath = Path.Combine(Directory.GetCurrentDirectory(), "CSharpLoader", "Mods", "BlackMythMap", "jas_minimap.dll");
+        Console.WriteLine($"dllPath: {dllPath}");
+        try
+        {
+            // 主动加载DLL
+            LoadLibrary(dllPath);
+            Console.WriteLine("loaded jas_minimap.dll");
+        } catch (Exception ex) { 
+            Console.WriteLine($"load jas_minimap.dll err: {ex.Message}");
+        }
+        
+        
 
-        Utils.RegisterGamePadBind(GamePadButton.Start, Open);
+        Utils.RegisterKeyBind(Key.M, Open);
+        Utils.RegisterKeyBind(Key.N, Toggle);
+
+        Utils.RegisterGamePadBind(GamePadButton.DPadLeftDown, Open);
+        Utils.RegisterGamePadBind(GamePadButton.Back, Toggle);
         // 启动定时器
         timer.Elapsed += (Object source, ElapsedEventArgs e) => Loop();
         timer.AutoReset = true;
@@ -59,11 +81,17 @@ public sealed class MyMod : ICSharpMod
     }
     public void Toggle()
     {
-        MyMod.toggle();
+        is_enabled = !is_enabled;
+        MyMod.toggle(is_enabled);
     }
     public void Open()
     {
-        MyMod.toggle_big_map();
+        is_open = !is_open; 
+        MyMod.open_big_map(is_open);
+        var controller = MyUtils.GetPlayerController();
+        if(controller is not null){
+            controller.ShowMouseCursor = is_open;
+        }
     }
     public void Loop()
     {
@@ -77,17 +105,26 @@ public sealed class MyMod : ICSharpMod
             MyMod.update(0, true, 0, 0, 0, 0);
             return;
         }
-              
-        var paused = controller.ShowMouseCursor;
-        var levelName = MyUtils.GetWorld().GetCurrentLevelName(true);
 
+        var IsPawnControlled = player.IsPawnControlled();
+        var IsPlayerControlled = player.IsPlayerControlled();
+
+        var IsGamePaused = MyUtils.GetWorld().IsGamePaused();
+
+
+        var IsControllerInPlayState = UGSE_EngineFuncLib.IsControllerInPlayState(controller);
+        var IsActive = player.InputComponent.IsActive();
+
+        var levelName = MyUtils.GetWorld().GetCurrentLevelName(true);
         var x = player.GetActorLocation().X;
         var y = player.GetActorLocation().Y;
         var z = player.GetActorLocation().Z;
 
         // 身躯只能左右转动
         var yaw = player.GetActorRotation().Yaw;
-        Console.WriteLine($"levelName:{levelName} paused:{paused} x:{x} y:{y} z:{z} yaw:{yaw}");
+        //Console.WriteLine($"levelName:{levelName} x:{x} y:{y} z:{z} yaw:{yaw}");
+
+        Console.WriteLine($"IsPawnControlled:{IsPawnControlled} IsActive:{IsActive} IsControllerInPlayState:{IsControllerInPlayState}");
         var maps = new Dictionary<string, int>(){
             {"HFS01_PersistentLevel",10},
             {"HFM02_PersistentLevel",20},
@@ -101,6 +138,6 @@ public sealed class MyMod : ICSharpMod
         };
             // 从字典中获取对应的 mapid，如果不存在则返回 0
         var mapid = maps.TryGetValue(levelName, out int id) ? id : 0;
-        MyMod.update(mapid, paused, x, y, z, yaw);
+        MyMod.update(mapid, false, x, y, z, yaw);
     }
 }

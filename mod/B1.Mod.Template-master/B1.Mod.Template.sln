@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B1.Mod.Template", "B1.Mod.Template.csproj", "{8518F30A-D8D5-4672-9C7E-44403F959E92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B1ModTemplate", "B1ModTemplate\B1ModTemplate.csproj", "{9230156D-52C0-4BD5-8535-1E41AF4BF78D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackMythMap", "B1ModTemplate\BlackMythMap.csproj", "{9230156D-52C0-4BD5-8535-1E41AF4BF78D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4B34501C-6682-4E28-92A1-A5C86512A25A}"
 	ProjectSection(SolutionItems) = preProject

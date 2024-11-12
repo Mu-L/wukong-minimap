@@ -23,13 +23,13 @@ pub unsafe extern "stdcall" fn update(
 }
 
 #[no_mangle]
-pub unsafe extern "stdcall" fn toggle() {
-    Game::toggle();
+pub unsafe extern "stdcall" fn toggle(val: bool) {
+    Game::toggle(val);
 }
 
 #[no_mangle]
-pub unsafe extern "stdcall" fn toggle_big_map() {
-    Game::toggle_big_map();
+pub unsafe extern "stdcall" fn open_big_map(val: bool) {
+    Game::open_big_map(val);
 }
 
 #[no_mangle]

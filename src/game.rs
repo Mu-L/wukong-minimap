@@ -63,16 +63,15 @@ impl Game {
             game.z = z;
             game.angle = angle;
         });
-        println!("game: {:?}", Self::get_game());
     }
 
     // toggle 方法保持一致
-    pub fn toggle() {
-        Self::modify(|game| game.enable = !game.enable);
+    pub fn toggle(val: bool) {
+        Self::modify(|game| game.enable = val);
     }
 
-    // toggle_big_map 方法保持一致
-    pub fn toggle_big_map() {
-        Self::modify(|game| game.open = !game.open);
+    // open_big_map 方法保持一致
+    pub fn open_big_map(val: bool) {
+        Self::modify(|game| game.open = val);
     }
 }
