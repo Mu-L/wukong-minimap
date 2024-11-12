@@ -42,7 +42,7 @@ public sealed class MyMod : ICSharpMod
     public void Init()
     {
         Console.WriteLine($"{Name} Init");
-        Console.WriteLine($"当前目录: {Directory.GetCurrentDirectory()}");
+        Console.WriteLine($"current dir: {Directory.GetCurrentDirectory()}");
         // {current_dir}/CSharpLoader/Mods/BlackMythMap/jas_minimap.dll
         var dllPath = Path.Combine(Directory.GetCurrentDirectory(), "CSharpLoader", "Mods", "BlackMythMap", "jas_minimap.dll");
         Console.WriteLine($"dllPath: {dllPath}");
@@ -60,8 +60,7 @@ public sealed class MyMod : ICSharpMod
         Utils.RegisterKeyBind(Key.M, Open);
         Utils.RegisterKeyBind(Key.N, Toggle);
 
-        Utils.RegisterGamePadBind(GamePadButton.DPadLeftDown, Open);
-        Utils.RegisterGamePadBind(GamePadButton.Back, Toggle);
+        Utils.RegisterGamePadBind(GamePadButton.Back, Open);
         // 启动定时器
         timer.Elapsed += (Object source, ElapsedEventArgs e) => Loop();
         timer.AutoReset = true;
@@ -86,8 +85,15 @@ public sealed class MyMod : ICSharpMod
     }
     public void Open()
     {
-        is_open = !is_open; 
+        is_open = !is_open;
         MyMod.open_big_map(is_open);
+
+        if (is_open && !is_enabled)
+        {
+            is_enabled = !is_enabled;
+            MyMod.toggle(is_enabled);
+        }
+
         var controller = MyUtils.GetPlayerController();
         if(controller is not null){
             controller.ShowMouseCursor = is_open;
@@ -106,15 +112,6 @@ public sealed class MyMod : ICSharpMod
             return;
         }
 
-        var IsPawnControlled = player.IsPawnControlled();
-        var IsPlayerControlled = player.IsPlayerControlled();
-
-        var IsGamePaused = MyUtils.GetWorld().IsGamePaused();
-
-
-        var IsControllerInPlayState = UGSE_EngineFuncLib.IsControllerInPlayState(controller);
-        var IsActive = player.InputComponent.IsActive();
-
         var levelName = MyUtils.GetWorld().GetCurrentLevelName(true);
         var x = player.GetActorLocation().X;
         var y = player.GetActorLocation().Y;
@@ -122,9 +119,10 @@ public sealed class MyMod : ICSharpMod
 
         // 身躯只能左右转动
         var yaw = player.GetActorRotation().Yaw;
-        //Console.WriteLine($"levelName:{levelName} x:{x} y:{y} z:{z} yaw:{yaw}");
+        
+        // TODO 暂停状态的判断
 
-        Console.WriteLine($"IsPawnControlled:{IsPawnControlled} IsActive:{IsActive} IsControllerInPlayState:{IsControllerInPlayState}");
+        //Console.WriteLine($"IsPawnControlled:{IsPawnControlled} IsActive:{IsActive} IsControllerInPlayState:{IsControllerInPlayState}");
         var maps = new Dictionary<string, int>(){
             {"HFS01_PersistentLevel",10},
             {"HFM02_PersistentLevel",20},
