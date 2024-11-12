@@ -17,25 +17,16 @@ pub unsafe extern "stdcall" fn update(
     z: f32,
     angle: f32,
 ) {
-    // 实现设置玩家生命值的逻辑
-    println!(
-        "SetMapStatus {:?} {:?} {:?} {:?} {:?}  {:?}",
-        level, paused, x, y, z, angle
-    );
     Game::update(level, paused, x, y, z, angle);
 }
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn toggle() {
-    // 实现设置玩家生命值的逻辑
-    println!("toggle");
     Game::toggle();
 }
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn toggle_big_map() {
-    // 实现设置玩家生命值的逻辑
-    println!("toggle_big_map");
     Game::toggle_big_map();
 }
 

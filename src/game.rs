@@ -12,7 +12,6 @@ pub struct Game {
     pub y: f32,
     pub z: f32,
     pub angle: f32,
-    pub prev_level: i32,
 }
 
 impl Game {
@@ -26,7 +25,6 @@ impl Game {
             y: 0.0,
             z: 0.0,
             angle: 0.0,
-            prev_level: 0,
         }
     }
 
@@ -58,7 +56,6 @@ impl Game {
     // 使用 modify 重写 update
     pub fn update(level: i32, paused: bool, x: f32, y: f32, z: f32, angle: f32) {
         Self::modify(|game| {
-            game.prev_level = game.level;
             game.level = level;
             game.paused = paused;
             game.x = x;

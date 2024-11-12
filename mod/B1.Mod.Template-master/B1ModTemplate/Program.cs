@@ -22,18 +22,24 @@ public sealed class MyMod : ICSharpMod
     [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
     public static extern void toggle();
 
+    // 导入 toggle 函数
+    [DllImport("jas_minimap.dll", CallingConvention = CallingConvention.StdCall)]
+    public static extern void toggle_big_map();
+
     // private readonly Harmony harmony;
     public string Name => ModName;
     public string Version => ModVersion;
 
-    public System.Timers.Timer timer = new System.Timers.Timer(200);
+    public System.Timers.Timer timer = new System.Timers.Timer(100);
 
 
     public void Init()
     {
         Console.WriteLine($"{Name} Init");
-        Utils.RegisterKeyBind(Key.M, () => Toggle());
+        Utils.RegisterKeyBind(Key.M, Open);
         Utils.RegisterKeyBind(ModifierKeys.Control, Key.M, Toggle);
+
+        Utils.RegisterGamePadBind(GamePadButton.Start, Open);
         // 启动定时器
         timer.Elapsed += (Object source, ElapsedEventArgs e) => Loop();
         timer.AutoReset = true;
@@ -54,6 +60,10 @@ public sealed class MyMod : ICSharpMod
     public void Toggle()
     {
         MyMod.toggle();
+    }
+    public void Open()
+    {
+        MyMod.toggle_big_map();
     }
     public void Loop()
     {

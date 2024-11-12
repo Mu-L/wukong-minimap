@@ -85,6 +85,8 @@ pub struct MapHud {
     textures: HashMap<String, ImageTexture>,
     icons: Vec<IconCheckbox>,
     areas: Vec<AreaInfo>,
+    area: Option<AreaInfo>,
+    pre_area_id: i32,
     open: bool,
 }
 
@@ -139,12 +141,17 @@ impl MapHud {
             icons,
             areas,
             open: false,
+            area: None,
+            pre_area_id: 0,
         }
     }
     fn get_texture_id(&self, name: &str) -> Option<TextureId> {
         self.textures.get(name).map(|t| t.id.unwrap())
     }
     fn get_map_image(&self, level: i32) -> Option<&RgbaImage> {
+        if level == 0 {
+            return None;
+        }
         unsafe { MAP_IMAGES.get().unwrap().get(&level) }
     }
     fn is_icon_checked(&self, key: &str) -> bool {
@@ -295,8 +302,8 @@ impl MapHud {
                     .build(|| {
                         let txt_id = self.get_texture_id("map").unwrap();
                         ui.set_cursor_pos([0.0, 0.0]);
-                        let area = self.get_area(game.level, &[game.x, game.y, game.z]);
-                        if let Some(area) = area {
+
+                        if let Some(area) = &self.area {
                             debug!("draw_mainmap");
                             Image::new(txt_id, [window_size, window_size]).build(ui);
 
@@ -427,15 +434,17 @@ impl Widget for MapHud {
     fn before_render(&mut self, ctx: &mut imgui::Context, render_ctx: &mut dyn RenderContext) {
         // ctx.io_mut().mouse_draw_cursor = self.open;
         let game = Game::get_game();
-        if game.level != game.prev_level {
+        self.area = self.get_area(game.level, &[game.x, game.y, game.z]);
+        let area_id = self.area.as_ref().map(|a| a.id).unwrap_or(0);
+
+        if area_id != self.pre_area_id {
+            self.pre_area_id = area_id;
             let map_texture = self.textures.get("map").unwrap();
-            let data = match game.level {
-                0 => map_texture.image.as_bytes(),
-                _ => match self.get_map_image(game.level) {
-                    Some(data) => data.as_bytes(),
-                    None => map_texture.image.as_bytes(),
-                },
+            let data = match self.get_map_image(area_id) {
+                Some(data) => data.as_bytes(),
+                None => map_texture.image.as_bytes(),
             };
+            println!("replace_texture: {:?}", area_id);
             let _ = render_ctx.replace_texture(map_texture.id.unwrap(), data, 2000, 2000);
         }
     }
