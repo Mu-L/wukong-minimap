@@ -5,11 +5,11 @@
 
 ﻿This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
 
-![image](./docs/images/minmap.png)
-
-﻿Open Source: https://github.com/jaskang/black-myth-map
-
 If possible, please help me give a star, this is very important to me.
+
+Nexusmods: [https://github.com/jaskang/black-myth-map](https://www.nexusmods.com/blackmythwukong/mods/956)
+
+![image](./docs/images/minmap.png)
 
 ### Key Instructions
 
@@ -37,6 +37,7 @@ Simply delete the BlackMythMap folder in b1\Binaries\Win64\CSharpLoader\Mods\
 
 如果可以的话 请帮我点个 star ，这对我很重要。
 
+Nexusmods: [https://github.com/jaskang/black-myth-map](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 ### 安装
 
