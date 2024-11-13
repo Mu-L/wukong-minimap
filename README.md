@@ -23,7 +23,7 @@ Nexusmods 下载地址: [https://www.nexusmods.com/blackmythwukong/mods/956](htt
 
 将 b1\Binaries\Win64\CSharpLoader\Mods\ 里的﻿  BlackMythMap 文件夹删除即可
 
-## 按键说明
+### 按键说明
 
 键盘：`M` 键打开/关闭大地图，`N` 开启关闭 Mod
 手柄：`Back` 键打开/关闭大地图
