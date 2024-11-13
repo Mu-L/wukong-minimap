@@ -2,7 +2,7 @@
 
 # Black Myth: Wukong Built-in real-time map
 
-中文说明：[README.md](./README.md)
+Switch language: [中文](./README.md)
 
 ﻿This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
 
@@ -21,7 +21,10 @@ Gamepad: `Back` to open/close the map
 ![image](./docs/images/bigmap.png)
 
 ### Installation 
-1. required CSharpLoader﻿
+
+1. installl require [CSharpLoader﻿](https://www.nexusmods.com/blackmythwukong/mods/664)﻿
+
+2. download Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 2. Extract BlackMythMap.zip directly into the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
 
