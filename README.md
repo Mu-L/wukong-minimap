@@ -9,19 +9,17 @@ Switch language: [English](README.en.md)
 
 如果可以的话 请帮我点个 star ，这对我很重要。
 
-Nexusmods 下载地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
+Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 ![image](./docs/images/minmap.png)
 
 ### 安装
 
-1. 先安装依赖  CSharpLoader﻿
+1. 先安装依赖  [CSharpLoader﻿]
+
+2. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
  
-2. 将 BlackMythMap.zip 直接 解压至黑神话的安装文件夹中 (steam的安装文件夹可以通过右键黑神话 -> 管理 -> 浏览本地文件 找到)
-
-### 卸载
-
-将 b1\Binaries\Win64\CSharpLoader\Mods\ 里的﻿  BlackMythMap 文件夹删除即可
+3. 将 BlackMythMap.zip 直接 解压至黑神话的安装文件夹中 (steam的安装文件夹可以通过右键黑神话 -> 管理 -> 浏览本地文件 找到)
 
 ### 按键说明
 
@@ -29,6 +27,11 @@ Nexusmods 下载地址: [https://www.nexusmods.com/blackmythwukong/mods/956](htt
 手柄：`Back` 键打开/关闭大地图
 
 ![image](./docs/images/bigmap.png)
+
+### 卸载
+
+将 b1\Binaries\Win64\CSharpLoader\Mods\ 里的﻿  BlackMythMap 文件夹删除即可
+
 
 ### 完善地图数据
 
