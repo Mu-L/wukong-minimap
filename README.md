@@ -3,7 +3,7 @@
 
 # 黑神话·悟空-内置实时地图
 
-en: [README.en.md](README.en.md)
+Switch language: [English](README.en.md)
 
 该插件是本人学习 Rust 的练手项目，基于[imgui](https://github.com/ocornut/imgui) 和 [hudhook](https://github.com/veeenu/hudhook?from=jaskang)库开发。该项目为免费开源请勿用作商业用途，作者不承担任何责任。
 
