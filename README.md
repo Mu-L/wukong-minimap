@@ -7,11 +7,11 @@ Switch language: [English](README.en.md)
 
 该插件是本人学习 Rust 的练手项目，基于[imgui](https://github.com/ocornut/imgui) 和 [hudhook](https://github.com/veeenu/hudhook?from=jaskang)库开发。该项目为免费开源请勿用作商业用途，作者不承担任何责任。
 
-![image](./docs/images/minmap.png)
-
 如果可以的话 请帮我点个 star ，这对我很重要。
 
-Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
+Nexusmods 下载地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
+
+![image](./docs/images/minmap.png)
 
 ### 安装
 
