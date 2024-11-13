@@ -4,7 +4,7 @@
     "map": 10,
     "code": "HFS01_PersistentLevel_C_0",
     "name": "黑风山",
-    "image": "map-10-hfs.png",
+    "image": "map-10-hfs.jpg",
     "range_x": [
       -105000,
       45000
@@ -704,7 +704,7 @@
     "map": 20,
     "code": "HFM02_PersistentLevel_C_1",
     "name": "黄风岭",
-    "image": "map-20-hfl.png",
+    "image": "map-20-hfl.jpg",
     "range_x": [
       -165000,
       -15000
@@ -1796,7 +1796,7 @@
     "map": 25,
     "code": "HFM_DuJiaoXian_Persist_C_0",
     "name": "斯哈里国",
-    "image": "map-25-shlg.png",
+    "image": "map-25-shlg.jpg",
     "range_x": [
       -25000,
       55000
@@ -1880,7 +1880,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_1_1",
     "name": "小西天-1",
-    "image": "map-30-xxt.png",
+    "image": "map-30-xxt.jpg",
     "range_x": [
       345000,
       445000
@@ -2041,7 +2041,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_1_2",
     "name": "小西天-2",
-    "image": "map-30-xxt-zjh.png",
+    "image": "map-30-xxt-zjh.jpg",
     "range_x": [
       335000,
       455000
@@ -2104,7 +2104,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_2_1",
     "name": "小西天-3",
-    "image": "map-30-xxt-ftj-01.png",
+    "image": "map-30-xxt-ftj-01.jpg",
     "range_x": [
       75000,
       115000
@@ -2251,7 +2251,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_2_2",
     "name": "小西天-4",
-    "image": "map-30-xxt-ftj-02.png",
+    "image": "map-30-xxt-ftj-02.jpg",
     "range_x": [
       75000,
       115000
@@ -2384,7 +2384,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_2_3",
     "name": "小西天-5",
-    "image": "map-30-xxt-ftj-03.png",
+    "image": "map-30-xxt-ftj-03.jpg",
     "range_x": [
       75000,
       115000
@@ -2524,7 +2524,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_2_4",
     "name": "小西天-6",
-    "image": "map-30-xxt-ftj.png",
+    "image": "map-30-xxt-ftj.jpg",
     "range_x": [
       -10000,
       130000
@@ -2902,7 +2902,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_4_1",
     "name": "小西天-7",
-    "image": "map-30-xxt-kh-gd.png",
+    "image": "map-30-xxt-kh-gd.jpg",
     "range_x": [
       -20000,
       40000
@@ -3056,7 +3056,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_4_2",
     "name": "小西天-8",
-    "image": "map-30-xxt-kh-khba.png",
+    "image": "map-30-xxt-kh-khba.jpg",
     "range_x": [
       -80000,
       70000
@@ -3476,7 +3476,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_5_1",
     "name": "小西天-9",
-    "image": "map-30-xxt-jlg.png",
+    "image": "map-30-xxt-jlg.jpg",
     "range_x": [
       -180000,
       -80000
@@ -3938,7 +3938,7 @@
     "map": 30,
     "code": "LYS_PersistentLevel_C_0_5_2",
     "name": "小西天-10",
-    "image": "map-30-xxt-xlys.png",
+    "image": "map-30-xxt-xlys.jpg",
     "range_x": [
       -260000,
       -150000
@@ -4204,7 +4204,7 @@
     "map": 40,
     "code": "PSD_PersistentLevel_C_1_1",
     "name": "盘丝洞-1",
-    "image": "map-40-psl-01.png",
+    "image": "map-40-psl-01.jpg",
     "range_x": [
       72000,
       142000
@@ -4414,7 +4414,7 @@
     "map": 40,
     "code": "PSD_PersistentLevel_C_1_2",
     "name": "盘丝洞-2",
-    "image": "map-40-psl-02.png",
+    "image": "map-40-psl-02.jpg",
     "range_x": [
       100000,
       160000
@@ -4666,7 +4666,7 @@
     "map": 40,
     "code": "PSD_PersistentLevel_C_1_3",
     "name": "盘丝洞-3",
-    "image": "map-40-psl-03.png",
+    "image": "map-40-psl-03.jpg",
     "range_x": [
       90000,
       180000
@@ -5198,7 +5198,7 @@
     "map": 40,
     "code": "PSD_PersistentLevel_C_1_4",
     "name": "盘丝洞-4",
-    "image": "map-40-psl-04.png",
+    "image": "map-40-psl-04.jpg",
     "range_x": [
       70000,
       170000
@@ -5393,7 +5393,7 @@
     "map": 40,
     "code": "PSD_PersistentLevel_C_1_7",
     "name": "黄花观",
-    "image": "map-40-psl-hhg.png",
+    "image": "map-40-psl-hhg.jpg",
     "range_x": [
       40000,
       180000
@@ -5638,7 +5638,7 @@
     "map": 80,
     "code": "ZYS01_persistentlevel_C_1",
     "name": "紫云山",
-    "image": "map-80-zys.png",
+    "image": "map-80-zys.jpg",
     "range_x": [
       -55000,
       65000
@@ -5827,7 +5827,7 @@
     "map": 50,
     "code": "HYS_PersistentLevel_C_1_1",
     "name": "火焰山",
-    "image": "map-50-hys.png",
+    "image": "map-50-hys.jpg",
     "range_x": [
       -75000,
       175000
@@ -6485,7 +6485,7 @@
     "map": 98,
     "code": "BYS_persistentlevel_C_0",
     "name": "花果山",
-    "image": "map-98-hgs.png",
+    "image": "map-98-hgs.jpg",
     "range_x": [
       -240000,
       260000
@@ -6702,7 +6702,7 @@
     "map": 70,
     "code": "BSD01_Guide_C_1",
     "name": "碧水洞",
-    "image": "map-70-bsd.png",
+    "image": "map-70-bsd.jpg",
     "range_x": [
       90000,
       230000
