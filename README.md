@@ -15,7 +15,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 ### 安装
 
-1. 先安装依赖  [CSharpLoader﻿]
+1. 先安装依赖  [CSharpLoader﻿](https://www.nexusmods.com/blackmythwukong/mods/664)
 
 2. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
  
