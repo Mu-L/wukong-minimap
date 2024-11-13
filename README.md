@@ -7,7 +7,7 @@
 
 If possible, please help me give a star, this is very important to me.
 
-Nexusmods: [https://github.com/jaskang/black-myth-map](https://www.nexusmods.com/blackmythwukong/mods/956)
+Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 ![image](./docs/images/minmap.png)
 
@@ -37,7 +37,7 @@ Simply delete the BlackMythMap folder in b1\Binaries\Win64\CSharpLoader\Mods\
 
 如果可以的话 请帮我点个 star ，这对我很重要。
 
-Nexusmods: [https://github.com/jaskang/black-myth-map](https://www.nexusmods.com/blackmythwukong/mods/956)
+Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 ### 安装
 
