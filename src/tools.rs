@@ -61,3 +61,10 @@ macro_rules! include_image {
             .into_rgba8()
     }};
 }
+
+pub fn setup_tracing() {
+    std::env::set_var("RUST_BACKTRACE", "full");
+    std::env::set_var("RUST_LOG", "trace");
+    hudhook::alloc_console().unwrap();
+    hudhook::enable_console_colors();
+}

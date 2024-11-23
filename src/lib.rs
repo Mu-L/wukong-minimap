@@ -1,35 +1,12 @@
-use game::Game;
 use hudhook::hooks::dx12::ImguiDx12Hooks;
 use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH};
+use wukong::Wukong;
 
-mod game;
+mod data;
+mod globals;
 mod render;
 mod tools;
-mod widgets;
-
-#[no_mangle]
-pub unsafe extern "stdcall" fn update(
-    level: i32,
-    paused: bool,
-    x: f32,
-    y: f32,
-    z: f32,
-    angle: f32,
-) {
-    let angle = angle + 180.0 + 90.0;
-    let angle = if angle > 360.0 { angle - 360.0 } else { angle };
-    Game::update(level, paused, x, y, z, angle);
-}
-
-#[no_mangle]
-pub unsafe extern "stdcall" fn toggle(val: bool) {
-    Game::toggle(val);
-}
-
-#[no_mangle]
-pub unsafe extern "stdcall" fn open_big_map(val: bool) {
-    Game::open_big_map(val);
-}
+mod wukong;
 
 #[no_mangle]
 pub unsafe extern "stdcall" fn DllMain(
@@ -38,9 +15,9 @@ pub unsafe extern "stdcall" fn DllMain(
     _: *mut ::std::ffi::c_void,
 ) {
     if reason == DLL_PROCESS_ATTACH {
-        Game::init();
-        // tools::setup_tracing();
+        tools::setup_tracing();
         ::hudhook::tracing::trace!("DllMain()");
+        Wukong::init();
         ::std::thread::spawn(move || {
             if let Err(e) = ::hudhook::Hudhook::builder()
                 .with::<ImguiDx12Hooks>(render::MapHud::new())
