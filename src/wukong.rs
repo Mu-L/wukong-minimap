@@ -3,8 +3,8 @@ use std::f64::consts::PI;
 use libmem::{find_module, get_process, hook_code, read_memory, sig_scan_ex};
 
 use crate::globals::{
-    asm_map_hook, asm_pos_hook, g_map_address, g_map_back_address, g_pos_address,
-    g_pos_back_address,
+    asm_map_hook, asm_pause_hook, asm_pos_hook, g_map_address, g_map_back_address, g_pause_address,
+    g_pause_back_address, g_pos_address, g_pos_back_address,
 };
 
 #[derive(Debug, Clone)]
@@ -76,7 +76,33 @@ impl Wukong {
                 pos_hook_address, &asm_pos_hook as *const _ as usize, g_pos_back_address
             );
         }
-        // Enable the hook
+
+        let pause_hook_address = sig_scan_ex(
+            &game_process,
+            "49 8B 47 30 48 8B C8 49 8B D6 4C 8B C5 49 83 C0 C8 83 38 00",
+            game_module.base,
+            game_module.size,
+        )
+        .unwrap();
+
+        // 这个注释不能删除，否则会报错
+        // hook_result 返回了 trampoline 结构体，里面有 address 和 size 两个字段，address 处保留了原始地址被jmp 覆盖的内容且附带了jmp 回去的指令
+        let hook_result = unsafe {
+            hook_code(
+                pause_hook_address + 0x4,
+                &asm_pause_hook as *const _ as usize,
+            )
+            .unwrap()
+        };
+        // 将返回的地址保存到 g_map_back_address
+        unsafe { g_pause_back_address = hook_result.address };
+
+        unsafe {
+            println!(
+                "pause_hook_original: {:#X} pause_hook_address: {:#X} g_pause_back_address: {:#X}",
+                pause_hook_address, &asm_pause_hook as *const _ as usize, g_pause_back_address
+            );
+        }
 
         Self {}
     }
@@ -104,8 +130,13 @@ impl Wukong {
             _ => unsafe { read_memory::<Position>(g_pos_address - 0x10) },
         };
 
+        let palying = match unsafe { g_pause_address } {
+            0 => 0,
+            _ => unsafe { read_memory::<i32>(g_pause_address + 0x48) },
+        };
+
         GameState {
-            paused: false,
+            paused: palying == 0,
             map_id,
             angle: vector_to_angle(position.angle_x, position.angle_y),
             x: position.x as f32,
