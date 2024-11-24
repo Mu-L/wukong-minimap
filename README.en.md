@@ -33,7 +33,9 @@ EnableJit=0 // Disable JIT compilation
 ```
 
 ### Key Instructions
+
 Keyboard: Press `M` to open/close the map, press `N` to toggle HUD
+
 Controller: Press `Left Down Arrow` to open/close the map, press `Select` to toggle HUD
 
 ![image](./docs/images/bigmap.png)

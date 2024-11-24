@@ -339,7 +339,7 @@ impl MapHud {
                         imgui::ImColor32::WHITE.to_rgba_f32s(),
                         // 展示地图信息保两位小数
                         format!(
-                            "MAP:{} X:{:.2} Y:{:.2} Z:{:.2}",
+                            "MAP:{} X:{:.2} Y:{:.2} Z:{:.2} repo: https://github.com/jaskang/black-myth-map",
                             game.map_id, game.x, game.y, game.z
                         ),
                     );
@@ -381,7 +381,7 @@ impl MapHud {
                 ui.set_cursor_pos([20.0, 0.0]);
                 ui.text_colored(
                     imgui::ImColor32::WHITE.to_rgba_f32s(),
-                    format!("M: Toggle Map | N: Toggle HUD"),
+                    format!("M: Toggle Map | N: Toggle HUD | by jaskang"),
                 );
             });
     }
