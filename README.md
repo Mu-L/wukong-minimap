@@ -11,6 +11,12 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 ![image](./docs/images/minmap.png)
 
+### 按键说明
+
+键盘：`M` 键打开/关闭大地图，`N` 键开启/关闭 HUD
+手柄：`左下箭头` 键打开/关闭大地图，`Select` 键开启/关闭 HUD
+
+![image](./docs/images/bigmap.png)
 
 #### 纯净安装
 
@@ -18,7 +24,9 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 2. 将 BlackMythMap.zip 直接解压至黑神话的安装文件夹下面的 `b1\Binaries\Win64` 中 (steam的安装文件夹可以通过右键黑神话 -> 管理 -> 浏览本地文件找到) 
 
-#### 使用 CSharpLoader
+![image](./docs/images/minfiles.png)
+
+#### 使用 CSharpLoader 的用户
 
 1. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
 
@@ -32,12 +40,6 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 EnableJit=0 // 禁用 JIT 编译
 ```
 
-### 按键说明
-
-键盘：`M` 键打开/关闭大地图，`N` 键开启/关闭 HUD
-手柄：`左下箭头` 键打开/关闭大地图，`Select` 键开启/关闭 HUD
-
-![image](./docs/images/bigmap.png)
 
 ### 卸载
 

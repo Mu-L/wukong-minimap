@@ -12,13 +12,24 @@ Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexu
 
 ![image](./docs/images/minmap.png)
 
-### Pure Installation 
+
+### Key Instructions
+
+Keyboard: Press `M` to open/close the map, press `N` to toggle HUD
+
+Controller: Press `Left Down Arrow` to open/close the map, press `Select` to toggle HUD
+
+![image](./docs/images/bigmap.png)
+
+### Installation 
 
 1. download: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64` folder under the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
 
-### Using CSharpLoader
+![image](./docs/images/minfiles.png)
+
+### For CSharpLoader users
 
 1. download: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
 
@@ -32,13 +43,6 @@ Configuration file path: `b1\Binaries\Win64\CSharpLoader\b1cs.ini`
 EnableJit=0 // Disable JIT compilation
 ```
 
-### Key Instructions
-
-Keyboard: Press `M` to open/close the map, press `N` to toggle HUD
-
-Controller: Press `Left Down Arrow` to open/close the map, press `Select` to toggle HUD
-
-![image](./docs/images/bigmap.png)
 
 ### Uninstallation 
 
