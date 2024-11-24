@@ -4,7 +4,7 @@
 
 Switch language: [中文](./README.md)
 
-﻿This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
+This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
 
 If possible, please help me give a star, this is very important to me.
 
@@ -12,23 +12,19 @@ Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexu
 
 ![image](./docs/images/minmap.png)
 
+### Installation 
+
+1. download: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
+
+2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64` folder under the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
+
+
 ### Key Instructions
-
-Keyboard: `M` to open/close the map,  `N`  enable/Disable Mod
-
-Gamepad: `Back` to open/close the map
+Keyboard: Press `M` to open/close the map, press `N` to toggle HUD
+Controller: Press `Left Down Arrow` to open/close the map, press `Select` to toggle HUD
 
 ![image](./docs/images/bigmap.png)
 
-### Installation 
-
-1. installl require [CSharpLoader﻿](https://www.nexusmods.com/blackmythwukong/mods/664)﻿
-
-2. download Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
-
-2. Extract BlackMythMap.zip directly into the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
-
 ### Uninstallation 
 
-Simply delete the BlackMythMap folder in b1\Binaries\Win64\CSharpLoader\Mods\
-
+Simply delete the BlackMythMap folder in b1\Binaries\Win64\jas_minimap.dll
