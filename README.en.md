@@ -6,7 +6,7 @@ Switch language: [中文](./README.md)
 
 This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
 
-If possible, please help me give a star, this is very important to me.
+If this plugin is helpful to you, please help me by giving it a star.
 
 Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
