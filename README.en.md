@@ -12,7 +12,7 @@ Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexu
 
 [![](./docs/images/page.jpg)](https://youtu.be/_gG5YlsjYwk)
 
-> Click on the above image to jump to the demo video
+> Click on the above image to jump to the YouTube demo video
 
 ### Key Instructions
 

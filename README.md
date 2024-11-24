@@ -12,7 +12,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 [![](./docs/images/page.jpg)](https://www.bilibili.com/video/BV14bBbYcEQg?t=3.8)
 
-> 点击图片跳转至视频演示
+> 点击图片跳转至 B 站演示视频
 
 
 ### 按键说明
