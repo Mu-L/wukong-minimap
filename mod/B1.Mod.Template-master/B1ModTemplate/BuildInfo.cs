@@ -3,5 +3,5 @@
 internal static class BuildInfo
 {
     internal const string ModName = "BlackMythMap";
-    internal const string ModVersion = "0.2.0";
+    internal const string ModVersion = "0.3.0";
 }

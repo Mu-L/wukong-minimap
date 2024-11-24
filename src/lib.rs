@@ -15,7 +15,7 @@ pub unsafe extern "stdcall" fn DllMain(
     _: *mut ::std::ffi::c_void,
 ) {
     if reason == DLL_PROCESS_ATTACH {
-        tools::setup_tracing();
+        // tools::setup_tracing();
         ::hudhook::tracing::trace!("DllMain()");
         Wukong::init();
         ::std::thread::spawn(move || {

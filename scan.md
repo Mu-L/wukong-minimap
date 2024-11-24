@@ -1,165 +1,68 @@
-"b1" "games\\b1\\b1-Win64-Shipping.exe"
-+---------------------------------------+-------------------------------------------------------------------------+
-| sig                                   | offline scan                                                            |
-+=======================================+=========================================================================+
-| UGameplayStaticsDoesSaveGameExist     | UGameplayStaticsDoesSaveGameExist(                                      |
-|                                       |     0x14e713640,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UGameplayStaticsLoadGameFromSlot      | UGameplayStaticsLoadGameFromSlot(                                       |
-|                                       |     0x14e7256d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UGameplayStaticsLoadGameFromMemory    | UGameplayStaticsLoadGameFromMemory(                                     |
-|                                       |     0x14e725330,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UGameplayStaticsSaveGameToSlot        | UGameplayStaticsSaveGameToSlot(                                         |
-|                                       |     0x14e72eb50,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UGameplayStaticsSaveGameToMemory      | UGameplayStaticsSaveGameToMemory(                                       |
-|                                       |     0x14e72e840,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FEngineLoopInit                       | FEngineLoopInit(                                                        |
-|                                       |     0x14b0b88d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UGameEngineTick                       | Msg("expected at least one value")                                      |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FEngineLoopTick                       | Msg("expected at least one value")                                      |
-+---------------------------------------+-------------------------------------------------------------------------+
-| Main                                  | Main(                                                                   |
-|                                       |     0x14b0c4c40,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| GMallocString                         | GMallocString(                                                          |
-|                                       |     0x15d699ea0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| GMallocPatterns                       | GMallocPatterns(                                                        |
-|                                       |     0x15d699ea0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| GMalloc                               | GMalloc(                                                                |
-|                                       |     0x15d699ea0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FFrameStepViaExec                     | FFrameStepViaExec {                                                     |
-|                                       |     step: 0x14cef3500,                                                  |
-|                                       |     step_explicit_property: 0x14cf19f40,                                |
-|                                       | }                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FFrameStepExplicitProperty            | FFrameStepExplicitProperty(                                             |
-|                                       |     0x14cf19f40,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FFrameStep                            | FFrameStep(                                                             |
-|                                       |     0x14cf19f10,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| GNatives                              | GNatives(                                                               |
-|                                       |     0x15d779ed0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UObjectSkipFunction                   | UObjectSkipFunction(                                                    |
-|                                       |     0x14cf15f20,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FTextFString                          | FTextFString(                                                           |
-|                                       |     0x14cc98af0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FNamePool                             | FNamePool(                                                              |
-|                                       |     0x15d6dbd00,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FNameToStringFString                  | FNameToStringFString(                                                   |
-|                                       |     0x14cd8ad80,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FNameToStringVoid                     | FNameToStringVoid(                                                      |
-|                                       |     0x14cd8afb0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FNameToString                         | FNameToString(                                                          |
-|                                       |     0x14cd8ad80,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FNameCtorWchar                        | FNameCtorWchar(                                                         |
-|                                       |     0x14cd72cc0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FPakPlatformFileInitialize            | FPakPlatformFileInitialize(                                             |
-|                                       |     0x14e3647a0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| AESKeys                               | AESKeys [                                                               |
-|                                       |     0xa896068444f496956900542a215367688b49b19c2537fcd2743d8585ba1eb128, |
-|                                       | ]                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| StaticConstructObjectInternalString   | StaticConstructObjectInternalString(                                    |
-|                                       |     0x14cf176d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| StaticConstructObjectInternalPatterns | StaticConstructObjectInternalPatterns(                                  |
-|                                       |     0x14cf176d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| StaticConstructObjectInternal         | StaticConstructObjectInternal(                                          |
-|                                       |     0x14cf176d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FUObjectHashTablesGet                 | FUObjectHashTablesGet(                                                  |
-|                                       |     0x14cf27390,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| A                                     | A(                                                                      |
-|                                       |     {},                                                                 |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UtilStringExtractor                   | UtilStringExtractor(                                                    |
-|                                       |     {},                                                                 |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UObjectBaseUtilityGetPathName         | Msg("found 3 unique values [14CDD1620, 14CDDD780, 14CF090A0]")          |
-+---------------------------------------+-------------------------------------------------------------------------+
-| ConsoleManagerSingleton               | Msg("found 2 unique values [14CC658B0, 14DBF85A0]")                     |
-+---------------------------------------+-------------------------------------------------------------------------+
-| KismetSystemLibrary                   | Msg("expected at least one value")                                      |
-+---------------------------------------+-------------------------------------------------------------------------+
-| StaticFindObjectFast                  | StaticFindObjectFast(                                                   |
-|                                       |     0x14cf18a40,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UFunctionBind                         | UFunctionBind(                                                          |
-|                                       |     0x14ce25ac0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| BlueprintLibraryInit                  | Msg("expected at least one value")                                      |
-+---------------------------------------+-------------------------------------------------------------------------+
-| UObjectBaseShutdown                   | UObjectBaseShutdown(                                                    |
-|                                       |     0x14cf1a8d0,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FUObjectArrayFreeUObjectIndex         | FUObjectArrayFreeUObjectIndex(                                          |
-|                                       |     0x14cefc570,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| FUObjectArrayAllocateUObjectIndex     | FUObjectArrayAllocateUObjectIndex(                                      |
-|                                       |     0x14ceff670,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| GUObjectArray                         | GUObjectArray(                                                          |
-|                                       |     0x15d77ad20,                                                        |
-|                                       | )                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| EngineVersionStrings                  | EngineVersionStrings {                                                  |
-|                                       |     branch_name: "++UE5+Release-5.0",                                   |
-|                                       |     build_date: "Jul  2 2024",                                          |
-|                                       |     build_version: "++UE5+Release-5.0-CL-0",                            |
-|                                       | }                                                                       |
-+---------------------------------------+-------------------------------------------------------------------------+
-| EngineVersion                         | Msg("expected at least one value")                                      |
-+---------------------------------------+-------------------------------------------------------------------------+
+loadPluginDlls : pluginsPath=[CSharpLoader\Plugins]
+thread '<unnamed>' panicked at src\tools.rs:68:30:
+called `Result::unwrap()` on an `Err` value: Error { code: HRESULT(0x80070005), message: "拒绝访问。" }
+stack backtrace:
+   0:     0x7ffc23f5be81 - DllMain
+   1:     0x7ffc23f707d9 - DllMain
+   2:     0x7ffc23f58c57 - DllMain
+   3:     0x7ffc23f5dc29 - DllMain
+   4:     0x7ffc23f5d7ac - DllMain
+   5:     0x7ffc23f5e532 - DllMain
+   6:     0x7ffc23f5e376 - DllMain
+   7:     0x7ffc23f5c5cf - DllMain
+   8:     0x7ffc23f5df86 - DllMain
+   9:     0x7ffc241acf74 - LM_FindSymbolAddressDemangled
+  10:     0x7ffc241ad390 - LM_FindSymbolAddressDemangled
+  11:     0x7ffc23ec900d - <unknown>
+  12:     0x7ffc23ed20b7 - DllMain
+  13:     0x7ffc241a372e - LM_FindSymbolAddressDemangled
+  14:     0x7ffd44618b8f - RtlActivateActivationContextUnsafeFast
+  15:     0x7ffd4465d52d - RtlEnumerateEntryHashTable
+  16:     0x7ffd4465d2de - RtlEnumerateEntryHashTable
+  17:     0x7ffd4461db1d - RtlCopyUnicodeString
+  18:     0x7ffd44618e30 - RtlImageRvaToSection
+  19:     0x7ffd446090cc - RtlUnicodeToCustomCPN
+  20:     0x7ffd4461a74a - LdrLoadDll
+  21:     0x7ffd4191b632 - LoadLibraryExW
+  22:     0x7ffcf78f1723 - OverlayHookD3D3
+  23:     0x7ffcf78f1bfb - OverlayHookD3D3
+  24:     0x7ffcf91f854e - HidP_UsageListDifference
+  25:     0x7ffcf91f1f8f - <unknown>
+  26:     0x7ffd4350259d - BaseThreadInitThunk
+  27:     0x7ffd4464af38 - RtlUserThreadStart
+thread '<unnamed>' panicked at core\src\panicking.rs:221:5:
+panic in a function that cannot unwind
+stack backtrace:
+   0:     0x7ffc23f5be81 - DllMain
+   1:     0x7ffc23f707d9 - DllMain
+   2:     0x7ffc23f58c57 - DllMain
+   3:     0x7ffc23f5dc29 - DllMain
+   4:     0x7ffc23f5d7ac - DllMain
+   5:     0x7ffc23f5e532 - DllMain
+   6:     0x7ffc23f5e33f - DllMain
+   7:     0x7ffc23f5c5cf - DllMain
+   8:     0x7ffc23f5df86 - DllMain
+   9:     0x7ffc241acfbd - LM_FindSymbolAddressDemangled
+  10:     0x7ffc241ad063 - LM_FindSymbolAddressDemangled
+  11:     0x7ffc241ad0fb - LM_FindSymbolAddressDemangled
+  12:     0x7ffc23ed2b01 - DllMain
+  13:     0x7ffd24abf730 - _CxxFrameHandler3
+  14:     0x7ffd24ab33d8 - is_exception_typeof
+  15:     0x7ffd44694ac6 - RtlCaptureContext2
+  16:     0x7ffc23ed20b7 - DllMain
+  17:     0x7ffc241a372e - LM_FindSymbolAddressDemangled
+  18:     0x7ffd44618b8f - RtlActivateActivationContextUnsafeFast
+  19:     0x7ffd4465d52d - RtlEnumerateEntryHashTable
+  20:     0x7ffd4465d2de - RtlEnumerateEntryHashTable
+  21:     0x7ffd4461db1d - RtlCopyUnicodeString
+  22:     0x7ffd44618e30 - RtlImageRvaToSection
+  23:     0x7ffd446090cc - RtlUnicodeToCustomCPN
+  24:     0x7ffd4461a74a - LdrLoadDll
+  25:     0x7ffd4191b632 - LoadLibraryExW
+  26:     0x7ffcf78f1723 - OverlayHookD3D3
+  27:     0x7ffcf78f1bfb - OverlayHookD3D3
+  28:     0x7ffcf91f854e - HidP_UsageListDifference
+  29:     0x7ffcf91f1f8f - <unknown>
+  30:     0x7ffd4350259d - BaseThreadInitThunk
+  31:     0x7ffd4464af38 - RtlUserThreadStart
+thread caused non-unwinding panic. aborting.
