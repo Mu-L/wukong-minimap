@@ -10,7 +10,7 @@ If possible, please help me give a star, this is very important to me.
 
 Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
-![image](./docs/images/minmap.png)
+![image](./docs/images/page.jpg)
 
 
 ### Key Instructions

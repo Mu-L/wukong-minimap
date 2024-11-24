@@ -9,7 +9,7 @@ Switch language: [English](README.en.md)
 
 Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
 
-![image](./docs/images/minmap.png)
+![image](./docs/images/page.jpg)
 
 ### 按键说明
 
