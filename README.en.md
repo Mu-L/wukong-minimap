@@ -27,7 +27,7 @@ Controller: Press `Left Down Arrow` to open/close the map, press `Select` to tog
 
 2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64` folder under the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
 
-![image](./docs/images/minfiles.png)
+![image](./docs/images/mapfiles.png)
 
 ### For CSharpLoader users
 

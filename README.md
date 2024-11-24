@@ -24,7 +24,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 2. 将 BlackMythMap.zip 直接解压至黑神话的安装文件夹下面的 `b1\Binaries\Win64` 中 (steam的安装文件夹可以通过右键黑神话 -> 管理 -> 浏览本地文件找到) 
 
-![image](./docs/images/minfiles.png)
+![image](./docs/images/mapfiles.png)
 
 #### 使用 CSharpLoader 的用户
 
