@@ -2,6 +2,8 @@
 name = "black-myth-map"
 version = "0.1.0"
 edition = "2021"
+# 添加平台限制
+target = ["x86_64-pc-windows-msvc", "i686-pc-windows-msvc"]
 
 [[bin]]
 name = "injector"
@@ -12,6 +14,7 @@ name = "jas_minimap"
 crate-type = ["cdylib"]
 
 [dependencies]
+gilrs = "0.11.0"
 hudhook = { version = "0.8.0", features = [
   "inject",
   "dx12",

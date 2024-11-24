@@ -19,7 +19,7 @@ pub struct Position {
 
 #[derive(Debug, Clone)]
 pub struct GameState {
-    pub paused: bool,
+    pub playing: bool,
     pub map_id: i32,
     pub x: f32,
     pub y: f32,
@@ -109,11 +109,6 @@ impl Wukong {
 
     // 获取地图id
     pub fn game_state() -> GameState {
-        println!(
-            "g_map_address: {:#X} g_pos_address: {:#X}  ",
-            unsafe { g_map_address },
-            unsafe { g_pos_address }
-        );
         let map_id: i32 = match unsafe { g_map_address } {
             0 => 0,
             _ => unsafe { read_memory::<i32>(g_map_address + 0x40) },
@@ -136,7 +131,7 @@ impl Wukong {
         };
 
         GameState {
-            paused: palying == 0,
+            playing: palying != 0,
             map_id,
             angle: vector_to_angle(position.angle_x, position.angle_y),
             x: position.x as f32,

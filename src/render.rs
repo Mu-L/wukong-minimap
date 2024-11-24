@@ -1,5 +1,7 @@
-use std::cell::OnceCell;
 use std::collections::HashMap;
+use std::{cell::OnceCell, sync::Mutex};
+
+use gilrs::{Button, EventType, Gilrs};
 
 use hudhook::{
     imgui::{
@@ -17,6 +19,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     data::get_icons,
     tools::{load_image, load_json, point_inside},
+    wukong::GameState,
 };
 use crate::{data::IconCheckbox, wukong::Wukong};
 
@@ -83,13 +86,16 @@ impl ImageTexture {
         }
     }
 }
+
 pub struct MapHud {
+    gilrs: Mutex<Gilrs>,
     textures: HashMap<String, ImageTexture>,
     icons: Vec<IconCheckbox>,
     areas: Vec<AreaInfo>,
     area: Option<AreaInfo>,
     pre_area_id: i32,
-    open: bool,
+    open_mainmap: bool,
+    enable: bool,
 }
 
 impl MapHud {
@@ -111,13 +117,16 @@ impl MapHud {
         let maps = load_map_data(&areas);
         unsafe { MAP_IMAGES.get_or_init(|| maps) };
 
+        let gilrs = Gilrs::new().unwrap();
         Self {
+            gilrs: Mutex::new(gilrs),
             textures,
             icons,
             areas,
             area: None,
             pre_area_id: 0,
-            open: false,
+            open_mainmap: false,
+            enable: true,
         }
     }
     fn get_texture_id(&self, name: &str) -> Option<TextureId> {
@@ -175,13 +184,12 @@ impl MapHud {
         let y = (point[1] - area.range_y[0]) / area.height();
         [x, y]
     }
-    fn render_map(&mut self, ui: &imgui::Ui) {
-        let game = Wukong::game_state();
-        if game.map_id > 0 && !game.paused {
+    fn render_minimap(&mut self, ui: &imgui::Ui, game: &GameState) {
+        if game.map_id > 0 && game.playing {
             let display_size = ui.io().display_size;
             let window_size = display_size[1] * MINI_MAP_SIZE;
             let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
-            ui.window("mini_map")
+            ui.window("minimap")
                 .size([window_size, window_size], Condition::Always)
                 .position([position_x, position_y], Condition::Always)
                 .flags(
@@ -255,8 +263,9 @@ impl MapHud {
                     }
                 });
         }
-
-        if !game.paused && self.open {
+    }
+    fn render_mainmap(&mut self, ui: &imgui::Ui, game: &GameState) {
+        if game.map_id > 0 && game.playing {
             let display_size = ui.io().display_size;
             let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 
@@ -264,7 +273,7 @@ impl MapHud {
                 (display_size[0] - window_size) / 2.0,
                 (display_size[1] - window_size) / 2.0,
             ];
-            ui.window("main_map")
+            ui.window("mainmap")
                 .size([window_size, window_size], Condition::Always)
                 .position([position_x, position_y], Condition::Always)
                 .flags(WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE)
@@ -313,25 +322,47 @@ impl MapHud {
                             .build(ui);
                     }
                 });
-
-            ui.window("main_control")
-                .size([100.0, window_size], Condition::Always) // 修改位置到右上角
-                .position([position_x - 100.0, position_y], Condition::Always)
+            ui.window("position")
+                .size([window_size, 30.0], Condition::Always) // 修改位置到右上角
+                .position([position_x, position_y + window_size], Condition::Always)
                 .flags(
                     WindowFlags::NO_TITLE_BAR
                         | WindowFlags::NO_RESIZE
                         | WindowFlags::NO_MOVE
                         | WindowFlags::NO_SCROLLBAR,
                 )
+                .bg_alpha(0.6)
                 .build(|| {
-                    // 每个 icon 都是一个 checkbox
-                    self.icons.iter_mut().for_each(|icon| {
-                        ui.checkbox(icon.name, &mut icon.checked);
-                    });
+                    ui.set_window_font_scale(1.5);
+                    ui.set_cursor_pos([20.0, 0.0]);
+                    ui.text_colored(
+                        imgui::ImColor32::WHITE.to_rgba_f32s(),
+                        // 展示地图信息保两位小数
+                        format!(
+                            "MAP:{} X:{:.2} Y:{:.2} Z:{:.2}",
+                            game.map_id, game.x, game.y, game.z
+                        ),
+                    );
                 });
+
+            // ui.window("main_control")
+            //     .size([100.0, window_size], Condition::Always) // 修改位置到右上角
+            //     .position([position_x - 100.0, position_y], Condition::Always)
+            //     .flags(
+            //         WindowFlags::NO_TITLE_BAR
+            //             | WindowFlags::NO_RESIZE
+            //             | WindowFlags::NO_MOVE
+            //             | WindowFlags::NO_SCROLLBAR,
+            //     )
+            //     .build(|| {
+            //         // 每个 icon 都是一个 checkbox
+            //         self.icons.iter_mut().for_each(|icon| {
+            //             ui.checkbox(icon.name, &mut icon.checked);
+            //         });
+            //     });
         }
     }
-    fn render_info(&mut self, ui: &imgui::Ui) {
+    fn render_info(&mut self, ui: &imgui::Ui, _game: &GameState) {
         let display_size = ui.io().display_size;
         let [position_x, position_y] = [0.0, display_size[1] - 30.0];
 
@@ -348,15 +379,9 @@ impl MapHud {
             .build(|| {
                 ui.set_window_font_scale(1.5);
                 ui.set_cursor_pos([20.0, 0.0]);
-                let game = Wukong::game_state();
-
                 ui.text_colored(
                     imgui::ImColor32::WHITE.to_rgba_f32s(),
-                    // 展示地图信息保留两位小数
-                    format!(
-                        "MapID:{} x:{:.2} y:{:.2} z:{:.2} ",
-                        game.map_id, game.x, game.y, game.z,
-                    ),
+                    format!("M: Toggle Map | N: Toggle HUD"),
                 );
             });
     }
@@ -458,8 +483,45 @@ impl ImguiRenderLoop for MapHud {
         }
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
-        self.render_info(ui);
-        self.render_map(ui);
+        let game = Wukong::game_state();
+        // Examine new events
+        if let Ok(mut gilrs) = self.gilrs.lock() {
+            while let Some(event) = gilrs.next_event() {
+                match event.event {
+                    EventType::ButtonPressed(Button::DPadDown, _) => {
+                        if !self.enable {
+                            self.enable = true;
+                        }
+                        self.open_mainmap = !self.open_mainmap;
+                    }
+                    EventType::ButtonPressed(Button::Select, _) => {
+                        self.enable = !self.enable;
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        if ui.is_key_pressed_no_repeat(imgui::Key::GamepadBack) {
+            self.open_mainmap = !self.open_mainmap;
+        }
+        if ui.is_key_pressed_no_repeat(imgui::Key::N) {
+            self.enable = !self.enable;
+        }
+        if ui.is_key_pressed_no_repeat(imgui::Key::M) {
+            // 开启大地图时, 如果小地图未开启, 则自动开启小地图
+            if !self.enable {
+                self.enable = true;
+            }
+            self.open_mainmap = !self.open_mainmap;
+        }
+        if self.enable {
+            self.render_info(ui, &game);
+            self.render_minimap(ui, &game);
+            if self.open_mainmap {
+                self.render_mainmap(ui, &game);
+            }
+        }
     }
     fn message_filter(&self, _io: &Io) -> MessageFilter {
         if _io.mouse_draw_cursor {
