@@ -123,3 +123,34 @@ b1-Win64-Shipping.exe+147997F - 83 38 00              - cmp dword ptr [rax],00 {
 b1-Win64-Shipping.exe+1479982 - E8 B1328C00           - call b1-Win64-Shipping.exe+1D3CC38 { ->->b1-Win64-Shipping.exe+197A840 }
 b1-Win64-Shipping.exe+1479987 - 0FB6 45 C8            - movzx eax,byte ptr [rbp-38]
 b1-Win64-Shipping.exe+147998B - 85 C0                 - test eax,eax
+
+
+
+<!-- CSharpLoader -->
+<!-- 89 47 48 48 63 47 4C FF C0 89 47 4C B8 01 -->
+062CF5DB - 48 63 47 44           - movsxd  rax,dword ptr [rdi+44]
+062CF5DF - 89 43 04              - mov [rbx+04],eax
+062CF5E2 - 44 89 67 44           - mov [rdi+44],r12d
+062CF5E6 - 48 63 47 48           - movsxd  rax,dword ptr [rdi+48]
+062CF5EA - FF C0                 - inc eax
+062CF5EC - 89 47 48              - mov [rdi+48],eax // 取消暂停
+062CF5EF - 48 63 47 4C           - movsxd  rax,dword ptr [rdi+4C]
+062CF5F3 - FF C0                 - inc eax
+062CF5F5 - 89 47 4C              - mov [rdi+4C],eax
+062CF5F8 - B8 01000000           - mov eax,00000001 { 1 }
+062CF5FD - EB 12                 - jmp 062CF611
+062CF5FF - 4D 8B EC              - mov r13,r12
+062CF602 - 4C 63 63 04           - movsxd  r12,dword ptr [rbx+04]
+062CF606 - 45 85 E4              - test r12d,r12d
+062CF609 - 0F8D 91FEFFFF         - jnl 062CF4A0
+062CF60F - 33 C0                 - xor eax,eax
+062CF611 - 48 8B 5D C8           - mov rbx,[rbp-38]
+062CF615 - 48 8B 75 D0           - mov rsi,[rbp-30]
+062CF619 - 48 8B 7D D8           - mov rdi,[rbp-28]
+062CF61D - 4C 8B 65 E0           - mov r12,[rbp-20]
+062CF621 - 4C 8B 6D E8           - mov r13,[rbp-18]
+062CF625 - 4C 8B 75 F0           - mov r14,[rbp-10]
+062CF629 - 4C 8B 7D F8           - mov r15,[rbp-08]
+062CF62D - 48 8D 65 00           - lea rsp,[rbp+00]
+062CF631 - 5D                    - pop rbp
+062CF632 - C3                    - ret 
