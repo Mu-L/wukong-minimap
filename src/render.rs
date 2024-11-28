@@ -335,7 +335,7 @@ impl MapHud {
                 .build(|| {
                     ui.set_window_font_scale(1.0);
                     let text = format!(
-                        "map:{} id:{} x:{:.2} y:{:.2} z:{:.2}",
+                        "map:{} id:{} x:{:.2} y:{:.2} z:{:.2} by jaskang",
                         game.level_name, game.map_id, game.x, game.y, game.z
                     );
                     // 计算文本尺寸
@@ -381,7 +381,10 @@ impl MapHud {
             )
             .build(|| {
                 ui.set_window_font_scale(1.0);
-                let text = format!("M: Open | N: Disable | by jaskang | {}", game.level_name);
+                let text = format!(
+                    "M: Open | N: Disable | black-myth-map v0.4.0 | {}",
+                    game.level_name
+                );
                 let text_size = ui.calc_text_size(&text);
                 ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
                 ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);

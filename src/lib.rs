@@ -3,7 +3,6 @@ use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL
 use wukong::Wukong;
 
 mod data;
-mod globals;
 mod render;
 mod tools;
 mod wukong;
