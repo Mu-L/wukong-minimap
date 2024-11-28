@@ -18,7 +18,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 ### 按键说明
 
 键盘：`M` 键打开/关闭大地图，`N` 键开启/关闭 HUD
-手柄：`左下箭头` 键打开/关闭大地图，`Select` 键开启/关闭 HUD
+手柄：`Select` 键打开/关闭大地图
 
 ![image](./docs/images/bigmap.png)
 
@@ -35,15 +35,6 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 1. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
 
 2. 将 BlackMythMap.zip 直接解压至黑神话的安装文件夹下面的 `b1\Binaries\Win64\CSharpLoader\Plugins` 中, 并删除 version.dll 文件。
-
-3. 禁用 CSharpLoader 的 `EnableJit` 配置。
-
-配置文件路径：`b1\Binaries\Win64\CSharpLoader\b1cs.ini`
-```ini
-[Settings]
-EnableJit=0 // 禁用 JIT 编译
-```
-
 
 ### 卸载
 
