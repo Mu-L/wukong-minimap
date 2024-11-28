@@ -24,7 +24,7 @@ Controller: Press `Select` to open/close the map,
 
 ### Installation 
 
-1. download: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
+1. download: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
 
 2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64` folder under the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
 
@@ -32,7 +32,7 @@ Controller: Press `Select` to open/close the map,
 
 ### For CSharpLoader users
 
-1. download: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
+1. download: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
 
 2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64\CSharpLoader\Plugins` folder under the installation folder of Black Myth, and delete the version.dll file.
 

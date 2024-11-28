@@ -24,7 +24,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 #### 纯净安装
 
-1. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
+1. 下载 Mod: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
 
 2. 将 BlackMythMap.zip 直接解压至黑神话的安装文件夹下面的 `b1\Binaries\Win64` 中 (steam的安装文件夹可以通过右键黑神话 -> 管理 -> 浏览本地文件找到) 
 
@@ -32,7 +32,7 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 #### 使用 CSharpLoader 的用户
 
-1. 下载 Mod: [BlackMythMap](https://www.nexusmods.com/blackmythwukong/mods/956)
+1. 下载 Mod: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
 
 2. 将 BlackMythMap.zip 直接解压至黑神话的安装文件夹下面的 `b1\Binaries\Win64\CSharpLoader\Plugins` 中, 并删除 version.dll 文件。
 
