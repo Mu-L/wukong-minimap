@@ -3,12 +3,12 @@
 
 #pragma pack(push, 1)  // 确保结构体布局一致性
 struct GameInfo {
-    int32_t mapid;
+    uint8_t levelName[256];
     float x;
     float y;
     float z;
     float angle;
-    uint8_t playing;
+    uint8_t bIsLocalViewTarget;
 };
 #pragma pack(pop)
 

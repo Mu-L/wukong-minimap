@@ -142,8 +142,15 @@ void UpdateOffsets()
 }
 
 // 修改getGameInfo方法
-extern "C" __declspec(dllexport)  GameInfo GetGameInfo() {
-    GameInfo info = { 0, 0.0f, 0.0f, 0.0f, 0.0f, false };  // 默认值
+extern "C" __declspec(dllexport) GameInfo GetGameInfo() {
+    GameInfo info = {
+        {0},           // levelName 数组初始化为0
+        -1.0f,        // x
+        -1.0f,        // y
+        -1.0f,        // z
+        0.0f,         // angle
+        0             // bIsLocalViewTarget
+    };
     
     SDK::UWorld* World = SDK::UWorld::GetWorld();
     if (!World) return info;
@@ -165,10 +172,11 @@ extern "C" __declspec(dllexport)  GameInfo GetGameInfo() {
 
     // 获取当前关卡名称
     std::string LevelName = World->PersistentLevel->Outer->GetName();
-    
+    strncpy_s(reinterpret_cast<char*>(info.levelName), sizeof(info.levelName), LevelName.c_str(), sizeof(info.levelName) - 1);
+
     // 设置地图ID
-    auto it = levelIdMap.find(LevelName);
-    info.mapid = (it != levelIdMap.end()) ? it->second : 0;
+    // auto it = levelIdMap.find(LevelName);
+    // info.mapid = (it != levelIdMap.end()) ? it->second : 0;
 
     // 获取位置和角度
     SDK::FVector Location = PlayerController->Pawn->K2_GetActorLocation();
@@ -198,7 +206,7 @@ extern "C" __declspec(dllexport)  GameInfo GetGameInfo() {
 
     //info.playing = !PlayerController->bShowMouseCursor;
 
-	info.playing = PlayerController->Pawn->bIsLocalViewTarget == 1;
+	info.bIsLocalViewTarget = PlayerController->Pawn->bIsLocalViewTarget;
     return info;
 }
 

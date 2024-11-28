@@ -333,15 +333,18 @@ impl MapHud {
                 )
                 .bg_alpha(0.6)
                 .build(|| {
-                    ui.set_window_font_scale(1.5);
-                    ui.set_cursor_pos([20.0, 0.0]);
+                    ui.set_window_font_scale(1.0);
+                    let text = format!(
+                        "LEVEL:{} ID:{} X:{:.2} Y:{:.2} Z:{:.2}",
+                        game.level_name, game.map_id, game.x, game.y, game.z
+                    );
+                    // 计算文本尺寸
+                    let text_size = ui.calc_text_size(&text);
+                    ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
                     ui.text_colored(
                         imgui::ImColor32::WHITE.to_rgba_f32s(),
                         // 展示地图信息保两位小数
-                        format!(
-                            "MAP:{} X:{:.2} Y:{:.2} Z:{:.2} repo: https://github.com/jaskang/black-myth-map",
-                            game.map_id, game.x, game.y, game.z
-                        ),
+                        text,
                     );
                 });
 
@@ -377,12 +380,11 @@ impl MapHud {
                     | WindowFlags::NO_BACKGROUND,
             )
             .build(|| {
-                ui.set_window_font_scale(1.5);
-                ui.set_cursor_pos([20.0, 0.0]);
-                ui.text_colored(
-                    imgui::ImColor32::WHITE.to_rgba_f32s(),
-                    format!("M: Toggle Map | N: Toggle HUD | by jaskang"),
-                );
+                ui.set_window_font_scale(1.0);
+                let text = format!("M: Open | N: Disable | by jaskang");
+                let text_size = ui.calc_text_size(&text);
+                ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
+                ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);
             });
     }
     /**
@@ -488,23 +490,17 @@ impl ImguiRenderLoop for MapHud {
         if let Ok(mut gilrs) = self.gilrs.lock() {
             while let Some(event) = gilrs.next_event() {
                 match event.event {
-                    EventType::ButtonPressed(Button::DPadDown, _) => {
+                    EventType::ButtonPressed(Button::Select, _) => {
                         if !self.enable {
                             self.enable = true;
                         }
                         self.open_mainmap = !self.open_mainmap;
-                    }
-                    EventType::ButtonPressed(Button::Select, _) => {
-                        self.enable = !self.enable;
                     }
                     _ => {}
                 }
             }
         }
 
-        if ui.is_key_pressed_no_repeat(imgui::Key::GamepadBack) {
-            self.open_mainmap = !self.open_mainmap;
-        }
         if ui.is_key_pressed_no_repeat(imgui::Key::N) {
             self.enable = !self.enable;
         }

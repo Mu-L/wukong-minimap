@@ -3,8 +3,9 @@ use hudhook::windows::{
     Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
 };
 use libmem::{find_module, get_process, hook_code, read_memory, sig_scan_ex};
+use std::collections::HashMap;
 use std::f64::consts::PI;
-use std::ffi::CString;
+use std::sync::OnceLock;
 
 use crate::globals::{
     asm_map_hook, asm_pause_hook, asm_pos_hook, g_map_address, g_map_back_address, g_pause_address,
@@ -14,7 +15,7 @@ use crate::globals::{
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 struct GameInfo {
-    mapid: i32,
+    level_name: [u8; 256],
     x: f32,
     y: f32,
     z: f32,
@@ -27,7 +28,7 @@ type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
 fn csharp_get_info() -> Option<GameInfo> {
     unsafe {
         // 获取已加载的 DLL 句柄
-        let handle = GetModuleHandleA(s!("wukong.asi")).unwrap();
+        let handle = GetModuleHandleA(s!("WukongApi.asi")).unwrap();
         // 获取函数地址
         let proc_addr = GetProcAddress(handle, s!("GetGameInfo"));
         if let Some(func) = proc_addr {
@@ -52,12 +53,36 @@ pub struct Position {
 
 #[derive(Debug, Clone)]
 pub struct GameState {
-    pub playing: bool,
+    pub level_name: String,
     pub map_id: i32,
+    pub playing: bool,
     pub x: f32,
     pub y: f32,
     pub z: f32,
     pub angle: f32,
+}
+
+// 使用 OnceLock 实现 LEVEL_ID_MAP
+static LEVEL_ID_MAP: OnceLock<HashMap<&'static str, i32>> = OnceLock::new();
+
+fn get_mapid_by_map(map_name: &str) -> i32 {
+    let map = LEVEL_ID_MAP.get_or_init(|| {
+        let mut m = HashMap::new();
+        m.insert("LYS_paintingworld_01", 31); // 如意画轴-六六村
+        m.insert("HFS01_PersistentLevel", 10); // 黑风山
+        m.insert("HFS01_Old_GYCY_YKX_PersistentLevel", 11); // 隐·旧观音禅院
+        m.insert("HFM02_PersistentLevel", 20); // 黄风岭
+        m.insert("HFM_DuJiaoXian_Persist", 25); // 隐·斯哈里国
+        m.insert("LYS_PersistentLevel", 30); // 小西天
+        m.insert("PSD_PersistentLevel", 40); // 盘丝岭
+        m.insert("ZYS01_persistentlevel", 80); // 隐·紫云山
+        m.insert("HYS_PersistentLevel", 50); // 火焰山
+        m.insert("BYS_persistentlevel", 98); // 花果山
+        m.insert("BSD01_Guide", 70); // 隐·壁水洞
+        m
+    });
+
+    map.get(map_name).copied().unwrap_or(0)
 }
 
 pub struct Wukong {}
@@ -69,11 +94,11 @@ impl Wukong {
             .parent()
             .unwrap()
             .join("assets")
-            .join("wukong.asi");
+            .join("WukongApi.asi");
 
         // 将 Path 转换为 CString
         let dll_path = dll_path.to_str().unwrap().to_owned();
-        // 加载 wukong.asi
+        // 加载 WukongApi.asi
         unsafe { LoadLibraryA(PCSTR::from_raw(dll_path.as_ptr())).ok() };
 
         let is_csharp_loader = true;
@@ -168,13 +193,22 @@ impl Wukong {
         let is_csharp_loader = true;
         if is_csharp_loader {
             let info = csharp_get_info().unwrap();
+            let level_name = String::from_utf8_lossy(&info.level_name)
+                .trim_matches(char::from(0))
+                .to_string();
+
+            // 使用新的函数名获取地图ID
+            let map_id = get_mapid_by_map(&level_name);
+            let angle = info.angle + 90.0;
+            let angle = if angle > 360.0 { angle - 360.0 } else { angle };
             return GameState {
                 playing: info.playing == 1,
-                map_id: info.mapid,
-                angle: info.angle,
-                x: info.x as f32,
-                y: info.y as f32,
-                z: info.z as f32,
+                level_name,
+                map_id,
+                angle,
+                x: info.x,
+                y: info.y,
+                z: info.z,
             };
         }
 
@@ -200,6 +234,7 @@ impl Wukong {
         };
 
         GameState {
+            level_name: "".to_string(),
             playing: palying != 0,
             map_id,
             angle: vector_to_angle(position.angle_x, position.angle_y),
