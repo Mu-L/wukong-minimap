@@ -185,7 +185,7 @@ impl MapHud {
         [x, y]
     }
     fn render_minimap(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.map_id > 0 && game.playing {
+        if game.map_id > 1 && game.playing {
             let display_size = ui.io().display_size;
             let window_size = display_size[1] * MINI_MAP_SIZE;
             let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
@@ -265,7 +265,7 @@ impl MapHud {
         }
     }
     fn render_mainmap(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.map_id > 0 && game.playing {
+        if game.map_id > 1 && game.playing {
             let display_size = ui.io().display_size;
             let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 
@@ -335,7 +335,7 @@ impl MapHud {
                 .build(|| {
                     ui.set_window_font_scale(1.0);
                     let text = format!(
-                        "LEVEL:{} ID:{} X:{:.2} Y:{:.2} Z:{:.2}",
+                        "map:{} id:{} x:{:.2} y:{:.2} z:{:.2}",
                         game.level_name, game.map_id, game.x, game.y, game.z
                     );
                     // 计算文本尺寸
@@ -365,7 +365,7 @@ impl MapHud {
             //     });
         }
     }
-    fn render_info(&mut self, ui: &imgui::Ui, _game: &GameState) {
+    fn render_info(&mut self, ui: &imgui::Ui, game: &GameState) {
         let display_size = ui.io().display_size;
         let [position_x, position_y] = [0.0, display_size[1] - 30.0];
 
@@ -381,7 +381,7 @@ impl MapHud {
             )
             .build(|| {
                 ui.set_window_font_scale(1.0);
-                let text = format!("M: Open | N: Disable | by jaskang");
+                let text = format!("M: Open | N: Disable | by jaskang | {}", game.level_name);
                 let text_size = ui.calc_text_size(&text);
                 ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
                 ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);
