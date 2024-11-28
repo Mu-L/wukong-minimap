@@ -45,11 +45,9 @@ Nexusmods 地址: [https://www.nexusmods.com/blackmythwukong/mods/956](https://w
 
 玩家在游戏中发现地图或点位信息错误，可截图反馈在 [issue](https://github.com/jaskang/jas_minimap/issues) 中，作者会及时更新
 
-### 打赏
-
-如果本插件对你有帮助，请作者喝杯咖啡吧
+### 共建地图交流群
 
 <div align="">
-<img src="./docs/images/donate.jpg" alt="打赏" style="width: 200px;" />
+<img src="./docs/images/qq.jpg" alt="qq 群" style="width: 200px;" />
 </div>
 
