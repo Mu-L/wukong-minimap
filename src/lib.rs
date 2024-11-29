@@ -16,7 +16,6 @@ pub unsafe extern "stdcall" fn DllMain(
     if reason == DLL_PROCESS_ATTACH {
         // tools::setup_tracing();
         ::hudhook::tracing::trace!("DllMain()");
-        Wukong::init();
         ::std::thread::spawn(move || {
             if let Err(e) = ::hudhook::Hudhook::builder()
                 .with::<ImguiDx12Hooks>(render::MapHud::new())

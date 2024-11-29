@@ -22,7 +22,7 @@ type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
 fn csharp_get_info() -> Option<GameInfo> {
     unsafe {
         // 获取已加载的 DLL 句柄
-        let handle = GetModuleHandleA(s!("WukongApi.asi")).unwrap();
+        let handle = GetModuleHandleA(s!("WukongApi.dll")).unwrap();
         // 获取函数地址
         let proc_addr = GetProcAddress(handle, s!("GetGameInfo"));
         if let Some(func) = proc_addr {
@@ -160,19 +160,18 @@ fn get_mapid_by_map(map_name: &str) -> i32 {
 pub struct Wukong {}
 
 impl Wukong {
-    pub fn init() -> Self {
+    pub fn init() {
         let current_path = hudhook::util::get_dll_path().unwrap();
         let dll_path = current_path
             .parent()
             .unwrap()
             .join("assets")
-            .join("WukongApi.asi");
+            .join("WukongApi.dll");
 
         // 将 Path 转换为 CString
         let dll_path = dll_path.to_str().unwrap().to_owned();
         // 加载 WukongApi.asi
         unsafe { LoadLibraryA(PCSTR::from_raw(dll_path.as_ptr())).ok() };
-        Self {}
     }
 
     // 获取地图id

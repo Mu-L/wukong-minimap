@@ -100,6 +100,8 @@ pub struct MapHud {
 
 impl MapHud {
     pub fn new() -> Self {
+        Wukong::init();
+
         let areas: Vec<AreaInfo> = load_json("areas.json");
         let icons = get_icons();
 
@@ -382,7 +384,7 @@ impl MapHud {
             .build(|| {
                 ui.set_window_font_scale(1.0);
                 let text = format!(
-                    "M: Open | N: Disable | black-myth-map v0.4.0 | {}",
+                    "M: Open | N: Disable | black-myth-map v0.4.1 | {}",
                     game.level_name
                 );
                 let text_size = ui.calc_text_size(&text);
