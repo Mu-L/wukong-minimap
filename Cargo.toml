@@ -24,6 +24,7 @@ image = { version = "0.25.2", features = [
   "png",
   "webp",
 ], default-features = false }
+libloading = "0.8.6"
 libmem = { version = "5.0.1" }
 memory-rs = "0.2.6"
 serde = { version = "1.0.210", features = ["derive"] }

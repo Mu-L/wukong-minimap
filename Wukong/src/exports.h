@@ -12,5 +12,8 @@ struct GameInfo {
 };
 #pragma pack(pop)
 
-// 使用 extern "C" 确保函数名不被修饰
+// 使用 extern "C" 确保函数名不被修饰 
+
+extern "C" __declspec(dllexport) void InitOffsets(void);
+
 extern "C" __declspec(dllexport) GameInfo GetGameInfo(void);

@@ -104,7 +104,7 @@ std::unordered_map<std::string, int32_t> levelIdMap = {
     { "BSD01_Guide", 70 }
 };
 
-void UpdateOffsets()
+extern "C" __declspec(dllexport) void InitOffsets()
 {
     // GObjects
     uint8_t* GObjectsScanResult = Memory::PatternScan(baseModule, "48 8B ?? ?? ?? ?? ?? 48 8B ?? ?? 48 8D ?? ?? EB ?? 33 ?? 8B ?? ?? C1 ??");
@@ -223,32 +223,23 @@ extern "C" __declspec(dllexport) GameInfo GetGameInfo() {
 //    }
 //}
 
-DWORD __stdcall Main(void*)
-{
-    UpdateOffsets();
-    return true;
-}
 
-BOOL APIENTRY DllMain(HMODULE hModule,
-    DWORD  ul_reason_for_call,
-    LPVOID lpReserved
-    )
-{
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH:
-    {
-        HANDLE mainHandle = CreateThread(NULL, 0, Main, 0, NULL, 0);
-        if (mainHandle)
-        {
-            CloseHandle(mainHandle);
-        }
-        break;
-    }
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
-    }
-    return TRUE;
-}
+//BOOL APIENTRY DllMain(HMODULE hModule,
+//    DWORD  ul_reason_for_call,
+//    LPVOID lpReserved
+//    )
+//{
+//    switch (ul_reason_for_call)
+//    {
+//    case DLL_PROCESS_ATTACH:
+//    {
+//        InitOffsets();
+//        break;
+//    }
+//    case DLL_THREAD_ATTACH:
+//    case DLL_THREAD_DETACH:
+//    case DLL_PROCESS_DETACH:
+//        break;
+//    }
+//    return TRUE;
+//}

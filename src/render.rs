@@ -108,6 +108,7 @@ impl MapHud {
         let mut textures = HashMap::new();
         textures.insert("map".to_string(), ImageTexture::new("nomap.png"));
         textures.insert("arrow".to_string(), ImageTexture::new("arrow.png"));
+        textures.insert("bg".to_string(), ImageTexture::new("bg.jpg"));
 
         icons.iter().for_each(|icon| {
             textures.insert(
@@ -202,6 +203,12 @@ impl MapHud {
                 )
                 .bg_alpha(0.6)
                 .build(|| {
+                    Image::new(
+                        self.get_texture_id("bg").unwrap(),
+                        [window_size, window_size],
+                    )
+                    .build(ui);
+                    ui.set_cursor_pos([0.0, 0.0]);
                     let txt_id = self.get_texture_id("map").unwrap();
                     let area = self.get_area(game.map_id, &[game.x, game.y, game.z]);
 
@@ -267,7 +274,7 @@ impl MapHud {
         }
     }
     fn render_mainmap(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.map_id > 1 && game.playing {
+        if game.map_id > 1 {
             let display_size = ui.io().display_size;
             let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 
@@ -281,8 +288,13 @@ impl MapHud {
                 .flags(WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE)
                 .bg_alpha(0.8)
                 .build(|| {
-                    let txt_id = self.get_texture_id("map").unwrap();
+                    Image::new(
+                        self.get_texture_id("bg").unwrap(),
+                        [window_size, window_size],
+                    )
+                    .build(ui);
                     ui.set_cursor_pos([0.0, 0.0]);
+                    let txt_id = self.get_texture_id("map").unwrap();
 
                     if let Some(area) = &self.area {
                         debug!("draw_mainmap");

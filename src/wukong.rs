@@ -2,6 +2,8 @@ use hudhook::windows::{
     core::{s, PCSTR},
     Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
 };
+use libloading::{Library, Symbol};
+
 use std::collections::HashMap;
 use std::f64::consts::PI;
 use std::sync::OnceLock;
@@ -17,22 +19,14 @@ struct GameInfo {
     playing: u8,
 }
 
-type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
+// type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
 
-fn csharp_get_info() -> Option<GameInfo> {
-    unsafe {
-        // 获取已加载的 DLL 句柄
-        let handle = GetModuleHandleA(s!("WukongApi.dll")).unwrap();
-        // 获取函数地址
-        let proc_addr = GetProcAddress(handle, s!("GetGameInfo"));
-        if let Some(func) = proc_addr {
-            // 转换为函数指针并调用
-            let get_game_info: GetGameInfoFn = std::mem::transmute(func);
-            Some(get_game_info())
-        } else {
-            None
-        }
-    }
+extern "C" {
+    fn GetGameInfo() -> GameInfo;
+}
+
+extern "C" {
+    fn InitOffsets() -> ();
 }
 
 #[derive(Debug, Clone)]
@@ -166,17 +160,34 @@ impl Wukong {
             .parent()
             .unwrap()
             .join("assets")
-            .join("WukongApi.dll");
+            .join("b1sdk.dll");
 
-        // 将 Path 转换为 CString
-        let dll_path = dll_path.to_str().unwrap().to_owned();
-        // 加载 WukongApi.asi
-        unsafe { LoadLibraryA(PCSTR::from_raw(dll_path.as_ptr())).ok() };
+        // 加载 DLL
+        // unsafe {
+        //     Library::new(dll_path).unwrap();
+        // };
+        unsafe { InitOffsets() };
     }
+    fn csharp_get_info() -> Option<GameInfo> {
+        // let current_path = hudhook::util::get_dll_path().unwrap();
+        // let dll_path = current_path
+        //     .parent()
+        //     .unwrap()
+        //     .join("assets")
+        //     .join("b1sdk.dll");
 
+        // // 加载 DLL
+        // unsafe {
+        //     let lib = Library::new(dll_path).unwrap();
+        //     let func: Symbol<GetGameInfoFn> = lib.get(b"GetGameInfo").unwrap();
+        //     return Some(func());
+        // };
+        let info = unsafe { GetGameInfo() };
+        Some(info)
+    }
     // 获取地图id
     pub fn game_state() -> GameState {
-        let info = csharp_get_info().unwrap();
+        let info = Wukong::csharp_get_info().unwrap();
         let level_name = String::from_utf8_lossy(&info.level_name)
             .trim_matches(char::from(0))
             .to_string();

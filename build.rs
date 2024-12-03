@@ -11,4 +11,6 @@ fn main() {
     //     .compile("interceptor");
 
     // res.compile().unwrap();
+    println!("cargo:rustc-link-lib=static=b1sdk");
+    println!("cargo:rustc-link-search=native=./Wukong/x64/Release");
 }
