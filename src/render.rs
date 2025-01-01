@@ -1,17 +1,15 @@
+use std::cell::OnceCell;
 use std::collections::HashMap;
-use std::{cell::OnceCell, sync::Mutex};
-
-use gilrs::{Button, EventType, Gilrs};
 
 use hudhook::{
     imgui::{
         self,
         internal::RawCast,
         sys::{ImFontAtlas_AddFontFromFileTTF, ImFontAtlas_GetGlyphRangesChineseFull},
-        Condition, Context, Image, Io, TextureId, WindowFlags,
+        Condition, Context, Image, TextureId, WindowFlags,
     },
     tracing::debug,
-    ImguiRenderLoop, MessageFilter, RenderContext,
+    ImguiRenderLoop, RenderContext,
 };
 use image::{EncodableLayout, RgbaImage};
 use serde::{Deserialize, Serialize};
@@ -29,8 +27,6 @@ static mut MAP_IMAGES: OnceCell<HashMap<i32, RgbaImage>> = OnceCell::new();
 const MAP_VIEWPORT: f32 = 20000.0;
 // 小地图窗口大小
 const MINI_MAP_SIZE: f32 = 0.2;
-// 大地图窗口大小
-const MAIN_MAP_SIZE: f32 = 0.8;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Icon {
@@ -88,14 +84,11 @@ impl ImageTexture {
 }
 
 pub struct MapHud {
-    gilrs: Mutex<Gilrs>,
     textures: HashMap<String, ImageTexture>,
     icons: Vec<IconCheckbox>,
     areas: Vec<AreaInfo>,
     area: Option<AreaInfo>,
     pre_area_id: i32,
-    open_mainmap: bool,
-    enable: bool,
 }
 
 impl MapHud {
@@ -120,16 +113,12 @@ impl MapHud {
         let maps = load_map_data(&areas);
         unsafe { MAP_IMAGES.get_or_init(|| maps) };
 
-        let gilrs = Gilrs::new().unwrap();
         Self {
-            gilrs: Mutex::new(gilrs),
             textures,
             icons,
             areas,
             area: None,
             pre_area_id: 0,
-            open_mainmap: false,
-            enable: true,
         }
     }
     fn get_texture_id(&self, name: &str) -> Option<TextureId> {
@@ -273,112 +262,7 @@ impl MapHud {
                 });
         }
     }
-    fn render_mainmap(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.map_id > 1 {
-            let display_size = ui.io().display_size;
-            let window_size = f32::min(display_size[0], display_size[1]) * MAIN_MAP_SIZE;
 
-            let [position_x, position_y] = [
-                (display_size[0] - window_size) / 2.0,
-                (display_size[1] - window_size) / 2.0,
-            ];
-            ui.window("mainmap")
-                .size([window_size, window_size], Condition::Always)
-                .position([position_x, position_y], Condition::Always)
-                .flags(WindowFlags::NO_TITLE_BAR | WindowFlags::NO_RESIZE | WindowFlags::NO_MOVE)
-                .bg_alpha(0.8)
-                .build(|| {
-                    Image::new(
-                        self.get_texture_id("bg").unwrap(),
-                        [window_size, window_size],
-                    )
-                    .build(ui);
-                    ui.set_cursor_pos([0.0, 0.0]);
-                    let txt_id = self.get_texture_id("map").unwrap();
-
-                    if let Some(area) = &self.area {
-                        debug!("draw_mainmap");
-                        Image::new(txt_id, [window_size, window_size]).build(ui);
-
-                        let draw_list = ui.get_window_draw_list();
-
-                        area.points
-                            .iter()
-                            .filter(|p| self.is_icon_checked(p.category.as_str()))
-                            .for_each(|p| {
-                                if let Some(tid) = self.get_texture_id(p.category.as_str()) {
-                                    // 计算位置后 画传送点图标。
-                                    let [x, y] = self.point_to_percent([p.x, p.y], &area);
-                                    let [x, y] = [x * window_size, y * window_size];
-                                    ui.set_cursor_pos([x - 18.0, y - 32.0]);
-                                    Image::new(tid, [36.0, 48.0]).build(ui);
-                                    // self.render_centered_text(ui, &p.name, x, y + 24.0);
-                                }
-                            });
-
-                        let location = self.point_to_percent([game.x, game.y], &area);
-                        let location = [
-                            position_x + location[0] * window_size,
-                            position_y + location[1] * window_size,
-                        ];
-                        let [p0, p1, p2, p3] =
-                            self.arrow_to_p4(ui, location, 32.0, game.angle + 180.0);
-
-                        // 使用 add_image_quad 方法角色箭头图标
-                        draw_list
-                            .add_image_quad(self.get_texture_id("arrow").unwrap(), p0, p1, p2, p3)
-                            .build();
-                    } else {
-                        debug!("draw_nomap");
-                        Image::new(txt_id, [window_size, window_size])
-                            .uv0([0.0, 0.0])
-                            .uv1([1.0, 1.0])
-                            .build(ui);
-                    }
-                });
-            ui.window("position")
-                .size([window_size, 30.0], Condition::Always) // 修改位置到右上角
-                .position([position_x, position_y + window_size], Condition::Always)
-                .flags(
-                    WindowFlags::NO_TITLE_BAR
-                        | WindowFlags::NO_RESIZE
-                        | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_SCROLLBAR,
-                )
-                .bg_alpha(0.6)
-                .build(|| {
-                    ui.set_window_font_scale(1.0);
-                    let text = format!(
-                        "map:{} id:{} x:{:.2} y:{:.2} z:{:.2} by jaskang",
-                        game.level_name, game.map_id, game.x, game.y, game.z
-                    );
-                    // 计算文本尺寸
-                    let text_size = ui.calc_text_size(&text);
-                    ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
-                    ui.text_colored(
-                        imgui::ImColor32::WHITE.to_rgba_f32s(),
-                        // 展示地图信息保两位小数
-                        text,
-                    );
-                });
-
-            // ui.window("main_control")
-            //     .size([100.0, window_size], Condition::Always) // 修改位置到右上角
-            //     .position([position_x - 100.0, position_y], Condition::Always)
-            //     .flags(
-            //         WindowFlags::NO_TITLE_BAR
-            //             | WindowFlags::NO_RESIZE
-            //             | WindowFlags::NO_MOVE
-            //             | WindowFlags::NO_SCROLLBAR,
-            //     )
-            //     .build(|| {
-            //         // 每个 icon 都是一个 checkbox
-            //         self.icons.iter_mut().for_each(|icon| {
-            //             ui.checkbox(icon.name, &mut icon.checked);
-            //         });
-            //     });
-        }
-    }
     fn render_info(&mut self, ui: &imgui::Ui, game: &GameState) {
         let display_size = ui.io().display_size;
         let [position_x, position_y] = [0.0, display_size[1] - 30.0];
@@ -498,49 +382,13 @@ impl ImguiRenderLoop for MapHud {
                 None => map_texture.image.as_bytes(),
             };
             println!("replace_texture: {:?}", area_id);
-            let _ = render_context.replace_texture(map_texture.id.unwrap(), data, 2000, 2000);
+            let _ = render_context.replace_texture(map_texture.id.unwrap(), data, 4096, 4096);
         }
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
         let game = Wukong::game_state();
-        // Examine new events
-        if let Ok(mut gilrs) = self.gilrs.lock() {
-            while let Some(event) = gilrs.next_event() {
-                match event.event {
-                    EventType::ButtonPressed(Button::Select, _) => {
-                        if !self.enable {
-                            self.enable = true;
-                        }
-                        self.open_mainmap = !self.open_mainmap;
-                    }
-                    _ => {}
-                }
-            }
-        }
 
-        if ui.is_key_pressed_no_repeat(imgui::Key::N) {
-            self.enable = !self.enable;
-        }
-        if ui.is_key_pressed_no_repeat(imgui::Key::M) {
-            // 开启大地图时, 如果小地图未开启, 则自动开启小地图
-            if !self.enable {
-                self.enable = true;
-            }
-            self.open_mainmap = !self.open_mainmap;
-        }
-        if self.enable {
-            self.render_info(ui, &game);
-            self.render_minimap(ui, &game);
-            if self.open_mainmap {
-                self.render_mainmap(ui, &game);
-            }
-        }
-    }
-    fn message_filter(&self, _io: &Io) -> MessageFilter {
-        if _io.mouse_draw_cursor {
-            MessageFilter::InputAll
-        } else {
-            MessageFilter::empty()
-        }
+        self.render_info(ui, &game);
+        self.render_minimap(ui, &game);
     }
 }

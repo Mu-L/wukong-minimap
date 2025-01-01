@@ -1,11 +1,4 @@
-use hudhook::windows::{
-    core::{s, PCSTR},
-    Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
-};
-use libloading::{Library, Symbol};
-
 use std::collections::HashMap;
-use std::f64::consts::PI;
 use std::sync::OnceLock;
 
 #[repr(C, packed)]
@@ -27,16 +20,6 @@ extern "C" {
 
 extern "C" {
     fn InitOffsets() -> ();
-}
-
-#[derive(Debug, Clone)]
-pub struct Position {
-    // 方向向量 2 个 f64
-    pub angle_x: f64,
-    pub angle_y: f64,
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -155,39 +138,11 @@ pub struct Wukong {}
 
 impl Wukong {
     pub fn init() {
-        let current_path = hudhook::util::get_dll_path().unwrap();
-        let dll_path = current_path
-            .parent()
-            .unwrap()
-            .join("assets")
-            .join("b1sdk.dll");
-
-        // 加载 DLL
-        // unsafe {
-        //     Library::new(dll_path).unwrap();
-        // };
         unsafe { InitOffsets() };
-    }
-    fn csharp_get_info() -> Option<GameInfo> {
-        // let current_path = hudhook::util::get_dll_path().unwrap();
-        // let dll_path = current_path
-        //     .parent()
-        //     .unwrap()
-        //     .join("assets")
-        //     .join("b1sdk.dll");
-
-        // // 加载 DLL
-        // unsafe {
-        //     let lib = Library::new(dll_path).unwrap();
-        //     let func: Symbol<GetGameInfoFn> = lib.get(b"GetGameInfo").unwrap();
-        //     return Some(func());
-        // };
-        let info = unsafe { GetGameInfo() };
-        Some(info)
     }
     // 获取地图id
     pub fn game_state() -> GameState {
-        let info = Wukong::csharp_get_info().unwrap();
+        let info = unsafe { GetGameInfo() };
         let level_name = String::from_utf8_lossy(&info.level_name)
             .trim_matches(char::from(0))
             .to_string();
