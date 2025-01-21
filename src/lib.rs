@@ -9,7 +9,7 @@ mod wukong;
 #[allow(non_snake_case)]
 pub extern "stdcall" fn DllMain(hmodule: HINSTANCE, reason: u32, _: *mut ::std::ffi::c_void) {
     if reason == DLL_PROCESS_ATTACH {
-        utils::setup_tracing();
+        // utils::setup_tracing();
 
         ::hudhook::tracing::trace!("DllMain()");
         ::std::thread::spawn(move || {

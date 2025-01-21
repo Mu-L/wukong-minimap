@@ -214,10 +214,11 @@ impl MiniMap {
             let window_size = (screen_width * 0.15).min(screen_height * 0.15);
 
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
-            let style = ui.push_style_var(StyleVar::WindowRounding(5.0));
+            let _ = ui.push_style_var(StyleVar::WindowPadding([0.0, 0.0]));
+            let _ = ui.push_style_var(StyleVar::WindowRounding(5.0));
             ui.window("wukong-minimap")
-                .size([window_size, window_size], Condition::Always)
-                .position([offset_x, offset_y], Condition::Always)
+                .size([window_size, window_size], Condition::Appearing)
+                .position([offset_x, offset_y], Condition::Appearing)
                 .flags(
                     WindowFlags::NO_TITLE_BAR
                         | WindowFlags::NO_RESIZE
@@ -266,35 +267,44 @@ impl MiniMap {
                         debug!("draw_nomap");
                     }
                 });
-            style.pop(); // 记得弹出样式，避免影响其他窗口
+
+            let logo_width = window_size * 0.5;
+            let logo_height = logo_width * 0.28;
+
+            ui.window("logo")
+                .position(
+                    [offset_x, offset_y + window_size - logo_height / 2.0],
+                    imgui::Condition::Appearing,
+                )
+                .size([window_size, logo_height], imgui::Condition::Appearing)
+                .flags(
+                    WindowFlags::NO_TITLE_BAR
+                        | WindowFlags::NO_RESIZE
+                        | WindowFlags::NO_MOVE
+                        | WindowFlags::NO_SCROLLBAR
+                        | WindowFlags::NO_BACKGROUND,
+                )
+                .build(|| {
+                    let bilibili = self.get_texture("bilibili").unwrap();
+                    let draw_list = ui.get_window_draw_list();
+                    let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
+                    let logo_offset_y = offset_y + window_size - logo_height / 2.0;
+
+                    draw_list
+                        .add_image(
+                            bilibili,
+                            [logo_offset_x, logo_offset_y],
+                            [logo_offset_x + logo_width, logo_offset_y + logo_height],
+                        )
+                        .build();
+                    // Image::new(tex_id, [logo_width, logo_height])
+                    //     .uv0([0.0, 0.0])
+                    //     .uv1([1.0, 1.0])
+                    //     .build(ui);
+                });
         }
     }
 
-    // fn render_info(&mut self, ui: &imgui::Ui, game: &GameState) {
-    //     let display_size = ui.io().display_size;
-    //     let [position_x, position_y] = [0.0, display_size[1] - 30.0];
-
-    //     ui.window("info")
-    //         .position([position_x, position_y], imgui::Condition::FirstUseEver)
-    //         .size([display_size[0], 30.0], imgui::Condition::FirstUseEver)
-    //         .flags(
-    //             WindowFlags::NO_TITLE_BAR
-    //                 | WindowFlags::NO_RESIZE
-    //                 | WindowFlags::NO_MOVE
-    //                 | WindowFlags::NO_SCROLLBAR
-    //                 | WindowFlags::NO_BACKGROUND,
-    //         )
-    //         .build(|| {
-    //             ui.set_window_font_scale(1.0);
-    //             let text = format!(
-    //                 "M: Open | N: Disable | black-myth-map v0.4.1 | {}",
-    //                 game.level_name
-    //             );
-    //             let text_size = ui.calc_text_size(&text);
-    //             ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
-    //             ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);
-    //         });
-    // }
     // /**
     //  * 获取地图背景图片的偏移值, 人物总是展示在中心位置,不断的调整背景图片的坐标值实现实时小地图功能,
     //  * 地图视窗大小为 MAP_WINDOW_SIZE, 展示游戏坐标范围为 MAP_VIEWPORT.
