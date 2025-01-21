@@ -1,25 +1,17 @@
 use std::cell::OnceCell;
 use std::collections::HashMap;
 
+use crate::{
+    utils::{image_with_bytes, image_with_file, load_data, MapInfo, Pos2},
+    wukong::{self, GameState},
+};
 use hudhook::{
-    imgui::{
-        self,
-        internal::RawCast,
-        sys::{ImFontAtlas_AddFontFromFileTTF, ImFontAtlas_GetGlyphRangesChineseFull},
-        Condition, Context, Image, TextureId, WindowFlags,
-    },
+    imgui::{self, Condition, Context, Image, StyleVar, TextureId, WindowFlags},
     tracing::debug,
     ImguiRenderLoop, RenderContext,
 };
 use image::{EncodableLayout, RgbaImage};
 use serde::{Deserialize, Serialize};
-
-use crate::{
-    data::get_icons,
-    tools::{load_image, load_json, point_inside},
-    wukong::GameState,
-};
-use crate::{data::IconCheckbox, wukong::Wukong};
 
 static mut MAP_IMAGES: OnceCell<HashMap<i32, RgbaImage>> = OnceCell::new();
 
@@ -28,295 +20,169 @@ const MAP_VIEWPORT: f32 = 20000.0;
 // 小地图窗口大小
 const MINI_MAP_SIZE: f32 = 0.2;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Icon {
-    pub name: String,
-    pub category: String,
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AreaInfo {
-    pub id: i32,
-    pub map: i32,
-    pub code: String,
-    pub name: String,
-    pub image: String,
-    pub range_x: [f32; 2],
-    pub range_y: [f32; 2],
-    pub range_z: [f32; 2],
-    pub range_side: Option<[f32; 4]>,
-    pub points: Vec<Icon>,
-}
-
-impl AreaInfo {
-    pub fn width(&self) -> f32 {
-        self.range_x[1] - self.range_x[0]
-    }
-    pub fn height(&self) -> f32 {
-        self.range_y[1] - self.range_y[0]
-    }
-}
-
-fn load_map_data(areas: &Vec<AreaInfo>) -> HashMap<i32, RgbaImage> {
-    let mut maps: HashMap<i32, RgbaImage> = HashMap::new();
-    for area in areas {
-        let image_data = load_image(&area.image);
-        maps.insert(area.id, image_data);
-    }
-    maps
-}
-
 pub struct ImageTexture {
     pub id: Option<imgui::TextureId>,
     pub image: RgbaImage,
 }
 
 impl ImageTexture {
-    pub fn new(str: &str) -> Self {
+    pub fn with_bytes(types: &[u8]) -> Self {
         Self {
             id: None,
-            image: load_image(str),
+            image: image_with_bytes(types),
+        }
+    }
+    pub fn with_file(file: &str) -> Self {
+        Self {
+            id: None,
+            image: image_with_file(file),
         }
     }
 }
 
-pub struct MapHud {
+pub struct MiniMap {
     textures: HashMap<String, ImageTexture>,
-    icons: Vec<IconCheckbox>,
-    areas: Vec<AreaInfo>,
-    area: Option<AreaInfo>,
-    pre_area_id: i32,
+    zoom: f32,
+    map: Option<MapInfo>,
+    maps: Vec<MapInfo>,
 }
 
-impl MapHud {
+impl MiniMap {
     pub fn new() -> Self {
-        Wukong::init();
+        wukong::init();
 
-        let areas: Vec<AreaInfo> = load_json("areas.json");
-        let icons = get_icons();
+        let maps: Vec<MapInfo> = load_data();
 
         let mut textures = HashMap::new();
-        textures.insert("map".to_string(), ImageTexture::new("nomap.png"));
-        textures.insert("arrow".to_string(), ImageTexture::new("arrow.png"));
-        textures.insert("bg".to_string(), ImageTexture::new("bg.jpg"));
+        textures.insert(
+            "bilibili".to_string(),
+            ImageTexture::with_bytes(include_bytes!("../includes/bilibili.png")),
+        );
+        textures.insert(
+            "mapplayer".to_string(),
+            ImageTexture::with_bytes(include_bytes!("../includes/mapplayer.png")),
+        );
+        textures.insert(
+            "fan".to_string(),
+            ImageTexture::with_bytes(include_bytes!("../includes/fan.png")),
+        );
+        textures.insert(
+            "teleport".to_string(),
+            ImageTexture::with_bytes(include_bytes!("../includes/teleport.png")),
+        );
 
-        icons.iter().for_each(|icon| {
-            textures.insert(
-                icon.key.to_string(),
-                ImageTexture::new(format!("icon_{}.png", icon.key).as_str()),
-            );
+        // 加载地图图片
+        maps.iter().for_each(|map| {
+            textures.insert(map.key.clone(), ImageTexture::with_file(map.key.as_str()));
         });
-
-        let maps = load_map_data(&areas);
-        unsafe { MAP_IMAGES.get_or_init(|| maps) };
 
         Self {
             textures,
-            icons,
-            areas,
-            area: None,
-            pre_area_id: 0,
+            zoom: 0.1,
+            map: None,
+            maps,
         }
     }
-    fn get_texture_id(&self, name: &str) -> Option<TextureId> {
-        self.textures.get(name).map(|t| t.id.unwrap())
-    }
-    fn get_map_image(&self, level: i32) -> Option<&RgbaImage> {
-        if level == 0 {
-            return None;
-        }
-        unsafe { MAP_IMAGES.get().unwrap().get(&level) }
-    }
-    fn is_icon_checked(&self, key: &str) -> bool {
-        self.icons
+
+    fn update_map(&mut self, game_state: &GameState) -> bool {
+        let level = game_state.level.clone();
+        let map = self
+            .maps
             .iter()
-            .any(|icon| icon.checked && icon.key == key)
-    }
-    fn get_area(&self, map_id: i32, position: &[f32; 3]) -> Option<AreaInfo> {
-        let area = self
-            .areas
-            .iter()
-            .rfind(|m| {
-                if map_id >= 10
-                    && m.map == map_id
-                    && position[0] >= m.range_x[0]
-                    && position[0] <= m.range_x[1]
-                    && position[1] >= m.range_y[0]
-                    && position[1] <= m.range_y[1]
-                    && position[0] != 0.0
-                    && position[1] != 0.0
+            .rev() // 从后面开始查找
+            .find(|map| {
+                if map.level == level
+                    && game_state.x >= map.range.start[0]
+                    && game_state.x <= map.range.end[0]
+                    && game_state.y >= map.range.start[1]
+                    && game_state.y <= map.range.end[1]
+                    && game_state.z >= map.range.start[2]
+                    && game_state.z <= map.range.end[2]
                 {
-                    if let Some(range_side) = &m.range_side {
-                        let inside = point_inside(
-                            [range_side[0], range_side[1]],
-                            [range_side[2], range_side[3]],
-                            [position[0], position[1]],
-                        );
-                        debug!("inside: {:?}", inside);
-                        if inside {
-                            return true;
-                        }
-                    }
-                    if position[2] >= m.range_z[0] && position[2] <= m.range_z[1] {
-                        return true;
-                    }
+                    return if map.areas.is_empty() {
+                        true
+                    } else {
+                        map.areas.iter().any(|area| {
+                            game_state.x >= area.start[0]
+                                && game_state.x <= area.end[0]
+                                && game_state.y >= area.start[1]
+                                && game_state.y <= area.end[1]
+                                && game_state.z >= area.start[2]
+                                && game_state.z <= area.end[2]
+                        })
+                    };
                 }
                 false
             })
-            .map(|m| m.clone());
-        area
-    }
+            .cloned();
 
-    // 转换游戏坐标转为坐标百分比
-    pub fn point_to_percent(&self, point: [f32; 2], area: &AreaInfo) -> [f32; 2] {
-        let x = (point[0] - area.range_x[0]) / area.width();
-        let y = (point[1] - area.range_y[0]) / area.height();
-        [x, y]
-    }
-    fn render_minimap(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.map_id > 1 && game.playing {
-            let display_size = ui.io().display_size;
-            let window_size = display_size[1] * MINI_MAP_SIZE;
-            let [position_x, position_y] = [display_size[0] - window_size - 10.0, 10.0];
-            ui.window("minimap")
-                .size([window_size, window_size], Condition::Always)
-                .position([position_x, position_y], Condition::Always)
-                .flags(
-                    WindowFlags::NO_TITLE_BAR
-                        | WindowFlags::NO_RESIZE
-                        | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_SCROLLBAR,
-                )
-                .bg_alpha(0.6)
-                .build(|| {
-                    Image::new(
-                        self.get_texture_id("bg").unwrap(),
-                        [window_size, window_size],
-                    )
-                    .build(ui);
-                    ui.set_cursor_pos([0.0, 0.0]);
-                    let txt_id = self.get_texture_id("map").unwrap();
-                    let area = self.get_area(game.map_id, &[game.x, game.y, game.z]);
-
-                    if let Some(area) = area {
-                        // 将游戏坐标转换为小地图坐标
-                        let minimap_x = (game.x - area.range_x[0]) / area.width();
-                        let minimap_y = (game.y - area.range_y[0]) / area.height();
-
-                        debug!("draw_minimap");
-                        let [uv0, uv1] = self.point_to_minimap_uv(
-                            [minimap_x, minimap_y],
-                            [area.width(), area.height()],
-                            window_size,
-                        );
-
-                        Image::new(txt_id, [window_size, window_size])
-                            .uv0(uv0)
-                            .uv1(uv1)
-                            .build(ui);
-
-                        area.points
-                            .iter()
-                            .filter(|p| self.is_icon_checked(p.category.as_str()))
-                            .for_each(|p| {
-                                if let Some(tid) = self.get_texture_id(p.category.as_str()) {
-                                    // 计算位置后 画传送点图标。
-                                    let scale = window_size / MAP_VIEWPORT;
-                                    let [x, y] = self.point_to_percent([p.x, p.y], &area);
-                                    let [minimap_width, minimap_height] =
-                                        [area.width() * scale, area.height() * scale];
-                                    let [x, y] = [
-                                        (x - uv0[0]) * minimap_width,
-                                        (y - uv0[1]) * minimap_height,
-                                    ];
-
-                                    ui.set_cursor_pos([x - 18.0, y - 32.0]);
-                                    Image::new(tid, [36.0, 48.0]).build(ui);
-                                }
-                            });
-
-                        let draw_list = ui.get_window_draw_list();
-
-                        // let [win_x, win_y] = ui.window_pos();
-                        let center = [
-                            position_x + window_size / 2.0,
-                            position_y + window_size / 2.0,
-                        ];
-                        let [p0, p1, p2, p3] =
-                            self.arrow_to_p4(ui, center, 32.0, game.angle + 180.0);
-
-                        // 使用 add_image_quad 方法角色箭头图标
-                        draw_list
-                            .add_image_quad(self.get_texture_id("arrow").unwrap(), p0, p1, p2, p3)
-                            .build();
-                    } else {
-                        debug!("draw_nomap");
-                        Image::new(txt_id, [window_size, window_size])
-                            .uv0([0.0, 0.0])
-                            .uv1([1.0, 1.0])
-                            .build(ui);
-                    }
-                });
+        match (self.map.as_ref(), map) {
+            (_, None) => {
+                self.map = None;
+                false
+            }
+            (None, Some(new_map)) => {
+                self.map = Some(new_map);
+                true
+            }
+            (Some(current_map), Some(new_map)) => {
+                if current_map.key != new_map.key {
+                    self.map = Some(new_map);
+                    true
+                } else {
+                    false
+                }
+            }
         }
     }
 
-    fn render_info(&mut self, ui: &imgui::Ui, game: &GameState) {
-        let display_size = ui.io().display_size;
-        let [position_x, position_y] = [0.0, display_size[1] - 30.0];
+    fn get_texture(&self, name: &str) -> Option<TextureId> {
+        self.textures.get(name).map(|t| t.id.unwrap())
+    }
 
-        ui.window("info")
-            .position([position_x, position_y], imgui::Condition::FirstUseEver)
-            .size([display_size[0], 30.0], imgui::Condition::FirstUseEver)
-            .flags(
-                WindowFlags::NO_TITLE_BAR
-                    | WindowFlags::NO_RESIZE
-                    | WindowFlags::NO_MOVE
-                    | WindowFlags::NO_SCROLLBAR
-                    | WindowFlags::NO_BACKGROUND,
-            )
-            .build(|| {
-                ui.set_window_font_scale(1.0);
-                let text = format!(
-                    "M: Open | N: Disable | black-myth-map v0.4.1 | {}",
-                    game.level_name
-                );
-                let text_size = ui.calc_text_size(&text);
-                ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
-                ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);
-            });
+    /**
+     * 将游戏坐标转换为小地图位置 0 - 1
+     * flag_start是游戏地图的边界左上角，flag_end 是右下角
+     * 0,0 是小地图的左上角 1,1 是小地图的右下角
+     */
+    fn location_to_map(&self, pos: Pos2) -> Pos2 {
+        if self.map.is_none() {
+            return Pos2::new(0.5, 0.5);
+        }
+        let map = self.map.as_ref().unwrap();
+        let [x_start, y_start, _] = map.range.start;
+        let [x_end, y_end, _] = map.range.end;
+        let x_offset = (pos.x - x_start) / (x_end - x_start);
+        let y_offset = (pos.y - y_start) / (y_end - y_start);
+        Pos2::new(x_offset, y_offset)
     }
     /**
-     * 获取地图背景图片的偏移值, 人物总是展示在中心位置,不断的调整背景图片的坐标值实现实时小地图功能,
-     * 地图视窗大小为 MAP_WINDOW_SIZE, 展示游戏坐标范围为 MAP_VIEWPORT.
-     * 返回地图图片的 uv 坐标
+     * 将游戏中玩家转换为小地图uv
+     * 玩家位于小地图的中心，根据 zoom 计算出小地图的uv
+     * size 小地图可视区域的比例    
      */
-    fn point_to_minimap_uv(
-        &self,
-        point: [f32; 2],
-        size: [f32; 2],
-        window_size: f32,
-    ) -> [[f32; 2]; 2] {
-        let half_window_size = window_size / 2.0;
-        let scale = window_size / MAP_VIEWPORT;
-        let (minimap_width, minimap_height) = (size[0] * scale, size[1] * scale);
-        let start_x = (point[0] * minimap_width - half_window_size) / minimap_width;
-        let end_x = (point[0] * minimap_width + half_window_size) / minimap_width;
-        let start_y = (point[1] * minimap_height - half_window_size) / minimap_height;
-        let end_y = (point[1] * minimap_height + half_window_size) / minimap_height;
-        [[start_x, start_y], [end_x, end_y]]
+    fn get_map_uv(&self, pos: Pos2) -> [[f32; 2]; 2] {
+        let map_pos = self.location_to_map(pos);
+        let half_zoom = self.zoom / 2.0;
+        let min_pos: [f32; 2] = [map_pos.x - half_zoom, map_pos.y - half_zoom];
+        let max_pos: [f32; 2] = [map_pos.x + half_zoom, map_pos.y + half_zoom];
+        [[min_pos[0], min_pos[1]], [max_pos[0], max_pos[1]]]
     }
 
-    fn arrow_to_p4(
-        &self,
-        ui: &imgui::Ui,
-        location: [f32; 2],
-        size: f32,
-        angle: f32,
-    ) -> [[f32; 2]; 4] {
-        ui.set_cursor_pos(location);
+    fn get_icon_pos(&self, pos: Pos2, player_pos: Pos2, center: Pos2, view_size: f32) -> [Pos2; 2] {
+        let [x_start, y_start, _] = self.map.as_ref().unwrap().range.start;
+        let [x_end, y_end, _] = self.map.as_ref().unwrap().range.end;
+        let x_scale = view_size / ((x_end - x_start).abs() * self.zoom);
+        let y_scale = view_size / ((y_end - y_start).abs() * self.zoom);
+        let pos = Pos2::new(
+            center.x + (pos.x - player_pos.x) * x_scale,
+            center.y + (pos.y - player_pos.y) * y_scale,
+        );
+        let min_pos = Pos2::new(pos.x - 16.0, pos.y - 16.0);
+        let max_pos = Pos2::new(pos.x + 16.0, pos.y + 16.0);
+        [min_pos, max_pos]
+    }
+    fn arrow_to_p4(&self, location: Pos2, size: f32, angle: f32) -> [[f32; 2]; 4] {
         let half_size = size / 2.0;
 
         // 计算旋转后的四个角点
@@ -325,39 +191,134 @@ impl MapHud {
 
         // 计算四个角点的位置
         let p1 = [
-            location[0] + (-half_size * cos_angle - -half_size * sin_angle),
-            location[1] + (-half_size * sin_angle + -half_size * cos_angle),
+            location.x + (-half_size * cos_angle - -half_size * sin_angle),
+            location.y + (-half_size * sin_angle + -half_size * cos_angle),
         ];
         let p2 = [
-            location[0] + (half_size * cos_angle - -half_size * sin_angle),
-            location[1] + (half_size * sin_angle + -half_size * cos_angle),
+            location.x + (half_size * cos_angle - -half_size * sin_angle),
+            location.y + (half_size * sin_angle + -half_size * cos_angle),
         ];
         let p3 = [
-            location[0] + (half_size * cos_angle - half_size * sin_angle),
-            location[1] + (half_size * sin_angle + half_size * cos_angle),
+            location.x + (half_size * cos_angle - half_size * sin_angle),
+            location.y + (half_size * sin_angle + half_size * cos_angle),
         ];
         let p4 = [
-            location[0] + (-half_size * cos_angle - half_size * sin_angle),
-            location[1] + (-half_size * sin_angle + half_size * cos_angle),
+            location.x + (-half_size * cos_angle - half_size * sin_angle),
+            location.y + (-half_size * sin_angle + half_size * cos_angle),
         ];
         [p1, p2, p3, p4]
     }
+    fn render(&mut self, ui: &imgui::Ui, game: &GameState) {
+        if game.playing {
+            let [screen_width, screen_height] = ui.io().display_size;
+            let window_size = (screen_width * 0.15).min(screen_height * 0.15);
+
+            let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
+            let style = ui.push_style_var(StyleVar::WindowRounding(5.0));
+            ui.window("wukong-minimap")
+                .size([window_size, window_size], Condition::Always)
+                .position([offset_x, offset_y], Condition::Always)
+                .flags(
+                    WindowFlags::NO_TITLE_BAR
+                        | WindowFlags::NO_RESIZE
+                        | WindowFlags::NO_MOVE
+                        | WindowFlags::NO_SCROLLBAR
+                        | WindowFlags::NO_BACKGROUND,
+                )
+                .build(|| {
+                    ui.set_cursor_pos([0.0, 0.0]);
+                    let draw_list = ui.get_window_draw_list();
+                    let center =
+                        Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
+
+                    if let Some(map) = self.map.as_ref() {
+                        let map_image = self.get_texture(&map.key).unwrap();
+                        let map_uv = self.get_map_uv(Pos2::new(game.x, game.y));
+                        draw_list
+                            .add_image(
+                                map_image,
+                                [offset_x, offset_y],
+                                [offset_x + window_size, offset_y + window_size],
+                            )
+                            .uv_min(map_uv[0])
+                            .uv_max(map_uv[1])
+                            .build();
+
+                        let teleport = self.get_texture("teleport").unwrap();
+                        map.points.iter().for_each(|point| {
+                            if point.icon == 0 {
+                                let [min, max] = self.get_icon_pos(
+                                    Pos2::new(point.x, point.y),
+                                    Pos2::new(game.x, game.y),
+                                    center,
+                                    window_size,
+                                );
+                                draw_list
+                                    .add_image(teleport, [min.x, min.y], [max.x, max.y])
+                                    .build();
+                            }
+                        });
+
+                        let mapplayer = self.get_texture("mapplayer").unwrap();
+                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, 32.0, game.angle);
+                        draw_list.add_image_quad(mapplayer, p0, p1, p2, p3).build();
+                    } else {
+                        debug!("draw_nomap");
+                    }
+                });
+            style.pop(); // 记得弹出样式，避免影响其他窗口
+        }
+    }
+
+    // fn render_info(&mut self, ui: &imgui::Ui, game: &GameState) {
+    //     let display_size = ui.io().display_size;
+    //     let [position_x, position_y] = [0.0, display_size[1] - 30.0];
+
+    //     ui.window("info")
+    //         .position([position_x, position_y], imgui::Condition::FirstUseEver)
+    //         .size([display_size[0], 30.0], imgui::Condition::FirstUseEver)
+    //         .flags(
+    //             WindowFlags::NO_TITLE_BAR
+    //                 | WindowFlags::NO_RESIZE
+    //                 | WindowFlags::NO_MOVE
+    //                 | WindowFlags::NO_SCROLLBAR
+    //                 | WindowFlags::NO_BACKGROUND,
+    //         )
+    //         .build(|| {
+    //             ui.set_window_font_scale(1.0);
+    //             let text = format!(
+    //                 "M: Open | N: Disable | black-myth-map v0.4.1 | {}",
+    //                 game.level_name
+    //             );
+    //             let text_size = ui.calc_text_size(&text);
+    //             ui.set_cursor_pos([10.0, (30.0 - text_size[1]) * 0.5]);
+    //             ui.text_colored(imgui::ImColor32::WHITE.to_rgba_f32s(), text);
+    //         });
+    // }
+    // /**
+    //  * 获取地图背景图片的偏移值, 人物总是展示在中心位置,不断的调整背景图片的坐标值实现实时小地图功能,
+    //  * 地图视窗大小为 MAP_WINDOW_SIZE, 展示游戏坐标范围为 MAP_VIEWPORT.
+    //  * 返回地图图片的 uv 坐标
+    //  */
+    // fn point_to_minimap_uv(
+    //     &self,
+    //     point: [f32; 2],
+    //     size: [f32; 2],
+    //     window_size: f32,
+    // ) -> [[f32; 2]; 2] {
+    //     let half_window_size = window_size / 2.0;
+    //     let scale = window_size / MAP_VIEWPORT;
+    //     let (minimap_width, minimap_height) = (size[0] * scale, size[1] * scale);
+    //     let start_x = (point[0] * minimap_width - half_window_size) / minimap_width;
+    //     let end_x = (point[0] * minimap_width + half_window_size) / minimap_width;
+    //     let start_y = (point[1] * minimap_height - half_window_size) / minimap_height;
+    //     let end_y = (point[1] * minimap_height + half_window_size) / minimap_height;
+    //     [[start_x, start_y], [end_x, end_y]]
+    // }
 }
 
-impl ImguiRenderLoop for MapHud {
+impl ImguiRenderLoop for MiniMap {
     fn initialize<'a>(&'a mut self, ctx: &mut Context, render_context: &'a mut dyn RenderContext) {
-        unsafe {
-            ImFontAtlas_AddFontFromFileTTF(
-                ctx.fonts().raw_mut(),
-                "C:\\windows\\fonts\\msyh.ttc\0".as_ptr().cast(),
-                18.0,
-                std::ptr::null(),
-                ImFontAtlas_GetGlyphRangesChineseFull(ctx.fonts().raw_mut()),
-            )
-        };
-        let style = ctx.style_mut();
-        style.window_padding = [0.00, 0.00];
-
         self.textures.iter_mut().for_each(|(_, txt)| {
             txt.id = render_context
                 .load_texture(txt.image.as_bytes(), txt.image.width(), txt.image.height())
@@ -370,25 +331,11 @@ impl ImguiRenderLoop for MapHud {
         render_context: &'a mut dyn RenderContext,
     ) {
         // ctx.io_mut().mouse_draw_cursor = self.open;
-        let game = Wukong::game_state();
-        self.area = self.get_area(game.map_id, &[game.x, game.y, game.z]);
-        let area_id = self.area.as_ref().map(|a| a.id).unwrap_or(0);
-
-        if area_id != self.pre_area_id {
-            self.pre_area_id = area_id;
-            let map_texture = self.textures.get("map").unwrap();
-            let data = match self.get_map_image(area_id) {
-                Some(data) => data.as_bytes(),
-                None => map_texture.image.as_bytes(),
-            };
-            println!("replace_texture: {:?}", area_id);
-            let _ = render_context.replace_texture(map_texture.id.unwrap(), data, 4096, 4096);
-        }
+        let game = wukong::game_state();
+        let _ = self.update_map(&game);
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
-        let game = Wukong::game_state();
-
-        self.render_info(ui, &game);
-        self.render_minimap(ui, &game);
+        let game = wukong::game_state();
+        self.render(ui, &game);
     }
 }

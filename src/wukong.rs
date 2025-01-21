@@ -1,5 +1,8 @@
-use std::collections::HashMap;
-use std::sync::OnceLock;
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+
+// 添加静态变量来存储上一次的状态
+static LAST_STATE: Lazy<Mutex<Option<GameState>>> = Lazy::new(|| Mutex::new(None));
 
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
@@ -9,23 +12,22 @@ struct GameInfo {
     y: f32,
     z: f32,
     angle: f32,
-    playing: u8,
+    is_local_view_target: u8,
 }
 
 // type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
 
 extern "C" {
-    fn GetGameInfo() -> GameInfo;
+    fn get_info() -> GameInfo;
 }
 
 extern "C" {
-    fn InitOffsets() -> ();
+    fn init_offsets() -> ();
 }
 
 #[derive(Debug, Clone)]
 pub struct GameState {
-    pub level_name: String,
-    pub map_id: i32,
+    pub level: String,
     pub playing: bool,
     pub x: f32,
     pub y: f32,
@@ -109,56 +111,43 @@ pub struct GameState {
 // 3635=Demo_Battle_VigorSkill
 // 3636=***guansi_tianjiang
 
-// 使用 OnceLock 实现 LEVEL_ID_MAP
-static LEVEL_ID_MAP: OnceLock<HashMap<&'static str, i32>> = OnceLock::new();
-
-fn get_mapid_by_map(map_name: &str) -> i32 {
-    let map = LEVEL_ID_MAP.get_or_init(|| {
-        let mut m = HashMap::new();
-        m.insert("LYS_paintingworld_01", 31); // 如意画轴-六六村
-        m.insert("HFS01_PersistentLevel", 10); // 黑风山
-        m.insert("HFS01_Old_GYCY_YKX_PersistentLevel", 11); // 隐·旧观音禅院
-        m.insert("HFS_WoodDragon", 12); // 黑风山-尺木间
-        m.insert("HFM02_PersistentLevel", 20); // 黄风岭
-        m.insert("HFM_DuJiaoXian_Persist", 25); // 隐·斯哈里国
-        m.insert("HFM_DustDragon_01", 24); // 黄风岭-藏龙洞
-        m.insert("LYS_PersistentLevel", 30); // 小西天
-        m.insert("PSD_PersistentLevel", 40); // 盘丝岭
-        m.insert("ZYS01_persistentlevel", 80); // 隐·紫云山
-        m.insert("HYS_PersistentLevel", 50); // 火焰山
-        m.insert("BYS_persistentlevel", 98); // 花果山
-        m.insert("BSD02_persistentlevel", 70); // 隐·壁水洞
-        m
-    });
-
-    map.get(map_name).copied().unwrap_or(999)
+pub fn init() {
+    unsafe { init_offsets() };
 }
 
-pub struct Wukong {}
+// 获取地图id
+pub fn game_state() -> GameState {
+    let info = unsafe { get_info() };
 
-impl Wukong {
-    pub fn init() {
-        unsafe { InitOffsets() };
-    }
-    // 获取地图id
-    pub fn game_state() -> GameState {
-        let info = unsafe { GetGameInfo() };
-        let level_name = String::from_utf8_lossy(&info.level_name)
-            .trim_matches(char::from(0))
-            .to_string();
+    let level = String::from_utf8_lossy(&info.level_name)
+        .trim_matches(char::from(0))
+        .to_string();
 
-        // 使用新的函数名获取地图ID
-        let map_id = get_mapid_by_map(&level_name);
-        let angle = info.angle - 90.0;
-        let angle = if angle < 0.0 { angle + 360.0 } else { angle };
-        return GameState {
-            playing: info.playing == 1,
-            level_name,
-            map_id,
-            angle,
-            x: info.x,
-            y: info.y,
-            z: info.z,
-        };
-    }
+    let angle = info.angle + 90.0;
+    let angle = if angle < 0.0 { angle + 360.0 } else { angle };
+
+    // 创建新的状态
+    let current_state = GameState {
+        playing: info.is_local_view_target == 1,
+        level: level.clone(),
+        angle,
+        x: info.x,
+        y: info.y,
+        z: info.z,
+    };
+
+    // 检查是否需要使用上一次的状态
+    let mut last_state = LAST_STATE.lock().unwrap();
+    let final_state = if !level.is_empty() && info.x == 0.0 && info.y == 0.0 && info.z == 0.0 {
+        // 如果有上一次的状态，使用它
+        last_state.clone().unwrap_or(current_state.clone())
+    } else {
+        // 否则使用当前状态
+        current_state.clone()
+    };
+
+    // 更新保存的状态
+    *last_state = Some(final_state.clone());
+
+    final_state
 }

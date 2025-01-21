@@ -1,21 +1,20 @@
 use hudhook::hooks::dx12::ImguiDx12Hooks;
 use hudhook::windows::Win32::{Foundation::HINSTANCE, System::SystemServices::DLL_PROCESS_ATTACH};
 
-mod data;
 mod render;
-mod tools;
+mod utils;
 mod wukong;
 
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern "stdcall" fn DllMain(hmodule: HINSTANCE, reason: u32, _: *mut ::std::ffi::c_void) {
     if reason == DLL_PROCESS_ATTACH {
-        tools::setup_tracing();
+        utils::setup_tracing();
 
         ::hudhook::tracing::trace!("DllMain()");
         ::std::thread::spawn(move || {
             if let Err(e) = ::hudhook::Hudhook::builder()
-                .with::<ImguiDx12Hooks>(render::MapHud::new())
+                .with::<ImguiDx12Hooks>(render::MiniMap::new())
                 .with_hmodule(hmodule)
                 .build()
                 .apply()
