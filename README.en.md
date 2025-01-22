@@ -1,43 +1,69 @@
+# Black Myth: Wukong - Built-in Real-time Map
 
+A minimap plugin for Black Myth: Wukong that provides real-time location tracking and navigation features. It's free~free~free~
 
-# Black Myth: Wukong Built-in real-time map
+This plugin is a personal Rust learning project developed using the [imgui](https://github.com/ocornut/imgui) and [hudhook](https://github.com/veeenu/hudhook?from=jaskang) libraries. This project is free and open source, not for commercial use, and the author assumes no responsibility.
 
-Switch language: [中文](./README.md)
+- Download: [releases](https://github.com/jaskang/wukong-minimap/releases)
+- BiliBli Demo Video：[我开发了一款黑神话悟空小地图插件，精准还原行旅图 免费开源～](https://www.bilibili.com/video/BV1FxrTYeEaA/?share_source=copy_web&vd_source=dcfc3e9cca2640bbaa21c24979c4c34b)
+- GitHub: [Please help me click star](https://github.com/jaskang/wukong-minimap)
+- Nexusmods: [Don't forget to recommend it](https://www.nexusmods.com/blackmythwukong/mods/956)
 
-This plugin is a learning project for me to practice Rust, developed based on imgui and hudhook libraries. This project is free and open source, please do not use it for commercial purposes, the author does not take any responsibility.
+切换语言: [中文](README.md)
 
-If this plugin is helpful to you, please help me by giving it a star.
+## Changelog
 
-Nexusmods: [https://www.nexusmods.com/blackmythwukong/mods/956](https://www.nexusmods.com/blackmythwukong/mods/956)
+- v1.4
+  - Support adjusting map size, `\ = ` to zoom in, `\ - ` to zoom out
+- v1.3
+  - Modified rendering method
+  - Changed loader, optimized compatibility with ue4ss, resolved charploader conflict issues
+    This version changed the plugin filename, please delete old version files jas_minimap.dll, version.dll first
+- v1.2
+  - Added error log output
+  - Attempted to adjust rendering parameters
+- v1.0
+  - Updated official travel map
+  - Modified rendering method
 
-[![](./docs/images/page.jpg)](https://youtu.be/_gG5YlsjYwk)
+## Demo Screenshots
 
-> Click on the above image to jump to the YouTube demo video
+![alt text](./docs/demo0.png)
+![alt text](./docs/demo1.png)
+![alt text](./docs/demo2.png)
 
-### Key Instructions
+## Installation Instructions
 
-Keyboard: Press `M` to open/close the map, press `N` to toggle HUD
+Extract `wukong-minimap.zip` directly to the `b1\Binaries\Win64` folder under Black Myth's installation directory (Steam installation folder can be found by right-clicking Black Myth -> Manage -> Browse Local Files)
 
-Controller: Press `Select` to open/close the map, 
+![alt text](./docs/install0.png)
 
-![image](./docs/images/bigmap.png)
+This plugin includes the following files:
 
-### Installation 
+- `wukong_minimap.dll` Core plugin functionality file
+- `dwmapi.dll` Loader - Loads wukong_minimap.dll by proxying system functions
+- `maps` Map folder, will be automatically generated on first launch
 
-1. download: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
+> Old versions used `jas_minimap.dll` -> `wukong_minimap.dll` and `version.dll` -> `dwmapi.dll`
 
-2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64` folder under the installation folder of Black Myth (you can find the Steam installation folder by right-clicking on Black Myth -> Manage -> Browse local files)
+If you have other means to load `wukong_minimap.dll`, you can completely skip `dwmapi.dll`
 
-![image](./docs/images/mapfiles.png)
+## For CSharpLoader Users
 
-### For CSharpLoader users
+Starting from v1.3, it's compatible with CSharpLoader without special handling. For versions before v1.3, please delete the old wukong_minimap.dll file in CSharpLoader\Plugins.
 
-1. download: [https://github.com/jaskang/black-myth-map/releases](https://github.com/jaskang/black-myth-map/releases)
+## For UE4SS Users
 
-2. Extract BlackMythMap.zip directly to the `b1\Binaries\Win64\CSharpLoader\Plugins` folder under the installation folder of Black Myth, and delete the version.dll file.
+Since ue4ss's built-in `dwmapi.dll` intercepts system APIs which prevents the plugin from loading properly, we just use the dwmapi.dll from wukong-minimap.
 
+## Uninstallation
 
+Simply delete the `wukong_minimap.dll` file. For versions below v1.3, delete `jas_minimap.dll`, `version.dll`, and `assets`
 
-### Uninstallation 
+## WeChat Group
 
-Simply delete the BlackMythMap folder in b1\Binaries\Win64\jas_minimap.dll
+<div align="center">
+
+![alt text](./docs/wechat.png)
+
+</div>
