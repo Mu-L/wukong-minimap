@@ -236,10 +236,11 @@ impl MiniMap {
                         let map_image = self.get_texture(&map.key).unwrap();
                         let map_uv = self.get_map_uv(Pos2::new(game.x, game.y));
                         draw_list
-                            .add_image(
+                            .add_image_rounded(
                                 map_image,
                                 [offset_x, offset_y],
                                 [offset_x + window_size, offset_y + window_size],
+                                5.0,
                             )
                             .uv_min(map_uv[0])
                             .uv_max(map_uv[1])
