@@ -1,24 +1,19 @@
-use std::cell::OnceCell;
 use std::collections::HashMap;
+use std::time::Duration;
+use std::time::Instant;
 
 use crate::{
     utils::{image_with_bytes, image_with_file, load_data, MapInfo, Pos2},
     wukong::{self, GameState},
 };
+use hudhook::imgui::Key;
+use hudhook::tracing;
 use hudhook::{
-    imgui::{self, Condition, Context, Image, StyleVar, TextureId, WindowFlags},
+    imgui::{self, Condition, Context, StyleVar, WindowFlags},
     tracing::debug,
     ImguiRenderLoop, RenderContext,
 };
 use image::{EncodableLayout, RgbaImage};
-use serde::{Deserialize, Serialize};
-
-static mut MAP_IMAGES: OnceCell<HashMap<i32, RgbaImage>> = OnceCell::new();
-
-// 小地图视窗大小, 对应游戏坐标
-const MAP_VIEWPORT: f32 = 20000.0;
-// 小地图窗口大小
-const MINI_MAP_SIZE: f32 = 0.2;
 
 pub struct ImageTexture {
     pub id: Option<imgui::TextureId>,
@@ -40,11 +35,22 @@ impl ImageTexture {
     }
 }
 
+struct Textures {
+    pub map: ImageTexture,
+    pub teleport: ImageTexture,
+    pub mapplayer: ImageTexture,
+    pub fan: ImageTexture,
+    pub logo: ImageTexture,
+}
+
 pub struct MiniMap {
-    textures: HashMap<String, ImageTexture>,
+    textures: Textures,
+    map_images: HashMap<String, RgbaImage>,
     zoom: f32,
+    size: f32,
     map: Option<MapInfo>,
     maps: Vec<MapInfo>,
+    game: GameState,
 }
 
 impl MiniMap {
@@ -53,62 +59,56 @@ impl MiniMap {
 
         let maps: Vec<MapInfo> = load_data();
 
-        let mut textures = HashMap::new();
-        textures.insert(
-            "bilibili".to_string(),
-            ImageTexture::with_bytes(include_bytes!("../includes/bilibili.png")),
-        );
-        textures.insert(
-            "mapplayer".to_string(),
-            ImageTexture::with_bytes(include_bytes!("../includes/mapplayer.png")),
-        );
-        textures.insert(
-            "fan".to_string(),
-            ImageTexture::with_bytes(include_bytes!("../includes/fan.png")),
-        );
-        textures.insert(
-            "teleport".to_string(),
-            ImageTexture::with_bytes(include_bytes!("../includes/teleport.png")),
-        );
+        let textures = Textures {
+            map: ImageTexture::with_bytes(include_bytes!("../includes/nomap.png")),
+            teleport: ImageTexture::with_bytes(include_bytes!("../includes/teleport.png")),
+            mapplayer: ImageTexture::with_bytes(include_bytes!("../includes/mapplayer.png")),
+            fan: ImageTexture::with_bytes(include_bytes!("../includes/fan.png")),
+            logo: ImageTexture::with_bytes(include_bytes!("../includes/logo.png")),
+        };
 
+        let mut map_images = HashMap::new();
         // 加载地图图片
         maps.iter().for_each(|map| {
-            textures.insert(map.key.clone(), ImageTexture::with_file(map.key.as_str()));
+            map_images.insert(map.key.clone(), image_with_file(map.key.as_str()));
         });
 
         Self {
             textures,
+            map_images,
             zoom: 0.1,
+            size: 0.15,
             map: None,
             maps,
+            game: wukong::game_state(),
         }
     }
 
-    fn update_map(&mut self, game_state: &GameState) -> bool {
-        let level = game_state.level.clone();
+    fn update_map(&mut self) -> Option<MapInfo> {
+        self.game = wukong::game_state();
         let map = self
             .maps
             .iter()
             .rev() // 从后面开始查找
             .find(|map| {
-                if map.level == level
-                    && game_state.x >= map.range.start[0]
-                    && game_state.x <= map.range.end[0]
-                    && game_state.y >= map.range.start[1]
-                    && game_state.y <= map.range.end[1]
-                    && game_state.z >= map.range.start[2]
-                    && game_state.z <= map.range.end[2]
+                if self.game.level == map.level
+                    && self.game.x >= map.range.start[0]
+                    && self.game.x <= map.range.end[0]
+                    && self.game.y >= map.range.start[1]
+                    && self.game.y <= map.range.end[1]
+                    && self.game.z >= map.range.start[2]
+                    && self.game.z <= map.range.end[2]
                 {
                     return if map.areas.is_empty() {
                         true
                     } else {
                         map.areas.iter().any(|area| {
-                            game_state.x >= area.start[0]
-                                && game_state.x <= area.end[0]
-                                && game_state.y >= area.start[1]
-                                && game_state.y <= area.end[1]
-                                && game_state.z >= area.start[2]
-                                && game_state.z <= area.end[2]
+                            self.game.x >= area.start[0]
+                                && self.game.x <= area.end[0]
+                                && self.game.y >= area.start[1]
+                                && self.game.y <= area.end[1]
+                                && self.game.z >= area.start[2]
+                                && self.game.z <= area.end[2]
                         })
                     };
                 }
@@ -118,26 +118,19 @@ impl MiniMap {
 
         match (self.map.as_ref(), map) {
             (_, None) => {
-                self.map = None;
-                false
+                return None;
             }
             (None, Some(new_map)) => {
-                self.map = Some(new_map);
-                true
+                return Some(new_map);
             }
             (Some(current_map), Some(new_map)) => {
                 if current_map.key != new_map.key {
-                    self.map = Some(new_map);
-                    true
+                    return Some(new_map);
                 } else {
-                    false
+                    return None;
                 }
             }
         }
-    }
-
-    fn get_texture(&self, name: &str) -> Option<TextureId> {
-        self.textures.get(name).map(|t| t.id.unwrap())
     }
 
     /**
@@ -183,42 +176,42 @@ impl MiniMap {
         [min_pos, max_pos]
     }
     fn arrow_to_p4(&self, location: Pos2, size: f32, angle: f32) -> [[f32; 2]; 4] {
-        let half_size = size / 2.0;
-
-        // 计算旋转后的四个角点
-        let cos_angle = angle.to_radians().cos();
-        let sin_angle = angle.to_radians().sin();
-
-        // 计算四个角点的位置
-        let p1 = [
-            location.x + (-half_size * cos_angle - -half_size * sin_angle),
-            location.y + (-half_size * sin_angle + -half_size * cos_angle),
-        ];
-        let p2 = [
-            location.x + (half_size * cos_angle - -half_size * sin_angle),
-            location.y + (half_size * sin_angle + -half_size * cos_angle),
-        ];
-        let p3 = [
-            location.x + (half_size * cos_angle - half_size * sin_angle),
-            location.y + (half_size * sin_angle + half_size * cos_angle),
-        ];
-        let p4 = [
-            location.x + (-half_size * cos_angle - half_size * sin_angle),
-            location.y + (-half_size * sin_angle + half_size * cos_angle),
-        ];
-        [p1, p2, p3, p4]
+        let rad = angle.to_radians();
+        let (sin, cos) = rad.sin_cos();
+        let half = size / 2.0;
+        // 使用一个简单的变换矩阵计算四个角点
+        let transform = |dx: f32, dy: f32| {
+            [
+                location.x + dx * cos - dy * sin,
+                location.y + dx * sin + dy * cos,
+            ]
+        };
+        [
+            transform(-half, -half), // 左上
+            transform(half, -half),  // 右上
+            transform(half, half),   // 右下
+            transform(-half, half),  // 左下
+        ]
     }
-    fn render(&mut self, ui: &imgui::Ui, game: &GameState) {
-        if game.playing {
+    fn render(&mut self, ui: &imgui::Ui) {
+        if ui.is_key_pressed_no_repeat(Key::Minus) {
+            self.size = (self.size - 0.05).max(0.15);
+            tracing::info!("size: {}", self.size);
+        }
+        if ui.is_key_pressed_no_repeat(Key::Equal) {
+            self.size = (self.size + 0.05).min(0.5);
+            tracing::info!("size: {}", self.size);
+        }
+        if self.game.playing {
             let [screen_width, screen_height] = ui.io().display_size;
-            let window_size = (screen_width * 0.15).min(screen_height * 0.15);
+            let window_size = (screen_width * self.size).min(screen_height * self.size);
 
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
             let _ = ui.push_style_var(StyleVar::WindowPadding([0.0, 0.0]));
             let _ = ui.push_style_var(StyleVar::WindowRounding(5.0));
             ui.window("wukong-minimap")
-                .size([window_size, window_size], Condition::Appearing)
-                .position([offset_x, offset_y], Condition::Appearing)
+                .size([window_size, window_size], Condition::Always)
+                .position([offset_x, offset_y], Condition::Always)
                 .flags(
                     WindowFlags::NO_TITLE_BAR
                         | WindowFlags::NO_RESIZE
@@ -233,8 +226,8 @@ impl MiniMap {
                         Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
 
                     if let Some(map) = self.map.as_ref() {
-                        let map_image = self.get_texture(&map.key).unwrap();
-                        let map_uv = self.get_map_uv(Pos2::new(game.x, game.y));
+                        let map_image = self.textures.map.id.unwrap();
+                        let map_uv = self.get_map_uv(Pos2::new(self.game.x, self.game.y));
                         draw_list
                             .add_image_rounded(
                                 map_image,
@@ -246,12 +239,12 @@ impl MiniMap {
                             .uv_max(map_uv[1])
                             .build();
 
-                        let teleport = self.get_texture("teleport").unwrap();
+                        let teleport = self.textures.teleport.id.unwrap();
                         map.points.iter().for_each(|point| {
                             if point.icon == 0 {
                                 let [min, max] = self.get_icon_pos(
                                     Pos2::new(point.x, point.y),
-                                    Pos2::new(game.x, game.y),
+                                    Pos2::new(self.game.x, self.game.y),
                                     center,
                                     window_size,
                                 );
@@ -261,9 +254,10 @@ impl MiniMap {
                             }
                         });
 
-                        let mapplayer = self.get_texture("mapplayer").unwrap();
-                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, 32.0, game.angle);
-                        draw_list.add_image_quad(mapplayer, p0, p1, p2, p3).build();
+                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, 32.0, self.game.angle);
+                        draw_list
+                            .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
+                            .build();
                     } else {
                         debug!("draw_nomap");
                     }
@@ -275,9 +269,9 @@ impl MiniMap {
             ui.window("logo")
                 .position(
                     [offset_x, offset_y + window_size - logo_height / 2.0],
-                    imgui::Condition::Appearing,
+                    imgui::Condition::Always,
                 )
-                .size([window_size, logo_height], imgui::Condition::Appearing)
+                .size([window_size, logo_height], imgui::Condition::Always)
                 .flags(
                     WindowFlags::NO_TITLE_BAR
                         | WindowFlags::NO_RESIZE
@@ -286,14 +280,13 @@ impl MiniMap {
                         | WindowFlags::NO_BACKGROUND,
                 )
                 .build(|| {
-                    let bilibili = self.get_texture("bilibili").unwrap();
                     let draw_list = ui.get_window_draw_list();
                     let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
                     let logo_offset_y = offset_y + window_size - logo_height / 2.0;
 
                     draw_list
                         .add_image(
-                            bilibili,
+                            self.textures.logo.id.unwrap(),
                             [logo_offset_x, logo_offset_y],
                             [logo_offset_x + logo_width, logo_offset_y + logo_height],
                         )
@@ -305,48 +298,77 @@ impl MiniMap {
                 });
         }
     }
-
-    // /**
-    //  * 获取地图背景图片的偏移值, 人物总是展示在中心位置,不断的调整背景图片的坐标值实现实时小地图功能,
-    //  * 地图视窗大小为 MAP_WINDOW_SIZE, 展示游戏坐标范围为 MAP_VIEWPORT.
-    //  * 返回地图图片的 uv 坐标
-    //  */
-    // fn point_to_minimap_uv(
-    //     &self,
-    //     point: [f32; 2],
-    //     size: [f32; 2],
-    //     window_size: f32,
-    // ) -> [[f32; 2]; 2] {
-    //     let half_window_size = window_size / 2.0;
-    //     let scale = window_size / MAP_VIEWPORT;
-    //     let (minimap_width, minimap_height) = (size[0] * scale, size[1] * scale);
-    //     let start_x = (point[0] * minimap_width - half_window_size) / minimap_width;
-    //     let end_x = (point[0] * minimap_width + half_window_size) / minimap_width;
-    //     let start_y = (point[1] * minimap_height - half_window_size) / minimap_height;
-    //     let end_y = (point[1] * minimap_height + half_window_size) / minimap_height;
-    //     [[start_x, start_y], [end_x, end_y]]
-    // }
 }
 
 impl ImguiRenderLoop for MiniMap {
     fn initialize<'a>(&'a mut self, ctx: &mut Context, render_context: &'a mut dyn RenderContext) {
-        self.textures.iter_mut().for_each(|(_, txt)| {
-            txt.id = render_context
-                .load_texture(txt.image.as_bytes(), txt.image.width(), txt.image.height())
-                .ok();
-        });
+        self.textures.map.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.map.image.as_bytes(),
+                    self.textures.map.image.width(),
+                    self.textures.map.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.teleport.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.teleport.image.as_bytes(),
+                    self.textures.teleport.image.width(),
+                    self.textures.teleport.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.mapplayer.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.mapplayer.image.as_bytes(),
+                    self.textures.mapplayer.image.width(),
+                    self.textures.mapplayer.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.fan.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.fan.image.as_bytes(),
+                    self.textures.fan.image.width(),
+                    self.textures.fan.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.logo.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.logo.image.as_bytes(),
+                    self.textures.logo.image.width(),
+                    self.textures.logo.image.height(),
+                )
+                .unwrap(),
+        );
     }
     fn before_render<'a>(
         &'a mut self,
         _ctx: &mut Context,
         render_context: &'a mut dyn RenderContext,
     ) {
-        // ctx.io_mut().mouse_draw_cursor = self.open;
-        let game = wukong::game_state();
-        let _ = self.update_map(&game);
+        let map = self.update_map();
+        if let Some(map) = map {
+            tracing::info!("update map: {:?}", map);
+            let map_image = self.map_images.get(map.key.as_str());
+            if let Some(map_image) = map_image {
+                let _ = render_context.replace_texture(
+                    self.textures.map.id.unwrap(),
+                    map_image.as_bytes(),
+                    map_image.width(),
+                    map_image.height(),
+                );
+            }
+            self.map = Some(map);
+        }
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
-        let game = wukong::game_state();
-        self.render(ui, &game);
+        self.render(ui);
     }
 }
