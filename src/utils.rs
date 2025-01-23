@@ -57,10 +57,13 @@ pub fn load_data() -> Vec<MapInfo> {
     if !maps_dir.exists() {
         std::fs::create_dir_all(maps_dir.clone()).unwrap();
     }
-    let resp = blocking::get("https://wukong.jaskang.me/data.json")
-        .unwrap()
-        .json::<Vec<MapInfo>>()
-        .unwrap();
+
+    let resp = match blocking::get("https://wukong.jaskang.me/data.json")
+        .and_then(|r| r.json::<Vec<MapInfo>>())
+    {
+        Ok(data) => data,
+        Err(e) => map_data(),
+    };
 
     let maps = resp.clone();
 
@@ -108,4 +111,10 @@ pub fn image_with_file(file: &str) -> RgbaImage {
         .unwrap()
         .into_rgba8();
     image
+}
+
+pub fn map_data() -> Vec<MapInfo> {
+    let data = include_str!("./../includes/data.json");
+    let maps: Vec<MapInfo> = serde_json::from_str(data).unwrap();
+    maps
 }

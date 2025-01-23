@@ -1,0 +1,1014 @@
+[
+  {
+    "level": "HFS01_PersistentLevel",
+    "key": "img_map_101.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_101.png",
+    "scale": 112,
+    "range": {
+      "start": [-138190.84, -108608.22, -9999999],
+      "end": [91185.16, 120767.78, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "翠竹林-后山",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_9",
+        "x": -16078.579406,
+        "y": 23212.450274,
+        "z": 1631.47315
+      },
+      {
+        "name": "翠竹林-白雾泽",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_7",
+        "x": 1300.2323,
+        "y": 64355.234375,
+        "z": 975.849121
+      },
+      {
+        "name": "翠竹林-蛇径",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_6",
+        "x": -425.251923,
+        "y": 54947.25,
+        "z": 1205.412804
+      },
+      {
+        "name": "苍狼林-观音禅院",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_5",
+        "x": 1321.775513,
+        "y": 11999.84375,
+        "z": 1121.336426
+      },
+      {
+        "name": "黑风洞-见谛峰",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_4",
+        "x": -63974.664062,
+        "y": 28486.105469,
+        "z": 8101.832031
+      },
+      {
+        "name": "苍狼林-前山",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_3",
+        "x": -35111.868485,
+        "y": 18220.894028,
+        "z": -921.253999
+      },
+      {
+        "name": "黑风洞-洞内",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_2",
+        "x": -62018.049156,
+        "y": 64197.80495,
+        "z": -1762.951053
+      },
+      {
+        "name": "黑风洞-洞外",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_11",
+        "x": -85214.835862,
+        "y": 59839.779841,
+        "z": -192.969867
+      },
+      {
+        "name": "苍狼林-林外",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_1",
+        "x": 3002.896729,
+        "y": -14980.264648,
+        "z": 4516.431152
+      },
+      {
+        "name": "招魂幡",
+        "icon": 1,
+        "key": "BP_RebirthPointZhaoHunFanBase_C_1",
+        "x": -59216.141769,
+        "y": 20820.697949,
+        "z": -2223.647438
+      }
+    ]
+  },
+  {
+    "level": "HFS01_Old_GYCY_YKX_PersistentLevel",
+    "key": "img_map_102.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_102.png",
+    "scale": 112,
+    "range": {
+      "start": [-138190.84, -108608.22, -9999999],
+      "end": [91185.16, 120767.78, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "隐·旧观音禅院",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_5",
+        "x": 1321.775513,
+        "y": 11999.84375,
+        "z": 1121.336426
+      }
+    ]
+  },
+  {
+    "level": "HFM02_PersistentLevel",
+    "key": "img_map_201.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_201.png",
+    "scale": 116,
+    "range": {
+      "start": [-199119.808594, -136817.070312, -9999999],
+      "end": [38448.191406, 100750.929688, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "卧虎寺-地窖",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_9",
+        "x": -68198.125,
+        "y": 28929.371094,
+        "z": -6529.9375
+      },
+      {
+        "name": "黄风阵-镇风门",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_8",
+        "x": -79708.451328,
+        "y": 3629.97571,
+        "z": -6079.594804
+      },
+      {
+        "name": "挟魂崖-藏风山凹",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_7",
+        "x": -86743.865352,
+        "y": -20399.023436,
+        "z": 2469.97259
+      },
+      {
+        "name": "挟魂崖-碎石台",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_6",
+        "x": -120662.470071,
+        "y": 5106.153649,
+        "z": 4985.635742
+      },
+      {
+        "name": "黄风阵-定风庄",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_5",
+        "x": -106456.265625,
+        "y": 36314.898438,
+        "z": 3855.012431
+      },
+      {
+        "name": "黄风阵-定风桥",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_4",
+        "x": -76157.160196,
+        "y": 54629.148737,
+        "z": 1204.7782
+      },
+      {
+        "name": "沙门村-不济谷",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_2",
+        "x": -40532.618612,
+        "y": -8827.798979,
+        "z": 892.446508
+      },
+      {
+        "name": "挟魂崖-枕石坪",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_13",
+        "x": -117922.918977,
+        "y": -20814.131945,
+        "z": 5341.150867
+      },
+      {
+        "name": "卧虎寺-寺门",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_12",
+        "x": -57715.808594,
+        "y": 21232.929688,
+        "z": -2506.174072
+      },
+      {
+        "name": "沙门村-井底",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_1",
+        "x": 126554.068392,
+        "y": -15651.032125,
+        "z": 4651.923266
+      },
+      {
+        "name": "沙门村-村口",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_0",
+        "x": -50062.062497,
+        "y": -33763.207033,
+        "z": 1265.967956
+      }
+    ]
+  },
+  {
+    "level": "HFM_DuJiaoXian_Persist",
+    "key": "img_map_202.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_202.png",
+    "scale": 116,
+    "range": {
+      "start": [-113496.51016800001, -111450.514671, -9999999],
+      "end": [124071.48983199999, 126117.485329, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "沙门界",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_3",
+        "x": 25239.489832,
+        "y": 12263.485329,
+        "z": -298.42671
+      },
+      {
+        "name": "沙门关",
+        "icon": 0,
+        "key": "RebirthPoint_HFM_Default_C_1",
+        "x": 42991.490097,
+        "y": 29736.809361,
+        "z": 210.387697
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_301.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_301.png",
+    "scale": 116,
+    "range": {
+      "start": [171454.596875, -665754.164338, -9999999],
+      "end": [622014.596875, -215194.164338, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "雪山径-披霜道",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_1",
+        "x": 405754.596875,
+        "y": -596124.164338,
+        "z": -24579.709825
+      },
+      {
+        "name": "雪山径-照鉴湖",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_5",
+        "x": 407361.310442,
+        "y": -378421.371331,
+        "z": -17040.213443
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_308.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_308.png",
+    "scale": 220,
+    "range": {
+      "start": [-330200.04068700003, -421365.681467, -9999999],
+      "end": [120359.959313, 29194.318533000012, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "苦海-苦海北岸",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_9",
+        "x": 16679.247689,
+        "y": -251087.408682,
+        "z": -28983.261883
+      },
+      {
+        "name": "苦海-戒语廊",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_10",
+        "x": 13879.97515,
+        "y": -292249.504033,
+        "z": -23666.082453
+      },
+      {
+        "name": "苦海-一念壁",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_17",
+        "x": -27879.870602,
+        "y": -314367.627476,
+        "z": -7454.690749
+      },
+      {
+        "name": "极乐谷-快活林",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_15",
+        "x": -113363.793832,
+        "y": -278841.655685,
+        "z": -31056.189318
+      },
+      {
+        "name": "极乐谷-罪业塔林",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_26",
+        "x": -129139.200499,
+        "y": -248272.67786,
+        "z": -33344.299808
+      },
+      {
+        "name": "极乐谷-无忧涧",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_22",
+        "x": -134299.583254,
+        "y": -280838.684333,
+        "z": -36261.120525
+      },
+      {
+        "name": "极乐谷-瓜田（需跳下）",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_20",
+        "x": -158537.173893,
+        "y": -271878.454735,
+        "z": -45469.161566
+      },
+      {
+        "name": "极乐谷-长生大道",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_24",
+        "x": -147600.040687,
+        "y": -236345.681467,
+        "z": -27840.402014
+      },
+      {
+        "name": "小雷音寺-寺门",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_28",
+        "x": -179259.314405,
+        "y": -173507.776324,
+        "z": -22008.523782
+      },
+      {
+        "name": "小雷音寺-大殿",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_32",
+        "x": -225235.143391,
+        "y": -112939.839533,
+        "z": -15525.94271
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_302.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_302.png",
+    "scale": 146,
+    "range": {
+      "start": [-87148.568701, -139610.766665, -29000],
+      "end": [211859.431299, 159397.233335, 9999999]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -139610.766665, -9999999],
+        "end": [211859.431299, 159397.233335, 9999999]
+      }
+    ],
+    "points": [
+      {
+        "name": "浮屠界-轮藏",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_12",
+        "x": 107250.431299,
+        "y": 76396.233335,
+        "z": -27919.400267
+      },
+      {
+        "name": "浮屠界-经筒外",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_nosnow_C_2",
+        "x": 75976.276396,
+        "y": 65516.38776,
+        "z": -26969.190134
+      },
+      {
+        "name": "浮屠界-冲寒道",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_7",
+        "x": 44474.48049,
+        "y": 34044.818192,
+        "z": -20263.001865
+      },
+      {
+        "name": "浮屠界-安身寺",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_16",
+        "x": 47153.791198,
+        "y": 7035.477586,
+        "z": -15637.401527
+      },
+      {
+        "name": "浮屠界-浮屠塔-虚拟",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Invisible_C_1",
+        "x": 60000,
+        "y": 92000,
+        "z": -20000
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_303.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_303.png",
+    "scale": 146,
+    "range": {
+      "start": [-87148.568701, -139610.766665, -31000],
+      "end": [211859.431299, 159397.233335, -29000]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -139610.766665, -9999999],
+        "end": [211859.431299, 159397.233335, 9999999]
+      }
+    ],
+    "points": []
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_304.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_304.png",
+    "scale": 146,
+    "range": {
+      "start": [-87148.568701, -139610.766665, -35000],
+      "end": [211859.431299, 159397.233335, -31000]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -139610.766665, -9999999],
+        "end": [211859.431299, 159397.233335, 9999999]
+      }
+    ],
+    "points": [
+      {
+        "name": "浮屠界-上层",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_nosnow_C_3",
+        "x": 84332.448593,
+        "y": 65023.226209,
+        "z": -33787.305512
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_305.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_305.png",
+    "scale": 146,
+    "range": {
+      "start": [-87148.568701, -139610.766665, -38000],
+      "end": [211859.431299, 159397.233335, -35000]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -139610.766665, -9999999],
+        "end": [211859.431299, 159397.233335, 9999999]
+      }
+    ],
+    "points": []
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_306.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_306.png",
+    "scale": 146,
+    "range": {
+      "start": [-87148.568701, -139610.766665, -9999999],
+      "end": [211859.431299, 159397.233335, -38000]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -139610.766665, -9999999],
+        "end": [211859.431299, 159397.233335, 9999999]
+      }
+    ],
+    "points": [
+      {
+        "name": "浮屠界-下层",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_nosnow_C_1",
+        "x": 86618.458317,
+        "y": 78559.580052,
+        "z": -40447.037344
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_307.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_307.png",
+    "scale": 146,
+    "range": {
+      "start": [-139637.115078, -350424.55637899996, -9999999],
+      "end": [159370.884922, -51416.55637899999, 9999999]
+    },
+    "areas": [
+      {
+        "start": [-10000.0, -228000.0, -9999999],
+        "end": [30000.0, -160000.0, 9999999]
+      }
+    ],
+    "points": [
+      {
+        "name": "苦海-龟岛",
+        "icon": 0,
+        "key": "RebirthPoint_LYS_Default_C_4",
+        "x": 7676.884922,
+        "y": -176027.556379,
+        "z": -14118.865394
+      }
+    ]
+  },
+  {
+    "level": "LYS_PersistentLevel",
+    "key": "img_map_309.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_309.png",
+    "scale": 220,
+    "range": {
+      "start": [-9999999, -9999999, -9999999],
+      "end": [-9999999, -9999999, -9999999]
+    },
+    "areas": [],
+    "points": []
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_401.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_401.png",
+    "scale": 126,
+    "range": {
+      "start": [-14729.427777000004, -153441.05533, 20000.0],
+      "end": [243318.572223, 104606.94467, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "兰喜村-朱家大院",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_2",
+        "x": 124437.572223,
+        "y": -93969.05533,
+        "z": 29914.945335
+      }
+    ]
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_402.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_402.png",
+    "scale": 126,
+    "range": {
+      "start": [-14729.427777000004, -153441.05533, 4000.0],
+      "end": [243318.572223, 104606.94467, 20000.0]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "兰喜村-朱家大院",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_2",
+        "x": 124437.572223,
+        "y": -93969.05533,
+        "z": 29914.945335
+      },
+      {
+        "name": "盘丝洞-上层",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_4",
+        "x": 132861.81158,
+        "y": -58752.71024,
+        "z": 9463.8149
+      },
+      {
+        "name": "盘丝洞-碎玉池",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_3",
+        "x": 139384.371637,
+        "y": -41339.579284,
+        "z": 8681.34057
+      }
+    ]
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_404.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_404.png",
+    "scale": 126,
+    "range": {
+      "start": [-14729.427777000004, -153441.05533, -9999999],
+      "end": [243318.572223, 104606.94467, 4000]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "盘丝洞-濯垢泉",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_1",
+        "x": 100265.35889,
+        "y": -22761.125858,
+        "z": -11318.209301
+      },
+      {
+        "name": "盘丝洞-底层",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_22",
+        "x": 150006.571741,
+        "y": -49004.749941,
+        "z": -11510.695569
+      },
+      {
+        "name": "盘丝洞-若仙庵",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_26",
+        "x": 125155.190767,
+        "y": -44869.308899,
+        "z": -12093.720914
+      },
+      {
+        "name": "盘丝洞-万慈窟",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_32",
+        "x": 112135.096976,
+        "y": 4760.922095,
+        "z": -4670.009964
+      }
+    ]
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_403.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_403.png",
+    "scale": 126,
+    "range": {
+      "start": [-14729.427777000004, -153441.05533, -7500.0],
+      "end": [243318.572223, 104606.94467, 4000.0]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "盘丝洞-千红窟",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_5",
+        "x": 136567.256781,
+        "y": -72707.968381,
+        "z": -1618.972873
+      },
+      {
+        "name": "盘丝洞-中层",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_10",
+        "x": 129673.711518,
+        "y": -61261.892727,
+        "z": 132.858339
+      },
+      {
+        "name": "盘丝洞-堕龙壁",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_11",
+        "x": 143629.602669,
+        "y": -19095.702138,
+        "z": -833.606719
+      },
+      {
+        "name": "盘丝洞-花间桥",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_12",
+        "x": 122174.540495,
+        "y": -44710.439124,
+        "z": 297.739498
+      },
+      {
+        "name": "盘丝洞-绝想崖",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_16",
+        "x": 158468.02107,
+        "y": -55896.351758,
+        "z": -850.835574
+      }
+    ]
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_405.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_405.png",
+    "scale": 127,
+    "range": {
+      "start": [-28029.919286999997, -32662.249507, -9999999],
+      "end": [232066.080713, 227433.750493, 9999999]
+    },
+    "areas": [
+      {
+        "start": [40000.0, 30000.0, -9999999],
+        "end": [232066.080713, 227433.750493, 9999999]
+      }
+    ],
+    "points": [
+      {
+        "name": "黄花观-山道",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_34",
+        "x": 142549.060317,
+        "y": 44474.929102,
+        "z": 30926.379614
+      },
+      {
+        "name": "黄花观-虎蛇虫林",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_38",
+        "x": 147484.080713,
+        "y": 85384.250493,
+        "z": 43633.287113
+      },
+      {
+        "name": "黄花观-观门",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_40",
+        "x": 130995.178644,
+        "y": 118779.23292,
+        "z": 47148.866457
+      },
+      {
+        "name": "黄花观-金光苑",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_42",
+        "x": 101220.389525,
+        "y": 140616.059508,
+        "z": 51649.122328
+      }
+    ]
+  },
+  {
+    "level": "ZYS01_persistentlevel",
+    "key": "img_map_406.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_406.png",
+    "scale": 98,
+    "range": {
+      "start": [-97180.666226, -103531.111, -9999999],
+      "end": [103523.333774, 97172.889, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "紫云山-千花谷",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_6",
+        "x": 6013.333774,
+        "y": -26160.111,
+        "z": 362.685045
+      },
+      {
+        "name": "紫云山-落花庄",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_8",
+        "x": 10539.170197,
+        "y": -633.223841,
+        "z": 1903.884122
+      },
+      {
+        "name": "紫云山-绕仙居",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_0",
+        "x": -12735.818548,
+        "y": -15071.717817,
+        "z": 937.252521
+      },
+      {
+        "name": "紫云山-巢云顶",
+        "icon": 0,
+        "key": "RebirthPoint_PSD_Default_C_10",
+        "x": 11780.30102,
+        "y": 26289.504593,
+        "z": 5565.359428
+      }
+    ]
+  },
+  {
+    "level": "HYS_PersistentLevel",
+    "key": "img_map_501.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_501.png",
+    "scale": 200,
+    "range": {
+      "start": [-167075.13432100002, -193193.4148, -9999999],
+      "end": [242524.86567899998, 216406.5852, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "灰烬林-火燎一关",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_10",
+        "x": 125167.689798,
+        "y": -134801.617426,
+        "z": 25011.703976
+      },
+      {
+        "name": "灰烬林-春秋寒",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_1",
+        "x": 118824.865679,
+        "y": -130093.4148,
+        "z": 28650.100536
+      },
+      {
+        "name": "灰烬林-灰烬台",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_3",
+        "x": 80018.585846,
+        "y": -93900.634548,
+        "z": 29021.337841
+      },
+      {
+        "name": "灰烬林-火燎二关",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_5",
+        "x": 97162.597748,
+        "y": -61546.640703,
+        "z": 22883.429912
+      },
+      {
+        "name": "火光地-清凉坡",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_2",
+        "x": 31286.162854,
+        "y": -13921.449439,
+        "z": 26257.48031
+      },
+      {
+        "name": "火光地-火燎三关",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_0",
+        "x": 34645.089045,
+        "y": 60046.174965,
+        "z": 35908.307147
+      },
+      {
+        "name": "火光地-陨砖坑",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_13",
+        "x": -34286.05977,
+        "y": 79641.98494,
+        "z": 37285.087046
+      }
+    ]
+  },
+  {
+    "level": "HYS_PersistentLevel",
+    "key": "img_map_502.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_502.png",
+    "scale": 200,
+    "range": {
+      "start": [-167075.13432100002, -193193.4148, -9999999],
+      "end": [242524.86567899998, 216406.5852, 9999999]
+    },
+    "areas": [
+      {
+        "start": [-14000.0, -46000.0, 5000.0],
+        "end": [58000.0, 20000.0, 15000.0]
+      },
+      {
+        "start": [-14000.0, 17000.0, 5000.0],
+        "end": [58000.0, 68000.0, 32000.0]
+      }
+    ],
+    "points": [
+      {
+        "name": "丹灶谷-谷口",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_7",
+        "x": 38305.233,
+        "y": -33090.749,
+        "z": 7703.593
+      },
+      {
+        "name": "丹灶谷-罗刹宫",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_9",
+        "x": 12739.440825,
+        "y": 24705.298593,
+        "z": 14893.399615
+      },
+      {
+        "name": "丹灶谷-翠云殿",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_4",
+        "x": 4237.184199,
+        "y": 27138.760846,
+        "z": 17733.918841
+      }
+    ]
+  },
+  {
+    "level": "BSD02_persistentlevel",
+    "key": "img_map_503.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_503.png",
+    "scale": 200,
+    "range": {
+      "start": [-25300.257007999986, -237095.45151400001, -9999999],
+      "end": [384299.742992, 172504.54848599999, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "碧水洞-炼魔坑",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_1",
+        "x": 214799.742992,
+        "y": -43995.451514,
+        "z": 34176.744086
+      },
+      {
+        "name": "碧水洞-洞天深处",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_3",
+        "x": 170249,
+        "y": -47940,
+        "z": 32095.312829
+      },
+      {
+        "name": "碧水洞-水火道",
+        "icon": 0,
+        "key": "RebirthPoint_HYS_Default_C_0",
+        "x": 96268.252559,
+        "y": -68920.144901,
+        "z": 21284.401422
+      }
+    ]
+  },
+  {
+    "level": "BYS_persistentlevel",
+    "key": "img_map_601.png",
+    "url": "https://wukong.jaskang.me/maps/img_map_601.png",
+    "scale": 472,
+    "range": {
+      "start": [-492786.016555, -350720.034165, -9999999],
+      "end": [473869.983445, 615935.965835, 9999999]
+    },
+    "areas": [],
+    "points": [
+      {
+        "name": "山脚-望犀坡",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_0",
+        "x": 70801.808431,
+        "y": -15561.304964,
+        "z": 14721.498902
+      },
+      {
+        "name": "山脚-青嶂道",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_1",
+        "x": 106417.983445,
+        "y": 104287.965835,
+        "z": 14281.384868
+      },
+      {
+        "name": "捕螂汀",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_3",
+        "x": -24661.401626,
+        "y": 133717.489522,
+        "z": -3728.609169
+      },
+      {
+        "name": "花果山-见鹿林",
+        "icon": 0,
+        "key": "RebirthPoint_HFS_C_2",
+        "x": -42011.107047,
+        "y": -71718.715033,
+        "z": 7127.009238
+      },
+      {
+        "name": "水帘洞-峰回路",
+        "icon": 0,
+        "key": "RebirthPoint_BYS_C_2",
+        "x": -72021.752362,
+        "y": 201069.088286,
+        "z": 11020.46432
+      },
+      {
+        "name": "石卵-天真顶",
+        "icon": 0,
+        "key": "RebirthPoint_BYS_C_3",
+        "x": -126629.365905,
+        "y": 331112.60825,
+        "z": 41514.009633
+      }
+    ]
+  }
+]
