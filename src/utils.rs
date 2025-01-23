@@ -76,8 +76,8 @@ pub fn load_data() -> Vec<MapInfo> {
             }
             Ok::<_, Box<dyn std::error::Error>>(())
         })() {
-            Ok(_) => println!("成功下载地图: {}", map.key),
-            Err(e) => eprintln!("下载地图失败 {}: {}", map.key, e),
+            Ok(_) => println!("加载地图成功: {}", map.key),
+            Err(e) => eprintln!("加载地图失败 {}: {}", map.key, e),
         }
     }
     resp

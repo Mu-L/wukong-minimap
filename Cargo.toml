@@ -7,7 +7,9 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-hudhook = { version = "0.8.0", features = ["dx12"], default-features = false }
+hudhook = { path = "vendor/hudhook", features = [
+  "dx12",
+], default-features = false }
 image = { version = "0.25.2", features = [
   "jpeg",
   "png",

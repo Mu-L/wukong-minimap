@@ -196,11 +196,11 @@ impl MiniMap {
     fn render(&mut self, ui: &imgui::Ui) {
         if ui.is_key_pressed_no_repeat(Key::Minus) {
             self.size = (self.size - 0.05).max(0.15);
-            tracing::info!("size: {}", self.size);
+            println!("size: {}", self.size);
         }
         if ui.is_key_pressed_no_repeat(Key::Equal) {
             self.size = (self.size + 0.05).min(0.5);
-            tracing::info!("size: {}", self.size);
+            println!("size: {}", self.size);
         }
         if self.game.playing {
             let [screen_width, screen_height] = ui.io().display_size;
@@ -355,7 +355,7 @@ impl ImguiRenderLoop for MiniMap {
     ) {
         let map = self.update_map();
         if let Some(map) = map {
-            tracing::info!("update map: {:?}", map);
+            println!("update map: {:?}", map);
             let map_image = self.map_images.get(map.key.as_str());
             if let Some(map_image) = map_image {
                 let _ = render_context.replace_texture(
