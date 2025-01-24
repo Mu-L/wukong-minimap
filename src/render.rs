@@ -36,10 +36,11 @@ impl ImageTexture {
 }
 
 struct Textures {
-    pub map: ImageTexture,
     pub teleport: ImageTexture,
     pub mapplayer: ImageTexture,
     pub fan: ImageTexture,
+
+    pub map: ImageTexture,
     pub logo: ImageTexture,
 }
 
