@@ -1,5 +1,4 @@
-use std::fs;
-use std::path::Path;
+use std::{fs, path::Path};
 
 fn main() {
     println!("cargo:rustc-link-lib=static=b1sdk");
@@ -16,22 +15,20 @@ fn main() {
         .unwrap()
         .to_path_buf();
 
-    let dll_name = "wukong_minimap.dll"; // 替换为你的 DLL 名称
-    let source_path =
-        Path::new(r"C:\Users\jaskang\code\wukong-minimap\target\release").join(dll_name);
-    let dest_path =
-        Path::new(r"D:\SteamLibrary\steamapps\common\BlackMythWukong\b1\Binaries\Win64")
-            .join(dll_name);
+    let dll_name = "wukong_minimap.dll";
+    // 修改为你的实际路径
+    let source_path = Path::new("target/release").join(dll_name);
+    // 修改为你的游戏实际安装路径
+    let dest_path = Path::new("D:/Games/BlackMythWukong/b1/Binaries/Win64").join(dll_name);
 
-    // 在构建完成后复制文件
     println!("cargo:rerun-if-changed={}", source_path.display());
 
     if source_path.exists() {
         match fs::copy(&source_path, &dest_path) {
-            Ok(_) => println!("Successfully copied DLL to game directory"),
-            Err(e) => println!("Failed to copy DLL: {}", e),
+            Ok(_) => println!("成功复制 DLL 到游戏目录"),
+            Err(e) => println!("复制 DLL 失败: {}", e),
         }
     } else {
-        println!("Source DLL not found at: {}", source_path.display());
+        println!("未找到源 DLL: {}", source_path.display());
     }
 }

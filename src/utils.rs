@@ -58,16 +58,9 @@ pub fn load_data() -> Vec<MapInfo> {
         std::fs::create_dir_all(maps_dir.clone()).unwrap();
     }
 
-    let resp = match blocking::get("https://wukong.jaskang.me/data.json")
-        .and_then(|r| r.json::<Vec<MapInfo>>())
-    {
-        Ok(data) => data,
-        Err(e) => map_data(),
-    };
+    let data = map_data();
 
-    let maps = resp.clone();
-
-    for map in maps {
+    for map in data.clone() {
         match (|| {
             let file_name = map.key.clone();
             let file_path = maps_dir.join(file_name);
@@ -83,7 +76,7 @@ pub fn load_data() -> Vec<MapInfo> {
             Err(e) => eprintln!("加载地图失败 {}: {}", map.key, e),
         }
     }
-    resp
+    data
 }
 
 pub fn setup_tracing() {

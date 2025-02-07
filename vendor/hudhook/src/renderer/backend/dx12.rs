@@ -850,12 +850,16 @@ impl TextureHeap {
             return Err(Error::from_hresult(HRESULT(-1)));
         }
 
+        // UINT uploadPitch = (image_width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
+        // UINT uploadSize = image_height * uploadPitch;
+
         // 计算每行像素数据的大小(RGBA格式,每像素4字节)
         let upload_row_size = width * 4;
         // 获取纹理数据对齐要求(通常为256字节)
-        let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         // 计算对齐后的行大小
-        let upload_pitch = upload_row_size.div_ceil(align) * align;
+        let upload_pitch = (width * 4 + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1)
+            & !(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1);
+
         // 计算整个纹理需要的缓冲区大小
         let upload_size = height * upload_pitch;
 
@@ -891,24 +895,28 @@ impl TextureHeap {
             )
         })?;
 
+        // Write pixels into the upload resource
+        // void* mapped = NULL;
+        // D3D12_RANGE range = { 0, uploadSize };
+        // hr = uploadBuffer->Map(0, &range, &mapped);
+        // IM_ASSERT(SUCCEEDED(hr));
+        // for (int y = 0; y < image_height; y++)
+        //     memcpy((void*)((uintptr_t)mapped + y * uploadPitch), image_data + y * image_width * 4, image_width * 4);
+        // uploadBuffer->Unmap(0, &range);
+
         // 映射缓冲区以允许CPU访问
         let mut upload_buffer_ptr = ptr::null_mut();
-        upload_buffer.Map(0, None, Some(&mut upload_buffer_ptr))?;
+        let range = D3D12_RANGE { Begin: 0, End: upload_size as usize };
+        upload_buffer.Map(0, Some(&range), Some(&mut upload_buffer_ptr))?;
 
         // 将纹理数据复制到上传缓冲区
-        if upload_row_size == upload_pitch {
-            // 如果行大小已经对齐,可以直接复制整块数据
-            ptr::copy_nonoverlapping(data.as_ptr(), upload_buffer_ptr as *mut u8, data.len());
-        } else {
-            // 如果需要对齐,则逐行复制并处理填充
-            for y in 0..height {
-                let src = data.as_ptr().add((y * upload_row_size) as usize);
-                let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
-                ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
-            }
+        for y in 0..height {
+            let src = data.as_ptr().add((y * upload_row_size) as usize);
+            let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
+            ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
         }
         // 取消映射
-        upload_buffer.Unmap(0, None);
+        upload_buffer.Unmap(0, Some(&range));
 
         // 重置命令分配器和命令列表以准备记录新命令
         self.command_allocator.Reset()?;

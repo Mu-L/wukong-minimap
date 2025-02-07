@@ -208,8 +208,6 @@ impl MiniMap {
             let window_size = (screen_width * self.size).min(screen_height * self.size);
 
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
-            let _ = ui.push_style_var(StyleVar::WindowPadding([0.0, 0.0]));
-            let _ = ui.push_style_var(StyleVar::WindowRounding(5.0));
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
                 .position([offset_x, offset_y], Condition::Always)
@@ -303,6 +301,11 @@ impl MiniMap {
 
 impl ImguiRenderLoop for MiniMap {
     fn initialize<'a>(&'a mut self, ctx: &mut Context, render_context: &'a mut dyn RenderContext) {
+        let style = ctx.style_mut();
+        // let [screen_width, screen_height] = ctx.io().display_size;
+        // let window_size = (screen_width * self.size).min(screen_height * self.size);
+        style.window_rounding = 20.0;
+        style.window_padding = [0.0, 0.0];
         self.textures.map.id = Some(
             render_context
                 .load_texture(
