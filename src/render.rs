@@ -216,7 +216,9 @@ impl MiniMap {
                         | WindowFlags::NO_RESIZE
                         | WindowFlags::NO_MOVE
                         | WindowFlags::NO_SCROLLBAR
-                        | WindowFlags::NO_BACKGROUND,
+                        | WindowFlags::NO_BACKGROUND
+                        | WindowFlags::NO_INPUTS
+                        | WindowFlags::NO_NAV,
                 )
                 .build(|| {
                     ui.set_cursor_pos([0.0, 0.0]);
@@ -276,7 +278,9 @@ impl MiniMap {
                         | WindowFlags::NO_RESIZE
                         | WindowFlags::NO_MOVE
                         | WindowFlags::NO_SCROLLBAR
-                        | WindowFlags::NO_BACKGROUND,
+                        | WindowFlags::NO_BACKGROUND
+                        | WindowFlags::NO_INPUTS
+                        | WindowFlags::NO_NAV,
                 )
                 .build(|| {
                     let draw_list = ui.get_window_draw_list();
