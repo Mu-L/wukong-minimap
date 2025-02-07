@@ -304,7 +304,7 @@ impl ImguiRenderLoop for MiniMap {
         let style = ctx.style_mut();
         // let [screen_width, screen_height] = ctx.io().display_size;
         // let window_size = (screen_width * self.size).min(screen_height * self.size);
-        style.window_rounding = 20.0;
+        style.window_rounding = 30.0;
         style.window_padding = [0.0, 0.0];
         self.textures.map.id = Some(
             render_context
