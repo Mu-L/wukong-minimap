@@ -832,6 +832,7 @@ impl TextureHeap {
         Ok(id)
     }
 
+    // 上传纹理数据到GPU
     unsafe fn upload_texture(
         &mut self,
         texture_id: TextureId,
@@ -840,6 +841,7 @@ impl TextureHeap {
         height: u32,
     ) -> Result<()> {
         let texture = &self.textures[texture_id.id()];
+        // 验证纹理尺寸是否匹配
         if texture.width != width || texture.height != height {
             error!(
                 "image size {width}x{height} do not match expected {}x{}",
@@ -848,13 +850,19 @@ impl TextureHeap {
             return Err(Error::from_hresult(HRESULT(-1)));
         }
 
+        // 计算每行像素数据的大小(RGBA格式,每像素4字节)
         let upload_row_size = width * 4;
+        // 获取纹理数据对齐要求(通常为256字节)
         let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
-        let upload_pitch = upload_row_size.div_ceil(align) * align; // 256 bytes aligned
+        // 计算对齐后的行大小
+        let upload_pitch = upload_row_size.div_ceil(align) * align;
+        // 计算整个纹理需要的缓冲区大小
         let upload_size = height * upload_pitch;
 
+        // 创建用于上传的临时缓冲区
         let upload_buffer: ID3D12Resource = util::try_out_ptr(|v| unsafe {
             self.device.CreateCommittedResource(
+                // 使用上传堆,允许CPU写入
                 &D3D12_HEAP_PROPERTIES {
                     Type: D3D12_HEAP_TYPE_UPLOAD,
                     CPUPageProperty: D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
@@ -863,6 +871,7 @@ impl TextureHeap {
                     VisibleNodeMask: Default::default(),
                 },
                 D3D12_HEAP_FLAG_NONE,
+                // 配置缓冲区属性
                 &D3D12_RESOURCE_DESC {
                     Dimension: D3D12_RESOURCE_DIMENSION_BUFFER,
                     Alignment: 0,
@@ -875,34 +884,44 @@ impl TextureHeap {
                     Layout: D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
                     Flags: D3D12_RESOURCE_FLAG_NONE,
                 },
+                // 初始状态设为通用读取
                 D3D12_RESOURCE_STATE_GENERIC_READ,
                 None,
                 v,
             )
         })?;
 
+        // 映射缓冲区以允许CPU访问
         let mut upload_buffer_ptr = ptr::null_mut();
         upload_buffer.Map(0, None, Some(&mut upload_buffer_ptr))?;
+
+        // 将纹理数据复制到上传缓冲区
         if upload_row_size == upload_pitch {
+            // 如果行大小已经对齐,可以直接复制整块数据
             ptr::copy_nonoverlapping(data.as_ptr(), upload_buffer_ptr as *mut u8, data.len());
         } else {
+            // 如果需要对齐,则逐行复制并处理填充
             for y in 0..height {
                 let src = data.as_ptr().add((y * upload_row_size) as usize);
                 let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
                 ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
             }
         }
+        // 取消映射
         upload_buffer.Unmap(0, None);
 
+        // 重置命令分配器和命令列表以准备记录新命令
         self.command_allocator.Reset()?;
         self.command_list.Reset(&self.command_allocator, None)?;
 
+        // 设置复制目标(最终纹理)的属性
         let dst_location = D3D12_TEXTURE_COPY_LOCATION {
             pResource: ManuallyDrop::new(Some(texture.resource.clone())),
             Type: D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
             Anonymous: D3D12_TEXTURE_COPY_LOCATION_0 { SubresourceIndex: 0 },
         };
 
+        // 设置复制源(上传缓冲区)的属性
         let src_location = D3D12_TEXTURE_COPY_LOCATION {
             pResource: ManuallyDrop::new(Some(upload_buffer.clone())),
             Type: D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
@@ -920,27 +939,33 @@ impl TextureHeap {
             },
         };
 
+        // 记录复制命令
         self.command_list.CopyTextureRegion(&dst_location, 0, 0, 0, &src_location, None);
+
+        // 创建资源屏障,将纹理状态从复制目标转换为着色器资源
         let barriers = [util::create_barrier(
             &texture.resource,
             D3D12_RESOURCE_STATE_COPY_DEST,
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
         )];
 
+        // 记录资源屏障命令
         self.command_list.ResourceBarrier(&barriers);
+        // 关闭命令列表
         self.command_list.Close()?;
+        // 提交命令到命令队列
         self.command_queue.ExecuteCommandLists(&[Some(self.command_list.cast()?)]);
+        // 添加信号并等待GPU完成
         self.command_queue.Signal(self.fence.fence(), self.fence.value())?;
         self.fence.wait()?;
         self.fence.incr();
 
+        // 清理资源屏障
         barriers.into_iter().for_each(util::drop_barrier);
 
-        // Apparently, leaking the upload buffer into the location is necessary.
-        // Uncommenting the following line consistently leads to a crash, which
-        // points to a double-free, but I don't know why: upload_buffer should
-        // stay alive with a positive refcount until the end of this block.
-        // let _ = ManuallyDrop::into_inner(src_location.pResource);
+        // 清理资源
+        // 注意:这里不能释放src_location.pResource,因为这会导致崩溃
+        // 可能是由于Windows-RS的引用计数问题
         let _ = ManuallyDrop::into_inner(dst_location.pResource);
 
         Ok(())
