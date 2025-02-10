@@ -42,7 +42,7 @@ This plugin includes the following files:
 
 - `wukong_minimap.dll` Core plugin functionality file
 - `dwmapi.dll` Loader - Loads wukong_minimap.dll by proxying system functions
-- `maps` Map folder, will be automatically generated on first launch
+- `maps` Map folder
 
 > Old versions used `jas_minimap.dll` -> `wukong_minimap.dll` and `version.dll` -> `dwmapi.dll`
 

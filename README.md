@@ -42,7 +42,7 @@ Switch language: [English](README.en.md)
 
 - `wukong_minimap.dll` 插件功能核心文件
 - `dwmapi.dll` 加载器 - 通过代理系统功能来加载 wukong_minimap.dll
-- `maps` 地图文件夹, 将在第一次启动后自动生成
+- `maps` 地图文件夹
 
 > 旧版本为 `jas_minimap.dll` -> `wukong_minimap.dll` 和 `version.dll` -> `dwmapi.dll`
 
