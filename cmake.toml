@@ -1,0 +1,23 @@
+# Reference: https://build-cpp.github.io/cmkr/cmake-toml
+# to build:
+# > cmake -B build
+# > cmake --build build --config Release
+[project]
+name = "wukong-minimap"
+version = "1.0.0"
+
+
+[target.wukong_minimap]
+type = "shared"
+sources = ["src/**.cpp", "src/**.rc"]
+headers = ["src/**.hpp", "src/**.h"]
+include-directories = ["src/", "vendors/MinHook/include"]
+link-libraries = ["vendors/MinHook/lib/minhook.x64.lib"]
+compile-features = ["cxx_std_23"]
+compile-options = ["/GS-", "/bigobj", "/EHa", "/MP"]
+# defines = [
+#   "UNICODE",  # Windows 宽字符系统宏
+#   "_UNICODE", # C 运行时库宽字符宏
+#   "WIN32",
+#   "_WINDOWS",
+# ]
