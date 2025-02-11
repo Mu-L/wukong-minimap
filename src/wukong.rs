@@ -6,23 +6,23 @@ static LAST_STATE: Lazy<Mutex<Option<GameState>>> = Lazy::new(|| Mutex::new(None
 
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
-struct GameInfo {
-    level_name: [u8; 256],
+struct PlayerInfo {
     x: f32,
     y: f32,
     z: f32,
     angle: f32,
     is_local_view_target: u8,
+    level_name: [u8; 256],
 }
 
 // type GetGameInfoFn = unsafe extern "C" fn() -> GameInfo;
 
 extern "C" {
-    fn get_info() -> GameInfo;
+    fn getPlayerInfo() -> PlayerInfo;
 }
 
 extern "C" {
-    fn init_offsets() -> ();
+    fn b1Init() -> ();
 }
 
 #[derive(Debug, Clone)]
@@ -112,12 +112,12 @@ pub struct GameState {
 // 3636=***guansi_tianjiang
 
 pub fn init() {
-    unsafe { init_offsets() };
+    unsafe { b1Init() };
 }
 
 // 获取地图id
 pub fn game_state() -> GameState {
-    let info = unsafe { get_info() };
+    let info = unsafe { getPlayerInfo() };
 
     let level = String::from_utf8_lossy(&info.level_name)
         .trim_matches(char::from(0))

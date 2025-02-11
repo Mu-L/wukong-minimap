@@ -62,9 +62,11 @@ impl MiniMap {
 
         let textures = Textures {
             map: ImageTexture::with_bytes(include_bytes!("../includes/nomap.png")),
-            teleport: ImageTexture::with_bytes(include_bytes!("../includes/teleport.png")),
-            mapplayer: ImageTexture::with_bytes(include_bytes!("../includes/mapplayer.png")),
-            fan: ImageTexture::with_bytes(include_bytes!("../includes/fan.png")),
+            teleport: ImageTexture::with_bytes(include_bytes!(
+                "../includes/MARKER_maptarget_shrine.png"
+            )),
+            mapplayer: ImageTexture::with_bytes(include_bytes!("../includes/MARKER_mapplayer.png")),
+            fan: ImageTexture::with_bytes(include_bytes!("../includes/MARKER_maptarget_fan.png")),
             logo: ImageTexture::with_bytes(include_bytes!("../includes/logo.png")),
         };
 
