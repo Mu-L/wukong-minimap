@@ -848,10 +848,12 @@ impl TextureHeap {
             return Err(Error::from_hresult(HRESULT(-1)));
         }
 
+        // 修改纹理内存对齐方式
         let upload_row_size = width * 4;
-        let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
-        let upload_pitch = upload_row_size.div_ceil(align) * align; // 256 bytes aligned
-        let upload_size = height * upload_pitch;
+        let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT; // 256
+                                                        // 确保行间距是 256 字节对齐
+        let upload_pitch = ((upload_row_size + align - 1) / align) * align;
+        let upload_size = upload_pitch * height;
 
         let upload_buffer: ID3D12Resource = util::try_out_ptr(|v| unsafe {
             self.device.CreateCommittedResource(
@@ -859,8 +861,8 @@ impl TextureHeap {
                     Type: D3D12_HEAP_TYPE_UPLOAD,
                     CPUPageProperty: D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
                     MemoryPoolPreference: D3D12_MEMORY_POOL_UNKNOWN,
-                    CreationNodeMask: Default::default(),
-                    VisibleNodeMask: Default::default(),
+                    CreationNodeMask: 1,
+                    VisibleNodeMask: 1,
                 },
                 D3D12_HEAP_FLAG_NONE,
                 &D3D12_RESOURCE_DESC {
@@ -881,17 +883,26 @@ impl TextureHeap {
             )
         })?;
 
+        // 改进内存复制逻辑
         let mut upload_buffer_ptr = ptr::null_mut();
         upload_buffer.Map(0, None, Some(&mut upload_buffer_ptr))?;
-        if upload_row_size == upload_pitch {
-            ptr::copy_nonoverlapping(data.as_ptr(), upload_buffer_ptr as *mut u8, data.len());
-        } else {
-            for y in 0..height {
-                let src = data.as_ptr().add((y * upload_row_size) as usize);
-                let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
-                ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
+
+        // 逐行复制并填充对齐空间
+        for y in 0..height {
+            let src = data.as_ptr().add((y * upload_row_size) as usize);
+            let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
+
+            // 复制实际数据
+            ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
+
+            // 如果需要,用0填充对齐空间
+            if upload_pitch > upload_row_size {
+                let padding_start = dst.add(upload_row_size as usize);
+                let padding_size = (upload_pitch - upload_row_size) as usize;
+                ptr::write_bytes(padding_start, 0, padding_size);
             }
         }
+
         upload_buffer.Unmap(0, None);
 
         self.command_allocator.Reset()?;

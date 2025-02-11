@@ -208,6 +208,7 @@ impl MiniMap {
             let window_size = (screen_width * self.size).min(screen_height * self.size);
 
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
+            let style = ui.push_style_var(StyleVar::WindowRounding(10.0));
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
                 .position([offset_x, offset_y], Condition::Always)
@@ -234,7 +235,7 @@ impl MiniMap {
                                 map_image,
                                 [offset_x, offset_y],
                                 [offset_x + window_size, offset_y + window_size],
-                                5.0,
+                                10.0,
                             )
                             .uv_min(map_uv[0])
                             .uv_max(map_uv[1])
@@ -263,7 +264,7 @@ impl MiniMap {
                         debug!("draw_nomap");
                     }
                 });
-
+            style.pop();
             let logo_width = window_size * 0.5;
             let logo_height = logo_width * 0.28;
 
