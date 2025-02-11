@@ -1,13 +1,10 @@
 use std::collections::HashMap;
-use std::time::Duration;
-use std::time::Instant;
 
 use crate::{
     utils::{image_with_bytes, image_with_file, load_data, MapInfo, Pos2},
     wukong::{self, GameState},
 };
 use hudhook::imgui::Key;
-use hudhook::tracing;
 use hudhook::{
     imgui::{self, Condition, Context, StyleVar, WindowFlags},
     tracing::debug,
@@ -27,7 +24,7 @@ impl ImageTexture {
             image: image_with_bytes(types),
         }
     }
-    pub fn with_file(file: &str) -> Self {
+    pub fn _with_file(file: &str) -> Self {
         Self {
             id: None,
             image: image_with_file(file),
@@ -210,18 +207,15 @@ impl MiniMap {
             let window_size = (screen_width * self.size).min(screen_height * self.size);
 
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
-            let style = ui.push_style_var(StyleVar::WindowRounding(10.0));
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
                 .position([offset_x, offset_y], Condition::Always)
                 .flags(
-                    WindowFlags::NO_TITLE_BAR
-                        | WindowFlags::NO_RESIZE
+                    WindowFlags::NO_DECORATION
                         | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_SCROLLBAR
-                        | WindowFlags::NO_BACKGROUND
                         | WindowFlags::NO_INPUTS
-                        | WindowFlags::NO_NAV,
+                        | WindowFlags::NO_NAV
+                        | WindowFlags::NO_BACKGROUND,
                 )
                 .build(|| {
                     ui.set_cursor_pos([0.0, 0.0]);
@@ -266,7 +260,6 @@ impl MiniMap {
                         debug!("draw_nomap");
                     }
                 });
-            style.pop();
             let logo_width = window_size * 0.5;
             let logo_height = logo_width * 0.28;
 
@@ -277,13 +270,11 @@ impl MiniMap {
                 )
                 .size([window_size, logo_height], imgui::Condition::Always)
                 .flags(
-                    WindowFlags::NO_TITLE_BAR
-                        | WindowFlags::NO_RESIZE
+                    WindowFlags::NO_DECORATION
                         | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_SCROLLBAR
-                        | WindowFlags::NO_BACKGROUND
                         | WindowFlags::NO_INPUTS
-                        | WindowFlags::NO_NAV,
+                        | WindowFlags::NO_NAV
+                        | WindowFlags::NO_BACKGROUND,
                 )
                 .build(|| {
                     let draw_list = ui.get_window_draw_list();
@@ -308,11 +299,12 @@ impl MiniMap {
 
 impl ImguiRenderLoop for MiniMap {
     fn initialize<'a>(&'a mut self, ctx: &mut Context, render_context: &'a mut dyn RenderContext) {
+        let io = ctx.io_mut();
+        io.mouse_draw_cursor = false;
         let style = ctx.style_mut();
-        // let [screen_width, screen_height] = ctx.io().display_size;
-        // let window_size = (screen_width * self.size).min(screen_height * self.size);
-        style.window_rounding = 30.0;
+        style.window_rounding = 10.0;
         style.window_padding = [0.0, 0.0];
+
         self.textures.map.id = Some(
             render_context
                 .load_texture(

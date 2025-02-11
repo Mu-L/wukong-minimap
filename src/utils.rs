@@ -1,11 +1,6 @@
 use image::{ImageReader, RgbaImage};
-use reqwest::blocking;
 use serde::{Deserialize, Serialize};
-use std::{
-    fs::File,
-    io::{Cursor, Read},
-    path::{Path, PathBuf},
-};
+use std::{io::Cursor, path::PathBuf};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Pos2 {
@@ -60,22 +55,13 @@ pub fn load_data() -> Vec<MapInfo> {
 
     let data = map_data();
 
-    for map in data.clone() {
-        match (|| {
-            let file_name = map.key.clone();
-            let file_path = maps_dir.join(file_name);
-            // 判断文件是否存在，如果不存在就下载
-            if !file_path.exists() {
-                let resp = blocking::get(&map.url)?;
-                let content = resp.bytes()?;
-                std::fs::write(file_path, content)?;
-            }
-            Ok::<_, Box<dyn std::error::Error>>(())
-        })() {
-            Ok(_) => println!("加载地图成功: {}", map.key),
-            Err(e) => eprintln!("加载地图失败 {}: {}", map.key, e),
-        }
-    }
+    // for map in data.clone() {
+    //     let file_path = maps_dir.join(&map.key);
+    //     if !file_path.exists() {
+    //         let image = blocking::get(&map.url).unwrap().bytes().unwrap();
+    //         std::fs::write(&file_path, &image).unwrap();
+    //     }
+    // }
     data
 }
 
