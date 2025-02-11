@@ -6,7 +6,7 @@ use crate::{
 };
 use hudhook::imgui::Key;
 use hudhook::{
-    imgui::{self, Condition, Context, StyleVar, WindowFlags},
+    imgui::{self, Condition, Context, WindowFlags},
     tracing::debug,
     ImguiRenderLoop, RenderContext,
 };
