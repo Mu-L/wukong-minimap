@@ -261,7 +261,9 @@ namespace Minimap
 
     // 从资源加载 JSON 数据
     maps = load_data();
-
+  }
+  void loadTextures()
+  {
     LoadTextureFromFile("map", "./maps/img_map_101.png");
     LoadTextureFromFile("player", "./maps/player.png");
     LoadTextureFromFile("teleport", "./maps/teleport.png");

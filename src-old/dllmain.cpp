@@ -3,10 +3,15 @@
 
 #include <thread>
 #include <chrono>
+#include "minimap.h"
 
 void startup_thread(HMODULE poc_module)
 {
-	std::this_thread::sleep_for(std::chrono::seconds(20));
+	std::this_thread::sleep_for(std::chrono::seconds(10));
+
+	Minimap::init();
+	std::this_thread::sleep_for(std::chrono::seconds(10));
+
 	DrawInit();
 }
 

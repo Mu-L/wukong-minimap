@@ -201,7 +201,6 @@ static HRESULT STDMETHODCALLTYPE MyPresent(IDXGISwapChain *SwapChain, UINT SyncI
 		ImGui_ImplWin32_Init(swapchainDesc.OutputWindow);
 		ImGui_ImplDX12_Init(device, swapchainDesc.BufferCount, swapchainDesc.BufferDesc.Format, Context.SRVDescriptorHeap, cpuHandle, gpuHandle);
 
-		Minimap::init();
 		initialized = TRUE;
 	}
 	if (!Context.CommandQueue)
@@ -214,9 +213,9 @@ static HRESULT STDMETHODCALLTYPE MyPresent(IDXGISwapChain *SwapChain, UINT SyncI
 	ImGui::NewFrame();
 
 	// 示例：渲染加载的图片
-	Minimap::draw();
+	// Minimap::draw();
 
-	// ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	ImGui::Render();
 

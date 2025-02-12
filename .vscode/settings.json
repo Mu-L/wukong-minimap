@@ -1,6 +1,16 @@
 {
-    "files.associations": {
-        "*.css": "tailwindcss",
-        "xhash": "cpp"
-    }
+  "files.associations": {
+    "*.json": "jsonc",
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.css": "tailwindcss",
+    "*.ttss": "css",
+    "*.sjs": "javascript",
+    "*.ttml": "ttml",
+    "*.wxml": "wxml",
+    "*.sk": "ttml",
+    "xhash": "cpp",
+    "thread": "cpp"
+  }
 }
