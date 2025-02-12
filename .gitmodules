@@ -1,12 +1,12 @@
 [submodule "submodules/glm"]
 	path = submodules/glm
-	url = git@github.com/g-truc/glm
+	url = git@github.com:g-truc/glm
 [submodule "submodules/spdlog"]
 	path = submodules/spdlog
-	url = git@github.com/gabime/spdlog
+	url = git@github.com:gabime/spdlog
 [submodule "submodules/imgui"]
 	path = submodules/imgui
-	url = git@github.com/ocornut/imgui.git
+	url = git@github.com:ocornut/imgui.git
 [submodule "submodules/UESDK"]
 	path = submodules/UESDK
 	url = git@github.com:praydog/UESDK.git
