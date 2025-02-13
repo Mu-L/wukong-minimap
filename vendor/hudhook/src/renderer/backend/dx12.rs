@@ -351,9 +351,9 @@ unsafe fn create_shader_program(
         NumStaticSamplers: 1,
         pStaticSamplers: &D3D12_STATIC_SAMPLER_DESC {
             Filter: D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-            AddressU: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-            AddressV: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-            AddressW: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            AddressU: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+            AddressV: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+            AddressW: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
             MipLODBias: 0f32,
             MaxAnisotropy: 0,
             ComparisonFunc: D3D12_COMPARISON_FUNC_ALWAYS,
@@ -422,7 +422,9 @@ unsafe fn create_shader_program(
     Texture2D texture0: register(t0);
 
     float4 main(PS_INPUT input): SV_Target {
-      float4 out_col = input.col * texture0.Sample(sampler0, input.uv);
+      float2 uv = input.uv;
+      uv = clamp(uv, 0.0, 1.0);
+      float4 out_col = input.col * texture0.Sample(sampler0, uv);
       return out_col;
     }"#;
 
@@ -850,9 +852,8 @@ impl TextureHeap {
 
         // 修改纹理内存对齐方式
         let upload_row_size = width * 4;
-        let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT; // 256
-                                                        // 确保行间距是 256 字节对齐
-        let upload_pitch = ((upload_row_size + align - 1) / align) * align;
+        let upload_pitch = (upload_row_size + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1)
+            & !(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1);
         let upload_size = upload_pitch * height;
 
         let upload_buffer: ID3D12Resource = util::try_out_ptr(|v| unsafe {
@@ -896,10 +897,11 @@ impl TextureHeap {
             ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
 
             // 如果需要,用0填充对齐空间
+            // 填充对齐空隙
             if upload_pitch > upload_row_size {
                 let padding_start = dst.add(upload_row_size as usize);
                 let padding_size = (upload_pitch - upload_row_size) as usize;
-                ptr::write_bytes(padding_start, 0, padding_size);
+                ptr::write_bytes(padding_start, 0, padding_size); // 关键
             }
         }
 
