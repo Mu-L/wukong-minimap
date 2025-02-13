@@ -11,6 +11,7 @@
     "*.wxml": "wxml",
     "*.sk": "ttml",
     "xhash": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "memory": "cpp"
   }
 }
