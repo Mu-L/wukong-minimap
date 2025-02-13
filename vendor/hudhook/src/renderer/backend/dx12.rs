@@ -351,9 +351,9 @@ unsafe fn create_shader_program(
         NumStaticSamplers: 1,
         pStaticSamplers: &D3D12_STATIC_SAMPLER_DESC {
             Filter: D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-            AddressU: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-            AddressV: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-            AddressW: D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+            AddressU: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            AddressV: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            AddressW: D3D12_TEXTURE_ADDRESS_MODE_WRAP,
             MipLODBias: 0f32,
             MaxAnisotropy: 0,
             ComparisonFunc: D3D12_COMPARISON_FUNC_ALWAYS,
@@ -422,9 +422,7 @@ unsafe fn create_shader_program(
     Texture2D texture0: register(t0);
 
     float4 main(PS_INPUT input): SV_Target {
-      float2 uv = input.uv;
-      uv = clamp(uv, 0.0, 1.0);
-      float4 out_col = input.col * texture0.Sample(sampler0, uv);
+      float4 out_col = input.col * texture0.Sample(sampler0, input.uv);
       return out_col;
     }"#;
 
@@ -532,11 +530,11 @@ unsafe fn create_shader_program(
                 D3D12_RENDER_TARGET_BLEND_DESC {
                     BlendEnable: true.into(),
                     LogicOpEnable: false.into(),
-                    SrcBlend: D3D12_BLEND_SRC_ALPHA,
+                    SrcBlend: D3D12_BLEND_ONE,
                     DestBlend: D3D12_BLEND_INV_SRC_ALPHA,
                     BlendOp: D3D12_BLEND_OP_ADD,
                     SrcBlendAlpha: D3D12_BLEND_ONE,
-                    DestBlendAlpha: D3D12_BLEND_INV_SRC_ALPHA,
+                    DestBlendAlpha: D3D12_BLEND_ONE,
                     BlendOpAlpha: D3D12_BLEND_OP_ADD,
                     LogicOp: Default::default(),
                     RenderTargetWriteMask: D3D12_COLOR_WRITE_ENABLE_ALL.0 as _,
@@ -850,11 +848,10 @@ impl TextureHeap {
             return Err(Error::from_hresult(HRESULT(-1)));
         }
 
-        // 修改纹理内存对齐方式
         let upload_row_size = width * 4;
-        let upload_pitch = (upload_row_size + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1)
-            & !(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1);
-        let upload_size = upload_pitch * height;
+        let align = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+        let upload_pitch = upload_row_size.div_ceil(align) * align; // 256 bytes aligned
+        let upload_size = height * upload_pitch;
 
         let upload_buffer: ID3D12Resource = util::try_out_ptr(|v| unsafe {
             self.device.CreateCommittedResource(
@@ -862,8 +859,8 @@ impl TextureHeap {
                     Type: D3D12_HEAP_TYPE_UPLOAD,
                     CPUPageProperty: D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
                     MemoryPoolPreference: D3D12_MEMORY_POOL_UNKNOWN,
-                    CreationNodeMask: 1,
-                    VisibleNodeMask: 1,
+                    CreationNodeMask: Default::default(),
+                    VisibleNodeMask: Default::default(),
                 },
                 D3D12_HEAP_FLAG_NONE,
                 &D3D12_RESOURCE_DESC {
@@ -884,27 +881,17 @@ impl TextureHeap {
             )
         })?;
 
-        // 改进内存复制逻辑
         let mut upload_buffer_ptr = ptr::null_mut();
         upload_buffer.Map(0, None, Some(&mut upload_buffer_ptr))?;
-
-        // 逐行复制并填充对齐空间
-        for y in 0..height {
-            let src = data.as_ptr().add((y * upload_row_size) as usize);
-            let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
-
-            // 复制实际数据
-            ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
-
-            // 如果需要,用0填充对齐空间
-            // 填充对齐空隙
-            if upload_pitch > upload_row_size {
-                let padding_start = dst.add(upload_row_size as usize);
-                let padding_size = (upload_pitch - upload_row_size) as usize;
-                ptr::write_bytes(padding_start, 0, padding_size); // 关键
+        if upload_row_size == upload_pitch {
+            ptr::copy_nonoverlapping(data.as_ptr(), upload_buffer_ptr as *mut u8, data.len());
+        } else {
+            for y in 0..height {
+                let src = data.as_ptr().add((y * upload_row_size) as usize);
+                let dst = (upload_buffer_ptr as *mut u8).add((y * upload_pitch) as usize);
+                ptr::copy_nonoverlapping(src, dst, upload_row_size as usize);
             }
         }
-
         upload_buffer.Unmap(0, None);
 
         self.command_allocator.Reset()?;

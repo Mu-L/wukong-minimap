@@ -304,7 +304,8 @@ impl ImguiRenderLoop for MiniMap {
         let style = ctx.style_mut();
         style.window_rounding = 10.0;
         style.window_padding = [0.0, 0.0];
-
+        // text red
+        style.colors[imgui::StyleColor::Text as usize] = [1.0, 0.0, 0.0, 1.0];
         self.textures.map.id = Some(
             render_context
                 .load_texture(
@@ -373,5 +374,6 @@ impl ImguiRenderLoop for MiniMap {
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
         self.render(ui);
+        // ui.show_demo_window(&mut true);
     }
 }
