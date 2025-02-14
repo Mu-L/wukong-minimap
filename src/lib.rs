@@ -15,7 +15,7 @@ pub extern "stdcall" fn DllMain(hmodule: HINSTANCE, reason: u32, _: *mut ::std::
         tracing::trace!("DllMain()");
         ::std::thread::spawn(move || {
             // 延迟 10 秒启动
-            ::std::thread::sleep(::std::time::Duration::from_secs(10));
+            ::std::thread::sleep(::std::time::Duration::from_secs(5));
             if let Err(e) = ::hudhook::Hudhook::builder()
                 .with::<ImguiDx12Hooks>(render::MiniMap::new())
                 .with_hmodule(hmodule)
