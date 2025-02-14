@@ -10,7 +10,7 @@ use hudhook::{
     tracing::debug,
     ImguiRenderLoop, RenderContext,
 };
-use image::{EncodableLayout, RgbaImage};
+use image::{EncodableLayout, ImageFormat, RgbaImage};
 
 pub struct ImageTexture {
     pub id: Option<imgui::TextureId>,
@@ -18,10 +18,10 @@ pub struct ImageTexture {
 }
 
 impl ImageTexture {
-    pub fn with_bytes(types: &[u8]) -> Self {
+    pub fn with_bytes(types: &[u8], format: ImageFormat) -> Self {
         Self {
             id: None,
-            image: image_with_bytes(types),
+            image: image_with_bytes(types, format),
         }
     }
     pub fn _with_file(file: &str) -> Self {
@@ -36,6 +36,11 @@ struct Textures {
     pub teleport: ImageTexture,
     pub mapplayer: ImageTexture,
     pub fan: ImageTexture,
+    pub boss: ImageTexture,
+    pub toumu: ImageTexture,
+    pub hulu: ImageTexture,
+    pub jiushi: ImageTexture,
+    pub xiandan: ImageTexture,
 
     pub map: ImageTexture,
     pub logo: ImageTexture,
@@ -49,6 +54,7 @@ pub struct MiniMap {
     map: Option<MapInfo>,
     maps: Vec<MapInfo>,
     game: GameState,
+    show: bool,
 }
 
 impl MiniMap {
@@ -58,13 +64,46 @@ impl MiniMap {
         let maps: Vec<MapInfo> = load_data();
 
         let textures = Textures {
-            map: ImageTexture::with_bytes(include_bytes!("../includes/nomap.png")),
-            teleport: ImageTexture::with_bytes(include_bytes!(
-                "../includes/MARKER_maptarget_shrine.png"
-            )),
-            mapplayer: ImageTexture::with_bytes(include_bytes!("../includes/MARKER_mapplayer.png")),
-            fan: ImageTexture::with_bytes(include_bytes!("../includes/MARKER_maptarget_fan.png")),
-            logo: ImageTexture::with_bytes(include_bytes!("../includes/logo.png")),
+            map: ImageTexture::with_bytes(
+                include_bytes!("../includes/nomap.webp"),
+                ImageFormat::WebP,
+            ),
+            logo: ImageTexture::with_bytes(
+                include_bytes!("../includes/logo.png"),
+                ImageFormat::Png,
+            ),
+            mapplayer: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_player.png"),
+                ImageFormat::Png,
+            ),
+            teleport: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_teleport.png"),
+                ImageFormat::Png,
+            ),
+            fan: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_fan.png"),
+                ImageFormat::Png,
+            ),
+            boss: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_boos.png"),
+                ImageFormat::Png,
+            ),
+            toumu: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_toumu.png"),
+                ImageFormat::Png,
+            ),
+            hulu: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_hulu.png"),
+                ImageFormat::Png,
+            ),
+            jiushi: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_jiushi.png"),
+                ImageFormat::Png,
+            ),
+            xiandan: ImageTexture::with_bytes(
+                include_bytes!("../includes/icon_xiandan.png"),
+                ImageFormat::Png,
+            ),
         };
 
         let mut map_images = HashMap::new();
@@ -81,6 +120,7 @@ impl MiniMap {
             map: None,
             maps,
             game: wukong::game_state(),
+            show: true,
         }
     }
 
@@ -202,7 +242,10 @@ impl MiniMap {
             self.size = (self.size + 0.05).min(0.5);
             println!("size: {}", self.size);
         }
-        if self.game.playing {
+        if ui.is_key_pressed_no_repeat(Key::Keypad0) {
+            self.show = !self.show;
+        }
+        if self.game.playing && self.show {
             let [screen_width, screen_height] = ui.io().display_size;
             let window_size = (screen_width * self.size).min(screen_height * self.size);
 
@@ -237,17 +280,26 @@ impl MiniMap {
                             .uv_max(map_uv[1])
                             .build();
 
-                        let teleport = self.textures.teleport.id.unwrap();
                         map.points.iter().for_each(|point| {
-                            if point.icon == 0 {
-                                let [min, max] = self.get_icon_pos(
-                                    Pos2::new(point.x, point.y),
-                                    Pos2::new(self.game.x, self.game.y),
-                                    center,
-                                    window_size,
-                                );
+                            let [min, max] = self.get_icon_pos(
+                                Pos2::new(point.x, point.y),
+                                Pos2::new(self.game.x, self.game.y),
+                                center,
+                                window_size,
+                            );
+                            let icon = match point.icon.as_str() {
+                                "teleport" => self.textures.teleport.id,
+                                "fan" => self.textures.fan.id,
+                                "boss" => self.textures.boss.id,
+                                "toumu" => self.textures.toumu.id,
+                                "hulu" => self.textures.hulu.id,
+                                "jiushi" => self.textures.jiushi.id,
+                                "xiandan" => self.textures.xiandan.id,
+                                _ => None,
+                            };
+                            if let Some(id) = icon {
                                 draw_list
-                                    .add_image(teleport, [min.x, min.y], [max.x, max.y])
+                                    .add_image(id, [min.x, min.y], [max.x, max.y])
                                     .build();
                             }
                         });
@@ -315,21 +367,33 @@ impl ImguiRenderLoop for MiniMap {
                 )
                 .unwrap(),
         );
-        self.textures.teleport.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.teleport.image.as_bytes(),
-                    self.textures.teleport.image.width(),
-                    self.textures.teleport.image.height(),
-                )
-                .unwrap(),
-        );
+
         self.textures.mapplayer.id = Some(
             render_context
                 .load_texture(
                     self.textures.mapplayer.image.as_bytes(),
                     self.textures.mapplayer.image.width(),
                     self.textures.mapplayer.image.height(),
+                )
+                .unwrap(),
+        );
+
+        self.textures.logo.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.logo.image.as_bytes(),
+                    self.textures.logo.image.width(),
+                    self.textures.logo.image.height(),
+                )
+                .unwrap(),
+        );
+
+        self.textures.teleport.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.teleport.image.as_bytes(),
+                    self.textures.teleport.image.width(),
+                    self.textures.teleport.image.height(),
                 )
                 .unwrap(),
         );
@@ -342,12 +406,48 @@ impl ImguiRenderLoop for MiniMap {
                 )
                 .unwrap(),
         );
-        self.textures.logo.id = Some(
+        self.textures.boss.id = Some(
             render_context
                 .load_texture(
-                    self.textures.logo.image.as_bytes(),
-                    self.textures.logo.image.width(),
-                    self.textures.logo.image.height(),
+                    self.textures.boss.image.as_bytes(),
+                    self.textures.boss.image.width(),
+                    self.textures.boss.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.toumu.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.toumu.image.as_bytes(),
+                    self.textures.toumu.image.width(),
+                    self.textures.toumu.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.hulu.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.hulu.image.as_bytes(),
+                    self.textures.hulu.image.width(),
+                    self.textures.hulu.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.jiushi.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.jiushi.image.as_bytes(),
+                    self.textures.jiushi.image.width(),
+                    self.textures.jiushi.image.height(),
+                )
+                .unwrap(),
+        );
+        self.textures.xiandan.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.xiandan.image.as_bytes(),
+                    self.textures.xiandan.image.width(),
+                    self.textures.xiandan.image.height(),
                 )
                 .unwrap(),
         );

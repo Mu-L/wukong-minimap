@@ -1,4 +1,4 @@
-use image::{ImageReader, RgbaImage};
+use image::{ImageFormat, ImageReader, RgbaImage};
 use serde::{Deserialize, Serialize};
 use std::{io::Cursor, path::PathBuf};
 
@@ -18,7 +18,7 @@ impl Pos2 {
 pub struct Point {
     pub name: String,
     pub key: String,
-    pub icon: i32,
+    pub icon: String,
     pub x: f32,
     pub y: f32,
     pub z: f32,
@@ -72,8 +72,8 @@ pub fn setup_tracing() {
     hudhook::enable_console_colors();
 }
 
-pub fn image_with_bytes(bytes: &[u8]) -> RgbaImage {
-    ImageReader::with_format(Cursor::new(bytes), image::ImageFormat::Png)
+pub fn image_with_bytes(bytes: &[u8], format: ImageFormat) -> RgbaImage {
+    ImageReader::with_format(Cursor::new(bytes), format)
         .decode()
         .unwrap()
         .into_rgba8()
