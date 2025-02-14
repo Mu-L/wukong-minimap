@@ -242,7 +242,7 @@ impl MiniMap {
             self.size = (self.size + 0.05).min(0.5);
             println!("size: {}", self.size);
         }
-        if ui.is_key_pressed_no_repeat(Key::Keypad0) {
+        if ui.is_key_pressed_no_repeat(Key::Alpha0) {
             self.show = !self.show;
         }
         if self.game.playing && self.show {
