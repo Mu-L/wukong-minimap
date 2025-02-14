@@ -115,8 +115,8 @@ impl MiniMap {
         Self {
             textures,
             map_images,
-            zoom: 0.1,
-            size: 0.15,
+            zoom: 0.15,
+            size: 0.2,
             map: None,
             maps,
             game: wukong::game_state(),
@@ -202,7 +202,14 @@ impl MiniMap {
         [[min_pos[0], min_pos[1]], [max_pos[0], max_pos[1]]]
     }
 
-    fn get_icon_pos(&self, pos: Pos2, player_pos: Pos2, center: Pos2, view_size: f32) -> [Pos2; 2] {
+    fn get_icon_pos(
+        &self,
+        pos: Pos2,
+        player_pos: Pos2,
+        center: Pos2,
+        view_size: f32,
+        icon_size: f32,
+    ) -> [Pos2; 2] {
         let [x_start, y_start, _] = self.map.as_ref().unwrap().range.start;
         let [x_end, y_end, _] = self.map.as_ref().unwrap().range.end;
         let x_scale = view_size / ((x_end - x_start).abs() * self.zoom);
@@ -211,14 +218,15 @@ impl MiniMap {
             center.x + (pos.x - player_pos.x) * x_scale,
             center.y + (pos.y - player_pos.y) * y_scale,
         );
-        let min_pos = Pos2::new(pos.x - 16.0, pos.y - 16.0);
-        let max_pos = Pos2::new(pos.x + 16.0, pos.y + 16.0);
+        let icon_half = icon_size / 2.0;
+        let min_pos = Pos2::new(pos.x - icon_half, pos.y - icon_half);
+        let max_pos = Pos2::new(pos.x + icon_half, pos.y + icon_half);
         [min_pos, max_pos]
     }
-    fn arrow_to_p4(&self, location: Pos2, size: f32, angle: f32) -> [[f32; 2]; 4] {
+    fn arrow_to_p4(&self, location: Pos2, angle: f32, icon_size: f32) -> [[f32; 2]; 4] {
         let rad = angle.to_radians();
         let (sin, cos) = rad.sin_cos();
-        let half = size / 2.0;
+        let half = icon_size / 2.0;
         // 使用一个简单的变换矩阵计算四个角点
         let transform = |dx: f32, dy: f32| {
             [
@@ -234,13 +242,21 @@ impl MiniMap {
         ]
     }
     fn render(&mut self, ui: &imgui::Ui) {
-        if ui.is_key_pressed_no_repeat(Key::Minus) {
+        if ui.is_key_pressed_no_repeat(Key::Minus) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size - 0.05).max(0.15);
             println!("size: {}", self.size);
         }
-        if ui.is_key_pressed_no_repeat(Key::Equal) {
+        if ui.is_key_pressed_no_repeat(Key::Equal) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size + 0.05).min(0.5);
             println!("size: {}", self.size);
+        }
+        if ui.is_key_pressed_no_repeat(Key::Minus) && ui.is_key_down(Key::LeftShift) {
+            self.zoom = (self.zoom - 0.05).max(0.15);
+            println!("zoom: {}", self.zoom);
+        }
+        if ui.is_key_pressed_no_repeat(Key::Equal) && ui.is_key_down(Key::LeftShift) {
+            self.zoom = (self.zoom + 0.05).min(0.5);
+            println!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Alpha0) {
             self.show = !self.show;
@@ -248,7 +264,7 @@ impl MiniMap {
         if self.game.playing && self.show {
             let [screen_width, screen_height] = ui.io().display_size;
             let window_size = (screen_width * self.size).min(screen_height * self.size);
-
+            let icon_size = window_size * 0.18;
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
@@ -274,7 +290,7 @@ impl MiniMap {
                                 map_image,
                                 [offset_x, offset_y],
                                 [offset_x + window_size, offset_y + window_size],
-                                10.0,
+                                window_size / 20.0,
                             )
                             .uv_min(map_uv[0])
                             .uv_max(map_uv[1])
@@ -286,6 +302,7 @@ impl MiniMap {
                                 Pos2::new(self.game.x, self.game.y),
                                 center,
                                 window_size,
+                                icon_size,
                             );
                             let icon = match point.icon.as_str() {
                                 "teleport" => self.textures.teleport.id,
@@ -304,7 +321,7 @@ impl MiniMap {
                             }
                         });
 
-                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, 32.0, self.game.angle);
+                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, self.game.angle, icon_size);
                         draw_list
                             .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
                             .build();
