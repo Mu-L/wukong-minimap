@@ -374,6 +374,6 @@ impl ImguiRenderLoop for MiniMap {
     }
     fn render(&mut self, ui: &mut imgui::Ui) {
         self.render(ui);
-        // ui.show_demo_window(&mut true);
+        ui.show_demo_window(&mut true);
     }
 }
