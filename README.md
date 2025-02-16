@@ -1,11 +1,14 @@
 # 黑神话·悟空-内置实时地图
 
+
+![alt text](./docs/banner.png)
+
 一个为《黑神话：悟空》设计的小地图插件，提供实时位置追踪和导航功能。是免费的~免费的~免费的~ 请帮我点个 star!
 
 - 下载地址: [releases](https://github.com/jaskang/wukong-minimap/releases)
-- BiliBli 演示视频：[程序员自费开发黑神话小地图，精准还原行旅图～](【程序员自费开发黑神话小地图，精准还原行旅图】 https://www.bilibili.com/video/BV1Y1KueREho/?share_source=copy_web&vd_source=dcfc3e9cca2640bbaa21c24979c4c34b)
-- GitHub 源代码: [请帮我点个 star](https://github.com/jaskang/wukong-minimap)
-- Nexusmods: [别忘了推荐一下](https://www.nexusmods.com/blackmythwukong/mods/956)
+- BiliBli 演示视频：[程序员自费开发黑神话小地图，精准还原行旅图～](https://www.bilibili.com/video/BV1Y1KueREho/?share_source=copy_web&vd_source=dcfc3e9cca2640bbaa21c24979c4c34b)
+- GitHub 源代码: [请帮我点个 star](https://github.com/jaskang/wukong-minimap) 
+- Nexusmods: [别忘了推荐一下](https://www.nexusmods.com/blackmythwukong/mods/1172)
 
 Switch language: [English](README.en.md)
 

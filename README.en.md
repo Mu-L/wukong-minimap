@@ -1,11 +1,13 @@
 # Black Myth: Wukong - Built-in Real-time Map
 
+![alt text](./docs/banner.png)
+
 A minimap plugin for Black Myth: Wukong that provides real-time location tracking and navigation features. It's free~free~free~
 
 - Download: [releases](https://github.com/jaskang/wukong-minimap/releases)
-- BiliBli Demo Video：[程序员自费开发黑神话小地图，精准还原行旅图～](【程序员自费开发黑神话小地图，精准还原行旅图】 https://www.bilibili.com/video/BV1Y1KueREho/?share_source=copy_web&vd_source=dcfc3e9cca2640bbaa21c24979c4c34b)
+- BiliBli Demo Video：[程序员自费开发黑神话小地图，精准还原行旅图～](https://www.bilibili.com/video/BV1Y1KueREho/?share_source=copy_web&vd_source=dcfc3e9cca2640bbaa21c24979c4c34b)
 - GitHub: [Please help me click star](https://github.com/jaskang/wukong-minimap)
-- Nexusmods: [Don't forget to recommend it](https://www.nexusmods.com/blackmythwukong/mods/956)
+- Nexusmods: [Don't forget to recommend it](https://www.nexusmods.com/blackmythwukong/mods/1172)
 
 切换语言: [中文](README.md)
 
