@@ -207,14 +207,7 @@ impl MiniMap {
         [[min_pos[0], min_pos[1]], [max_pos[0], max_pos[1]]]
     }
 
-    fn get_icon_pos(
-        &self,
-        pos: Pos2,
-        player_pos: Pos2,
-        center: Pos2,
-        view_size: f32,
-        icon_size: f32,
-    ) -> [Pos2; 2] {
+    fn get_icon_pos(&self, pos: Pos2, player_pos: Pos2, center: Pos2, view_size: f32) -> Pos2 {
         let [x_start, y_start, _] = self.map.as_ref().unwrap().range.start;
         let [x_end, y_end, _] = self.map.as_ref().unwrap().range.end;
         let x_scale = view_size / ((x_end - x_start).abs() * self.zoom);
@@ -223,10 +216,7 @@ impl MiniMap {
             center.x + (pos.x - player_pos.x) * x_scale,
             center.y + (pos.y - player_pos.y) * y_scale,
         );
-        let icon_half = icon_size / 2.0;
-        let min_pos = Pos2::new(pos.x - icon_half, pos.y - icon_half);
-        let max_pos = Pos2::new(pos.x + icon_half, pos.y + icon_half);
-        [min_pos, max_pos]
+        pos
     }
     fn arrow_to_p4(&self, location: Pos2, angle: f32, icon_size: f32) -> [[f32; 2]; 4] {
         let rad = angle.to_radians();
@@ -270,11 +260,11 @@ impl MiniMap {
             let [screen_width, screen_height] = ui.io().display_size;
             let window_size = (screen_width * self.size).min(screen_height * self.size);
             let map_size: f32 = window_size * 0.947;
+            let map_size_half = map_size / 2.0;
             let icon_size = window_size * 0.18;
+            let icon_size_half = icon_size / 2.0;
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
             let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
-
-            let style = ui.push_style_var(imgui::StyleVar::WindowRounding(window_size / 2.0));
 
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
@@ -308,12 +298,11 @@ impl MiniMap {
                             .build();
 
                         map.points.iter().for_each(|point| {
-                            let [min, max] = self.get_icon_pos(
+                            let icon_pos = self.get_icon_pos(
                                 Pos2::new(point.x, point.y),
                                 Pos2::new(self.game.x, self.game.y),
                                 center,
                                 map_size,
-                                icon_size,
                             );
                             let icon = match point.icon.as_str() {
                                 "teleport" => self.textures.teleport.id,
@@ -327,11 +316,27 @@ impl MiniMap {
                             };
 
                             if let Some(id) = icon {
-                                ui.set_cursor_pos([min.x - map_offset_x, min.y - map_offset_y]);
+                                // ui.set_cursor_pos([min.x - map_offset_x, min.y - map_offset_y]);
                                 // Image::new(id, [icon_size, icon_size]).build(ui);
-                                draw_list
-                                    .add_image(id, [min.x, min.y], [max.x, max.y])
-                                    .build();
+                                // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
+                                let distance = ((icon_pos.x - center.x).powi(2)
+                                    + (icon_pos.y - center.y).powi(2))
+                                .sqrt();
+                                if distance <= map_size_half - icon_size_half {
+                                    draw_list
+                                        .add_image(
+                                            id,
+                                            [
+                                                icon_pos.x - icon_size_half,
+                                                icon_pos.y - icon_size_half,
+                                            ],
+                                            [
+                                                icon_pos.x + icon_size_half,
+                                                icon_pos.y + icon_size_half,
+                                            ],
+                                        )
+                                        .build();
+                                }
                             }
                         });
 
@@ -351,13 +356,13 @@ impl MiniMap {
                         debug!("draw_nomap");
                     }
                 });
-            style.pop();
+
             let logo_width = window_size * 0.5;
             let logo_height = logo_width * 0.28;
 
             ui.window("logo")
                 .position(
-                    [offset_x, offset_y + window_size - logo_height / 2.0],
+                    [offset_x, offset_y + window_size + logo_height / 2.0],
                     imgui::Condition::Always,
                 )
                 .size([window_size, logo_height], imgui::Condition::Always)
@@ -371,7 +376,7 @@ impl MiniMap {
                 .build(|| {
                     let draw_list = ui.get_window_draw_list();
                     let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
-                    let logo_offset_y = offset_y + window_size - logo_height / 2.0;
+                    let logo_offset_y = offset_y + window_size + logo_height / 2.0;
 
                     draw_list
                         .add_image(
