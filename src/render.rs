@@ -4,7 +4,7 @@ use crate::{
     utils::{image_with_bytes, image_with_file, load_data, MapInfo, Pos2},
     wukong::{self, GameState},
 };
-use hudhook::imgui::Key;
+use hudhook::imgui::{sys, Image, Key};
 use hudhook::{
     imgui::{self, Condition, Context, WindowFlags},
     tracing::debug,
@@ -35,6 +35,7 @@ impl ImageTexture {
 struct Textures {
     pub teleport: ImageTexture,
     pub mapplayer: ImageTexture,
+    pub mapwraper: ImageTexture,
     pub fan: ImageTexture,
     pub boss: ImageTexture,
     pub toumu: ImageTexture,
@@ -64,6 +65,10 @@ impl MiniMap {
         let maps: Vec<MapInfo> = load_data();
 
         let textures = Textures {
+            mapwraper: ImageTexture::with_bytes(
+                include_bytes!("../includes/mapwraper.png"),
+                ImageFormat::Png,
+            ),
             map: ImageTexture::with_bytes(
                 include_bytes!("../includes/nomap.webp"),
                 ImageFormat::WebP,
@@ -264,8 +269,13 @@ impl MiniMap {
         if self.game.playing && self.show {
             let [screen_width, screen_height] = ui.io().display_size;
             let window_size = (screen_width * self.size).min(screen_height * self.size);
+            let map_size: f32 = window_size * 0.947;
             let icon_size = window_size * 0.18;
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
+            let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
+
+            let style = ui.push_style_var(imgui::StyleVar::WindowRounding(window_size / 2.0));
+
             ui.window("wukong-minimap")
                 .size([window_size, window_size], Condition::Always)
                 .position([offset_x, offset_y], Condition::Always)
@@ -279,18 +289,19 @@ impl MiniMap {
                 .build(|| {
                     ui.set_cursor_pos([0.0, 0.0]);
                     let draw_list = ui.get_window_draw_list();
-                    let center =
-                        Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
 
                     if let Some(map) = self.map.as_ref() {
                         let map_image = self.textures.map.id.unwrap();
+                        let map_offset_x = offset_x + (window_size - map_size) / 2.0;
+                        let map_offset_y = offset_y + (window_size - map_size) / 2.0;
                         let map_uv = self.get_map_uv(Pos2::new(self.game.x, self.game.y));
+
                         draw_list
                             .add_image_rounded(
                                 map_image,
-                                [offset_x, offset_y],
-                                [offset_x + window_size, offset_y + window_size],
-                                window_size / 20.0,
+                                [map_offset_x, map_offset_y],
+                                [map_offset_x + map_size, map_offset_y + map_size],
+                                map_size / 2.0,
                             )
                             .uv_min(map_uv[0])
                             .uv_max(map_uv[1])
@@ -301,7 +312,7 @@ impl MiniMap {
                                 Pos2::new(point.x, point.y),
                                 Pos2::new(self.game.x, self.game.y),
                                 center,
-                                window_size,
+                                map_size,
                                 icon_size,
                             );
                             let icon = match point.icon.as_str() {
@@ -314,7 +325,10 @@ impl MiniMap {
                                 "xiandan" => self.textures.xiandan.id,
                                 _ => None,
                             };
+
                             if let Some(id) = icon {
+                                ui.set_cursor_pos([min.x - map_offset_x, min.y - map_offset_y]);
+                                // Image::new(id, [icon_size, icon_size]).build(ui);
                                 draw_list
                                     .add_image(id, [min.x, min.y], [max.x, max.y])
                                     .build();
@@ -325,10 +339,19 @@ impl MiniMap {
                         draw_list
                             .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
                             .build();
+
+                        draw_list
+                            .add_image(
+                                self.textures.mapwraper.id.unwrap(),
+                                [offset_x, offset_y],
+                                [offset_x + window_size, offset_y + window_size],
+                            )
+                            .build();
                     } else {
                         debug!("draw_nomap");
                     }
                 });
+            style.pop();
             let logo_width = window_size * 0.5;
             let logo_height = logo_width * 0.28;
 
@@ -375,6 +398,17 @@ impl ImguiRenderLoop for MiniMap {
         style.window_padding = [0.0, 0.0];
         // text red
         // style.colors[imgui::StyleColor::Text as usize] = [0.0, 0.0, 1.0, 1.0];
+
+        self.textures.mapwraper.id = Some(
+            render_context
+                .load_texture(
+                    self.textures.mapwraper.image.as_bytes(),
+                    self.textures.mapwraper.image.width(),
+                    self.textures.mapwraper.image.height(),
+                )
+                .unwrap(),
+        );
+
         self.textures.map.id = Some(
             render_context
                 .load_texture(
