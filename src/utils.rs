@@ -1,6 +1,6 @@
 use image::{ImageFormat, ImageReader, RgbaImage};
 use serde::{Deserialize, Serialize};
-use std::{io::Cursor, path::PathBuf};
+use std::{collections::HashMap, io::Cursor, path::PathBuf};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Pos2 {
@@ -17,8 +17,8 @@ impl Pos2 {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Point {
     pub name: String,
-    pub key: String,
-    pub icon: String,
+    // pub key: String,
+    pub category: String,
     pub x: f32,
     pub y: f32,
     pub z: f32,
@@ -38,31 +38,11 @@ pub struct MapInfo {
     pub scale: f32,
     pub areas: Vec<Area>,
     pub url: String,
-    pub points: Vec<Point>,
 }
 
 pub fn get_dll_dir() -> PathBuf {
     let dll_path = hudhook::util::get_dll_path().unwrap();
     dll_path.parent().unwrap().to_path_buf()
-}
-
-pub fn load_data() -> Vec<MapInfo> {
-    let dll_dir = get_dll_dir();
-    let maps_dir = dll_dir.join("maps");
-    if !maps_dir.exists() {
-        std::fs::create_dir_all(maps_dir.clone()).unwrap();
-    }
-
-    let data = map_data();
-
-    // for map in data.clone() {
-    //     let file_path = maps_dir.join(&map.key);
-    //     if !file_path.exists() {
-    //         let image = blocking::get(&map.url).unwrap().bytes().unwrap();
-    //         std::fs::write(&file_path, &image).unwrap();
-    //     }
-    // }
-    data
 }
 
 pub fn setup_tracing() {
@@ -92,8 +72,34 @@ pub fn image_with_file(file: &str) -> RgbaImage {
     image
 }
 
-pub fn map_data() -> Vec<MapInfo> {
+pub fn load_data() -> Vec<MapInfo> {
     let data = include_str!("./../includes/data.json");
     let maps: Vec<MapInfo> = serde_json::from_str(data).unwrap();
     maps
+}
+
+pub fn load_points() -> HashMap<String, Vec<Point>> {
+    let data = include_str!("./../includes/data_points.json");
+    let points: HashMap<String, Vec<Point>> = serde_json::from_str(data).unwrap();
+    // println!("points: {:?}", points);
+    points
+}
+
+pub fn is_in_range(point: &Point, range: &Area) -> bool {
+    point.x >= range.start[0]
+        && point.x <= range.end[0]
+        && point.y >= range.start[1]
+        && point.y <= range.end[1]
+        && point.z >= range.start[2]
+        && point.z <= range.end[2]
+}
+
+pub fn is_in_map(point: &Point, map: &MapInfo) -> bool {
+    let in_range = is_in_range(point, &map.range);
+    // 判断是否在地图的区域范围内, 如果地图有区域, 需要至少一个区域包含该点
+    if map.areas.is_empty() {
+        in_range
+    } else {
+        map.areas.iter().any(|area| is_in_range(point, area))
+    }
 }

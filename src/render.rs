@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
 use crate::{
-    utils::{image_with_bytes, image_with_file, load_data, MapInfo, Pos2},
+    utils::{
+        image_with_bytes, image_with_file, is_in_map, load_data, load_points, MapInfo, Point, Pos2,
+    },
     wukong::{self, GameState},
 };
-use hudhook::imgui::{sys, Image, Key};
+use hudhook::imgui::Key;
 use hudhook::{
     imgui::{self, Condition, Context, WindowFlags},
     tracing::debug,
@@ -83,6 +85,7 @@ pub struct MiniMap {
     size: f32,
     map: Option<MapInfo>,
     maps: Vec<MapInfo>,
+    points: HashMap<String, Vec<Point>>,
     game: GameState,
     show: bool,
 }
@@ -92,6 +95,7 @@ impl MiniMap {
         wukong::init();
 
         let maps: Vec<MapInfo> = load_data();
+        let points: HashMap<String, Vec<Point>> = load_points();
 
         let textures = Textures {
             map: ImageTexture::with_bytes(
@@ -134,6 +138,7 @@ impl MiniMap {
             size: 0.2,
             map: None,
             maps,
+            points,
             game: wukong::game_state(),
             show: true,
         }
@@ -308,58 +313,62 @@ impl MiniMap {
                             .uv_max(map_uv[1])
                             .build();
 
-                        map.points.iter().for_each(|point| {
-                            let icon_pos = self.get_icon_pos(
-                                Pos2::new(point.x, point.y),
-                                Pos2::new(self.game.x, self.game.y),
-                                center,
-                                map_size,
-                            );
-                            let icon = match point.icon.as_str() {
-                                "teleport" => self.textures.teleport.id,
-                                "fan" => self.textures.fan.id,
-                                "boss" => self.textures.boss.id,
-                                "toumu" => self.textures.toumu.id,
-                                "hulu" => self.textures.hulu.id,
-                                "jiushi" => self.textures.jiushi.id,
-                                "xiandan" => self.textures.xiandan.id,
-                                "baoxiang" => self.textures.baoxiang.id,
-                                "zhenwan" => self.textures.zhenwan.id,
-                                "fabao" => self.textures.fabao.id,
-                                "dazuo" => self.textures.dazuo.id,
-                                "cailiao" => self.textures.cailiao.id,
-                                "jingpo" => self.textures.jingpo.id,
-                                "sandongchong" => self.textures.sandongchong.id,
-                                "luojia" => self.textures.luojia.id,
-                                "bianhua" => self.textures.bianhua.id,
-                                "yaojin" => self.textures.yaojin.id,
-                                _ => None,
-                            };
+                        self.points
+                            .get(map.level.as_str())
+                            .unwrap_or(&vec![])
+                            .iter()
+                            .filter(|point| is_in_map(point, &map))
+                            .for_each(|point| {
+                                let icon_pos = self.get_icon_pos(
+                                    Pos2::new(point.x, point.y),
+                                    Pos2::new(self.game.x, self.game.y),
+                                    center,
+                                    map_size,
+                                );
+                                let icon = match point.category.as_str() {
+                                    "teleport" => self.textures.teleport.id,
+                                    "fan" => self.textures.fan.id,
+                                    "boss" => self.textures.boss.id,
+                                    "toumu" => self.textures.toumu.id,
+                                    "hulu" => self.textures.hulu.id,
+                                    "jiushi" => self.textures.jiushi.id,
+                                    "xiandan" => self.textures.xiandan.id,
+                                    "baoxiang" => self.textures.baoxiang.id,
+                                    "zhenwan" => self.textures.zhenwan.id,
+                                    "fabao" => self.textures.fabao.id,
+                                    "dazuo" => self.textures.dazuo.id,
+                                    "cailiao" => self.textures.cailiao.id,
+                                    "jingpo" => self.textures.jingpo.id,
+                                    "sandongchong" => self.textures.sandongchong.id,
+                                    "luojia" => self.textures.luojia.id,
+                                    "bianhua" => self.textures.bianhua.id,
+                                    "yaojin" => self.textures.yaojin.id,
+                                    _ => None,
+                                };
 
-                            if let Some(id) = icon {
-                                // ui.set_cursor_pos([min.x - map_offset_x, min.y - map_offset_y]);
-                                // Image::new(id, [icon_size, icon_size]).build(ui);
-                                // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
-                                let distance = ((icon_pos.x - center.x).powi(2)
-                                    + (icon_pos.y - center.y).powi(2))
-                                .sqrt();
-                                if distance <= map_size_half - icon_size_half {
-                                    draw_list
-                                        .add_image(
-                                            id,
-                                            [
-                                                icon_pos.x - icon_size_half,
-                                                icon_pos.y - icon_size_half,
-                                            ],
-                                            [
-                                                icon_pos.x + icon_size_half,
-                                                icon_pos.y + icon_size_half,
-                                            ],
-                                        )
-                                        .build();
+                                if let Some(id) = icon {
+                                    // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
+                                    // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
+                                    let distance = ((icon_pos.x - center.x).powi(2)
+                                        + (icon_pos.y - center.y).powi(2))
+                                    .sqrt();
+                                    if distance <= map_size_half - icon_size_half {
+                                        draw_list
+                                            .add_image(
+                                                id,
+                                                [
+                                                    icon_pos.x - icon_size_half,
+                                                    icon_pos.y - icon_size_half,
+                                                ],
+                                                [
+                                                    icon_pos.x + icon_size_half,
+                                                    icon_pos.y + icon_size_half,
+                                                ],
+                                            )
+                                            .build();
+                                    }
                                 }
-                            }
-                        });
+                            });
 
                         let [p0, p1, p2, p3] = self.arrow_to_p4(center, self.game.angle, icon_size);
                         draw_list
