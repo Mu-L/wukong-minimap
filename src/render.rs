@@ -406,7 +406,7 @@ impl MiniMap {
                 .build(|| {
                     let draw_list = ui.get_window_draw_list();
                     let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
-                    let logo_offset_y = offset_y + window_size + logo_height / 2.0;
+                    let logo_offset_y = offset_y + window_size + logo_height / 4.0;
 
                     draw_list
                         .add_image(
