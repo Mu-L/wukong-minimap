@@ -137,7 +137,7 @@ let data = [
       },
       {
         name: "玲珑内丹",
-        category: "yongpin",
+        category: "cailiao",
         x: -3032,
         y: 15309,
         z: 1706,
@@ -459,7 +459,7 @@ let data = [
       },
       {
         name: "色蕴",
-        category: "yaopin",
+        category: "yaojin",
         x: -48048,
         y: -835,
         z: -2258,
@@ -702,7 +702,7 @@ let data = [
     points: [
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -82628,
         y: -18982,
         z: 1800,
@@ -716,7 +716,7 @@ let data = [
       },
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -100881,
         y: -25293,
         z: 4186,
@@ -730,7 +730,7 @@ let data = [
       },
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -99132,
         y: -8560,
         z: 4900,
@@ -758,7 +758,7 @@ let data = [
       },
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -100659,
         y: -29284,
         z: 5250,
@@ -779,7 +779,7 @@ let data = [
       },
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -119879,
         y: -15610,
         z: 5546,
@@ -793,7 +793,7 @@ let data = [
       },
       {
         name: "石之厉",
-        category: "yaopin",
+        category: "yaojin",
         x: -120552,
         y: -7492,
         z: 5224,
@@ -814,21 +814,21 @@ let data = [
       },
       {
         name: "石之精魄",
-        category: "yaopin",
+        category: "yaojin",
         x: -101611,
         y: -9216,
         z: 7545,
       },
       {
         name: "佛目珠",
-        category: "yaopin",
+        category: "yaojin",
         x: -110161,
         y: -7806,
         z: 7385,
       },
       {
         name: "受蕴",
-        category: "yaopin",
+        category: "yaojin",
         x: -119760,
         y: -3988,
         z: 5150,
@@ -919,7 +919,7 @@ let data = [
       },
       {
         name: "锕罗金片",
-        category: "yaopin",
+        category: "yaojin",
         x: -45864,
         y: 3260,
         z: -1913,
@@ -933,7 +933,7 @@ let data = [
       },
       {
         name: "隐藏·飞龙鳞片",
-        category: "yaopin",
+        category: "yaojin",
         x: 24753,
         y: -20936,
         z: 4430,
@@ -1122,7 +1122,7 @@ let data = [
       },
       {
         name: "注意弓箭手",
-        category: "yaopin",
+        category: "yaojin",
         x: -54245,
         y: -52232,
         z: -214,
@@ -1241,7 +1241,7 @@ let data = [
       },
       {
         name: "醒酒石/登仙散",
-        category: "yaopin",
+        category: "yaojin",
         x: -94074,
         y: 59382,
         z: 856,
@@ -1276,7 +1276,7 @@ let data = [
       },
       {
         name: "拨浪鼓获取",
-        category: "yaopin",
+        category: "yaojin",
         x: -94406,
         y: 13935,
         z: 2915,
@@ -2335,7 +2335,7 @@ let data = [
       },
       {
         name: "神魂·四将",
-        category: "yaopin",
+        category: "yaojin",
         x: 80246,
         y: 59635,
         z: -36973,
@@ -2543,7 +2543,7 @@ let data = [
       },
       {
         name: "神魂·一将",
-        category: "yaopin",
+        category: "yaojin",
         x: 93501,
         y: 69572,
         z: -26873,
@@ -3281,7 +3281,7 @@ let data = [
       },
       {
         name: "想蕴（需走隐藏道路）",
-        category: "yaopin",
+        category: "yaojin",
         x: -31617,
         y: -319934,
         z: -5969,
@@ -3615,7 +3615,7 @@ let data = [
       },
       {
         name: "神魂·三将",
-        category: "yaopin",
+        category: "yaojin",
         x: -165400,
         y: -237063,
         z: -26837,
@@ -3844,7 +3844,7 @@ let data = [
       },
       {
         name: "神魂·二将",
-        category: "yaopin",
+        category: "yaojin",
         x: -171050,
         y: -188823,
         z: -21904,
@@ -4463,7 +4463,7 @@ let data = [
       },
       {
         name: "茧圆",
-        category: "yaopin",
+        category: "yaojin",
         x: 125216,
         y: -61778,
         z: 8716,
@@ -5188,7 +5188,7 @@ let data = [
       },
       {
         name: "行蕴",
-        category: "yaopin",
+        category: "yaojin",
         x: 107170,
         y: -12814,
         z: -10608,
@@ -6426,7 +6426,7 @@ let data = [
       },
       {
         name: "如意金箍棒",
-        category: "yaopin",
+        category: "yaojin",
         x: -69970,
         y: 180097,
         z: 9766,
@@ -6659,30 +6659,29 @@ let data = [
 
 const categories = [
   "yaocai",
-  "baoxiang",
-  "dazuo",
+  "baoxiang", //
+  "dazuo", //
   "zhixian",
-  "yongpin",
-  "xiandan",
-  "teleport",
+  "xiandan", //
+  "teleport", //
   "pass-route",
-  "cailiao",
-  "toumu",
-  "jingpo",
-  "jiushi",
-  "boss",
-  "fabao",
+  "cailiao", //
+  "toumu", //
+  "jingpo", //
+  "jiushi", //
+  "boss", //
+  "fabao", //
   "start",
-  "sandongchong",
-  "yaopin",
+  "sandongchong", //
+  "yaojin",
   "renwu",
-  "zhenwan",
+  "zhenwan", //
   "lingyun",
   "end",
-  "hulu",
+  "hulu", //
   "hidden",
-  "luojia",
-  "bianhua",
+  "luojia", //
+  "bianhua", //
   "comment",
 ];
 
@@ -6722,3 +6721,9 @@ for (let i = 0; i < data.length; i++) {
 }
 
 console.log(JSON.stringify(result));
+
+const filter = (arr) => {
+  return arr.filter((item) => {
+    return item.category !== "teleport";
+  });
+};

@@ -33,18 +33,47 @@ impl ImageTexture {
 }
 
 struct Textures {
-    pub teleport: ImageTexture,
-    pub mapplayer: ImageTexture,
-    pub mapwraper: ImageTexture,
-    pub fan: ImageTexture,
-    pub boss: ImageTexture,
-    pub toumu: ImageTexture,
-    pub hulu: ImageTexture,
-    pub jiushi: ImageTexture,
-    pub xiandan: ImageTexture,
-
     pub map: ImageTexture,
     pub logo: ImageTexture,
+    pub mapplayer: ImageTexture,
+    pub mapwraper: ImageTexture,
+
+    // const categories = [
+    //     "yaocai",
+    //     "pass-route",
+    //     "start",
+    //     "yaojin",
+    //     "renwu",
+    //     "lingyun",
+    //     "zhixian",
+    //     "end",
+    //     "hidden",
+    //     "comment",
+    // ];
+    pub teleport: ImageTexture,
+    pub fan: ImageTexture,          // 起点-招魂幡
+    pub boss: ImageTexture,         // boss
+    pub toumu: ImageTexture,        // 头目
+    pub hulu: ImageTexture,         // 葫芦
+    pub jiushi: ImageTexture,       // 酒食
+    pub xiandan: ImageTexture,      // 仙丹
+    pub baoxiang: ImageTexture,     // 宝箱
+    pub zhenwan: ImageTexture,      // 珍玩
+    pub fabao: ImageTexture,        // 法宝
+    pub dazuo: ImageTexture,        // 打坐点
+    pub cailiao: ImageTexture,      // 材料
+    pub jingpo: ImageTexture,       // 精魄
+    pub sandongchong: ImageTexture, // 三冬虫
+    pub luojia: ImageTexture,       // 洛珈
+    pub bianhua: ImageTexture,      // 变化
+    pub yaojin: ImageTexture,       // 要紧事物
+}
+
+// 定义宏来简化纹理创建，仅适用于PNG格式
+macro_rules! png_texture {
+    ($file:expr) => {
+        ImageTexture::with_bytes(include_bytes!($file), ImageFormat::Png)
+    };
 }
 
 pub struct MiniMap {
@@ -65,50 +94,31 @@ impl MiniMap {
         let maps: Vec<MapInfo> = load_data();
 
         let textures = Textures {
-            mapwraper: ImageTexture::with_bytes(
-                include_bytes!("../includes/mapwraper.png"),
-                ImageFormat::Png,
-            ),
             map: ImageTexture::with_bytes(
                 include_bytes!("../includes/nomap.webp"),
                 ImageFormat::WebP,
             ),
-            logo: ImageTexture::with_bytes(
-                include_bytes!("../includes/logo.png"),
-                ImageFormat::Png,
-            ),
-            mapplayer: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_player.png"),
-                ImageFormat::Png,
-            ),
-            teleport: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_teleport.png"),
-                ImageFormat::Png,
-            ),
-            fan: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_fan.png"),
-                ImageFormat::Png,
-            ),
-            boss: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_boos.png"),
-                ImageFormat::Png,
-            ),
-            toumu: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_toumu.png"),
-                ImageFormat::Png,
-            ),
-            hulu: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_hulu.png"),
-                ImageFormat::Png,
-            ),
-            jiushi: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_jiushi.png"),
-                ImageFormat::Png,
-            ),
-            xiandan: ImageTexture::with_bytes(
-                include_bytes!("../includes/icon_xiandan.png"),
-                ImageFormat::Png,
-            ),
+            logo: png_texture!("../includes/logo.png"),
+            mapwraper: png_texture!("../includes/mapwraper.png"),
+            mapplayer: png_texture!("../includes/icon_player.png"),
+
+            teleport: png_texture!("../includes/icon_teleport.png"),
+            fan: png_texture!("../includes/icon_fan.png"),
+            boss: png_texture!("../includes/icon_boss.png"),
+            toumu: png_texture!("../includes/icon_toumu.png"),
+            hulu: png_texture!("../includes/icon_hulu.png"),
+            jiushi: png_texture!("../includes/icon_jiushi.png"),
+            xiandan: png_texture!("../includes/icon_xiandan.png"),
+            baoxiang: png_texture!("../includes/icon_baoxiang.png"),
+            zhenwan: png_texture!("../includes/icon_zhenwan.png"),
+            fabao: png_texture!("../includes/icon_fabao.png"),
+            dazuo: png_texture!("../includes/icon_dazuo.png"),
+            yaojin: png_texture!("../includes/icon_yaojin.png"),
+            cailiao: png_texture!("../includes/icon_cailiao.png"),
+            jingpo: png_texture!("../includes/icon_jingpo.png"),
+            sandongchong: png_texture!("../includes/icon_sandongchong.png"),
+            luojia: png_texture!("../includes/icon_luojia.png"),
+            bianhua: png_texture!("../includes/icon_bianhua.png"),
         };
 
         let mut map_images = HashMap::new();
@@ -258,10 +268,11 @@ impl MiniMap {
         }
         if self.game.playing && self.show {
             let [screen_width, screen_height] = ui.io().display_size;
-            let window_size = (screen_width * self.size).min(screen_height * self.size);
+            // let default_window_size = screen_width.min(screen_height) * 0.2;
+            let window_size = screen_width.min(screen_height) * self.size;
             let map_size: f32 = window_size * 0.947;
             let map_size_half = map_size / 2.0;
-            let icon_size = window_size * 0.18;
+            let icon_size = screen_width.min(screen_height) * 0.03;
             let icon_size_half = icon_size / 2.0;
             let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
             let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
@@ -312,6 +323,16 @@ impl MiniMap {
                                 "hulu" => self.textures.hulu.id,
                                 "jiushi" => self.textures.jiushi.id,
                                 "xiandan" => self.textures.xiandan.id,
+                                "baoxiang" => self.textures.baoxiang.id,
+                                "zhenwan" => self.textures.zhenwan.id,
+                                "fabao" => self.textures.fabao.id,
+                                "dazuo" => self.textures.dazuo.id,
+                                "cailiao" => self.textures.cailiao.id,
+                                "jingpo" => self.textures.jingpo.id,
+                                "sandongchong" => self.textures.sandongchong.id,
+                                "luojia" => self.textures.luojia.id,
+                                "bianhua" => self.textures.bianhua.id,
+                                "yaojin" => self.textures.yaojin.id,
                                 _ => None,
                             };
 
@@ -357,12 +378,12 @@ impl MiniMap {
                     }
                 });
 
-            let logo_width = window_size * 0.5;
+            let logo_width = screen_width.min(screen_height) * 0.065;
             let logo_height = logo_width * 0.28;
 
             ui.window("logo")
                 .position(
-                    [offset_x, offset_y + window_size + logo_height / 2.0],
+                    [offset_x, offset_y + window_size + logo_height / 4.0],
                     imgui::Condition::Always,
                 )
                 .size([window_size, logo_height], imgui::Condition::Always)
@@ -404,108 +425,46 @@ impl ImguiRenderLoop for MiniMap {
         // text red
         // style.colors[imgui::StyleColor::Text as usize] = [0.0, 0.0, 1.0, 1.0];
 
-        self.textures.mapwraper.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.mapwraper.image.as_bytes(),
-                    self.textures.mapwraper.image.width(),
-                    self.textures.mapwraper.image.height(),
-                )
-                .unwrap(),
-        );
+        // 定义宏来简化纹理加载
+        macro_rules! load_textures {
+            ($($texture:ident),*) => {
+                $(
+                    self.textures.$texture.id = Some(
+                        render_context
+                            .load_texture(
+                                self.textures.$texture.image.as_bytes(),
+                                self.textures.$texture.image.width(),
+                                self.textures.$texture.image.height(),
+                            )
+                            .unwrap(),
+                    );
+                )*
+            }
+        }
 
-        self.textures.map.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.map.image.as_bytes(),
-                    self.textures.map.image.width(),
-                    self.textures.map.image.height(),
-                )
-                .unwrap(),
-        );
-
-        self.textures.mapplayer.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.mapplayer.image.as_bytes(),
-                    self.textures.mapplayer.image.width(),
-                    self.textures.mapplayer.image.height(),
-                )
-                .unwrap(),
-        );
-
-        self.textures.logo.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.logo.image.as_bytes(),
-                    self.textures.logo.image.width(),
-                    self.textures.logo.image.height(),
-                )
-                .unwrap(),
-        );
-
-        self.textures.teleport.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.teleport.image.as_bytes(),
-                    self.textures.teleport.image.width(),
-                    self.textures.teleport.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.fan.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.fan.image.as_bytes(),
-                    self.textures.fan.image.width(),
-                    self.textures.fan.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.boss.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.boss.image.as_bytes(),
-                    self.textures.boss.image.width(),
-                    self.textures.boss.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.toumu.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.toumu.image.as_bytes(),
-                    self.textures.toumu.image.width(),
-                    self.textures.toumu.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.hulu.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.hulu.image.as_bytes(),
-                    self.textures.hulu.image.width(),
-                    self.textures.hulu.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.jiushi.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.jiushi.image.as_bytes(),
-                    self.textures.jiushi.image.width(),
-                    self.textures.jiushi.image.height(),
-                )
-                .unwrap(),
-        );
-        self.textures.xiandan.id = Some(
-            render_context
-                .load_texture(
-                    self.textures.xiandan.image.as_bytes(),
-                    self.textures.xiandan.image.width(),
-                    self.textures.xiandan.image.height(),
-                )
-                .unwrap(),
+        // 使用宏加载所有纹理
+        load_textures!(
+            mapwraper,
+            map,
+            mapplayer,
+            logo,
+            teleport,
+            fan,
+            boss,
+            toumu,
+            hulu,
+            jiushi,
+            xiandan,
+            baoxiang,
+            zhenwan,
+            fabao,
+            dazuo,
+            cailiao,
+            jingpo,
+            sandongchong,
+            luojia,
+            bianhua,
+            yaojin
         );
     }
     fn before_render<'a>(

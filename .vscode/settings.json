@@ -1,6 +1,7 @@
 {
-    "files.associations": {
-        "*.css": "tailwindcss",
-        "xhash": "cpp"
-    }
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "xhash": "cpp"
+  },
+  "cmake.sourceDirectory": "C:/Users/jaskang/code/wukong-minimap/b1sdk"
 }
