@@ -13,6 +13,9 @@ Switch language: [English](README.en.md)
 
 ## 更新日志
 
+- v1.7
+  - 调整 UI
+  - 添加大量点位
 - v1.6
   - 修复 AMD 显卡渲染问题
   - 添加点位

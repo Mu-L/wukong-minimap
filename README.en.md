@@ -13,6 +13,9 @@ A minimap plugin for Black Myth: Wukong that provides real-time location trackin
 
 ## Changelog
 
+- v1.7
+  - 调整 UI
+  - 添加大量点位
 - v1.6
   - Fixed AMD GPU rendering issues
   - Added map points
