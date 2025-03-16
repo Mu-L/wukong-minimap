@@ -78,6 +78,10 @@ macro_rules! png_texture {
     };
 }
 
+pub enum MiniMapMode {
+    North, // 北边为上
+    Face,  // 玩家角色面对方向为上
+}
 pub struct MiniMap {
     textures: Textures,
     map_images: HashMap<String, RgbaImage>,
@@ -87,6 +91,7 @@ pub struct MiniMap {
     maps: Vec<MapInfo>,
     points: HashMap<String, Vec<Point>>,
     game: GameState,
+    mode: MiniMapMode,
     show: bool,
 }
 
@@ -140,6 +145,7 @@ impl MiniMap {
             maps,
             points,
             game: wukong::game_state(),
+            mode: MiniMapMode::North,
             show: true,
         }
     }
@@ -297,6 +303,7 @@ impl MiniMap {
                     let draw_list = ui.get_window_draw_list();
 
                     if let Some(map) = self.map.as_ref() {
+                        // 绘制地图
                         let map_image = self.textures.map.id.unwrap();
                         let map_offset_x = offset_x + (window_size - map_size) / 2.0;
                         let map_offset_y = offset_y + (window_size - map_size) / 2.0;
@@ -348,7 +355,6 @@ impl MiniMap {
 
                                 if let Some(id) = icon {
                                     // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
-                                    // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
                                     let distance = ((icon_pos.x - center.x).powi(2)
                                         + (icon_pos.y - center.y).powi(2))
                                     .sqrt();
@@ -370,11 +376,13 @@ impl MiniMap {
                                 }
                             });
 
+                        // 绘制玩家角色箭头
                         let [p0, p1, p2, p3] = self.arrow_to_p4(center, self.game.angle, icon_size);
                         draw_list
                             .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
                             .build();
 
+                        // 绘制外围地图边框
                         draw_list
                             .add_image(
                                 self.textures.mapwraper.id.unwrap(),
