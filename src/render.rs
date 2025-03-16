@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Mutex};
 
 use crate::{
     utils::{
@@ -6,6 +6,7 @@ use crate::{
     },
     wukong::{self, GameState},
 };
+use gilrs::{GamepadId, Gilrs};
 use hudhook::imgui::Key;
 use hudhook::{
     imgui::{self, Condition, Context, WindowFlags},
@@ -83,6 +84,8 @@ pub enum MiniMapMode {
     Face,  // 玩家角色面对方向为上
 }
 pub struct MiniMap {
+    gilrs: Mutex<Gilrs>,
+    current_gamepad: Option<GamepadId>,
     textures: Textures,
     map_images: HashMap<String, RgbaImage>,
     zoom: f32,
@@ -92,7 +95,8 @@ pub struct MiniMap {
     points: HashMap<String, Vec<Point>>,
     game: GameState,
     mode: MiniMapMode,
-    show: bool,
+    is_show_main: bool,
+    is_show: bool,
 }
 
 impl MiniMap {
@@ -136,7 +140,10 @@ impl MiniMap {
             map_images.insert(map.key.clone(), image_with_file(map.key.as_str()));
         });
 
+        let gilrs = Gilrs::new().unwrap();
         Self {
+            gilrs: Mutex::new(gilrs),
+            current_gamepad: None,
             textures,
             map_images,
             zoom: 0.15,
@@ -146,7 +153,8 @@ impl MiniMap {
             points,
             game: wukong::game_state(),
             mode: MiniMapMode::North,
-            show: true,
+            is_show_main: false,
+            is_show: true,
         }
     }
 
@@ -275,9 +283,66 @@ impl MiniMap {
             println!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Alpha0) {
-            self.show = !self.show;
+            self.is_show = !self.is_show;
         }
-        if self.game.playing && self.show {
+        if let Ok(mut gilrs) = self.gilrs.lock() {
+            // Examine new events
+            while let Some(gilrs::Event { id, event, .. }) = gilrs.next_event() {
+                self.current_gamepad = Some(id);
+                println!("gilrs event from {}: {:?}", id, event);
+                if let gilrs::EventType::ButtonPressed(button, code) = event {
+                    let gamepad = gilrs.gamepad(id);
+                    if gamepad.is_pressed(gilrs::Button::RightTrigger) {
+                        match button {
+                            gilrs::Button::South => {
+                                self.size = (self.size - 0.05).max(0.15);
+                                println!("Button South is pressed");
+                            }
+                            gilrs::Button::East => {
+                                self.size = (self.size + 0.05).min(0.5);
+                                println!("Button East is pressed");
+                            }
+                            gilrs::Button::DPadDown => {
+                                self.is_show_main = !self.is_show_main;
+                                println!("Button West is pressed");
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+
+        //         gilrs event from 0: ButtonPressed(South, Code(EvCode(EvCode(12))))
+        // gilrs event from 0: ButtonChanged(South, 1.0, Code(EvCode(EvCode(12))))
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // Button South is pressed
+        // gilrs event from 0: ButtonReleased(South, Code(EvCode(EvCode(12))))
+        // gilrs event from 0: ButtonChanged(South, 0.0, Code(EvCode(EvCode(12))))
+        // gilrs event from 0: ButtonPressed(East, Code(EvCode(EvCode(13))))
+        // gilrs event from 0: ButtonChanged(East, 1.0, Code(EvCode(EvCode(13))))
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // Button East is pressed
+        // gilrs event from 0: ButtonReleased(East, Code(EvCode(EvCode(13))))
+        // gilrs event from 0: ButtonChanged(East, 0.0, Code(EvCode(EvCode(13))))
+
+        if self.game.playing && self.is_show {
             let [screen_width, screen_height] = ui.io().display_size;
             // let default_window_size = screen_width.min(screen_height) * 0.2;
             let window_size = screen_width.min(screen_height) * self.size;
@@ -320,6 +385,7 @@ impl MiniMap {
                             .uv_max(map_uv[1])
                             .build();
 
+                        // 绘制地图图标
                         self.points
                             .get(map.level.as_str())
                             .unwrap_or(&vec![])
