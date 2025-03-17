@@ -764,10 +764,50 @@
     {
       "name": "隐·旧观音禅院",
       "category": "teleport",
-      "key": "RebirthPoint_HFS_C_5",
-      "x": 1321.775513,
-      "y": 11999.84375,
-      "z": 1121.336426
+      "key": "RebirthPoint_HFS_C_0",
+      "x": 989.721041,
+      "y": 12054.579316,
+      "z": 1117.897777
+    },
+    {
+      "name": "招魂幡",
+      "category": "fan",
+      "key": "BP_RebirthPointZhaoHunFanBase_C_1",
+      "x": 7129.359689,
+      "y": 5614.734557,
+      "z": -298.139427
+    },
+    {
+      "name": "宝箱",
+      "category": "baoxiang",
+      "key": "BPO_TreasureBox_Coffin_02_C_1",
+      "x": -1208.189544,
+      "y": 9319.136927,
+      "z": 1088.309834
+    },
+    {
+      "name": "宝箱",
+      "category": "baoxiang",
+      "key": "BPO_TreasureBox_Coffin_01_C_5",
+      "x": -1709.013758,
+      "y": 8175.717102,
+      "z": 1079.491997
+    },
+    {
+      "name": "宝箱",
+      "category": "baoxiang",
+      "key": "BPO_TreasureBox_Coffin_01_C_3",
+      "x": -2422.951337,
+      "y": 10403.979587,
+      "z": 1085.259534
+    },
+    {
+      "name": "BPO_Door02_C",
+      "category": "men",
+      "key": "BPO_Door02_C_2",
+      "x": -3158.576991,
+      "y": 13358.716445,
+      "z": 1590.0
     }
   ],
   "HFM02_PersistentLevel": [

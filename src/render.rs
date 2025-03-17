@@ -285,6 +285,10 @@ impl MiniMap {
         if ui.is_key_pressed_no_repeat(Key::Alpha0) {
             self.is_show = !self.is_show;
         }
+        if ui.is_key_pressed_no_repeat(Key::Tab) {
+            self.is_show_main = !self.is_show_main;
+            wukong::toggle_mouse_cursor(self.is_show_main);
+        }
         if let Ok(mut gilrs) = self.gilrs.lock() {
             // Examine new events
             while let Some(gilrs::Event { id, event, .. }) = gilrs.next_event() {
@@ -304,6 +308,7 @@ impl MiniMap {
                             }
                             gilrs::Button::DPadDown => {
                                 self.is_show_main = !self.is_show_main;
+                                wukong::toggle_mouse_cursor(self.is_show_main);
                                 println!("Button West is pressed");
                             }
                             _ => {}
@@ -312,35 +317,6 @@ impl MiniMap {
                 }
             }
         }
-
-        //         gilrs event from 0: ButtonPressed(South, Code(EvCode(EvCode(12))))
-        // gilrs event from 0: ButtonChanged(South, 1.0, Code(EvCode(EvCode(12))))
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // Button South is pressed
-        // gilrs event from 0: ButtonReleased(South, Code(EvCode(EvCode(12))))
-        // gilrs event from 0: ButtonChanged(South, 0.0, Code(EvCode(EvCode(12))))
-        // gilrs event from 0: ButtonPressed(East, Code(EvCode(EvCode(13))))
-        // gilrs event from 0: ButtonChanged(East, 1.0, Code(EvCode(EvCode(13))))
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // Button East is pressed
-        // gilrs event from 0: ButtonReleased(East, Code(EvCode(EvCode(13))))
-        // gilrs event from 0: ButtonChanged(East, 0.0, Code(EvCode(EvCode(13))))
 
         if self.game.playing && self.is_show {
             let [screen_width, screen_height] = ui.io().display_size;

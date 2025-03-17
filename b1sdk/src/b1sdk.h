@@ -8,9 +8,11 @@ extern "C" struct PlayerInfo
   float z;
   float angle;
   uint8_t bIsLocalViewTarget;
+  uint8_t bShowMouseCursor;
   char level[256]; // 固定大小的字符数组替代 std::string
 };
 
 // 使用 __cdecl 调用约定
 extern "C" __declspec(dllexport) void b1Init(void);
+extern "C" __declspec(dllexport) bool toggleMouseCursor(bool show);
 extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo(void);

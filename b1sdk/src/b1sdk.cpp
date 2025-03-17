@@ -4,6 +4,38 @@
 
 #include "b1sdk.h"
 
+extern "C" __declspec(dllexport) bool toggleMouseCursor(bool show)
+{
+	SDK::UWorld *World = SDK::UWorld::GetWorld();
+	if (!World)
+	{
+		printf_s("World is null\n");
+		return true;
+	}
+	SDK::UGameplayStatics *GameplayStatics = SDK::UGameplayStatics::GetDefaultObj();
+	if (!GameplayStatics)
+	{
+		printf_s("GameplayStatics is null\n");
+		return true;
+	}
+	SDK::APlayerController *playerController = GameplayStatics->GetPlayerController(World, 0);
+	if (!playerController)
+	{
+		printf_s("playerController is null\n");
+		return true;
+	}
+	playerController->bShowMouseCursor = show ? 1 : 0;
+	if (show)
+	{
+		SDK::UGSE_EngineFuncLib::SetInputModeUIOnly(playerController, nullptr, SDK::EMouseLockMode::DoNotLock);
+	}
+	else
+	{
+		SDK::UGSE_EngineFuncLib::SetInputModeGameOnly(playerController);
+	}
+	return show;
+}
+
 extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 {
 	PlayerInfo info = {
@@ -12,22 +44,33 @@ extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 			-1.0f, // z
 			0.0f,	 // angle
 			0,		 // bIsLocalViewTarget
+			1,		 // bShowMouseCursor
 			""};
 
 	SDK::UWorld *World = SDK::UWorld::GetWorld();
 	if (!World)
 	{
+		printf_s("World is null\n");
 		return info;
 	}
 	SDK::UGameplayStatics *GameplayStatics = SDK::UGameplayStatics::GetDefaultObj();
 	if (!GameplayStatics)
 	{
+		printf_s("GameplayStatics is null\n");
 		return info;
 	}
 
 	SDK::ACharacter *playerCharacter = SDK::UBGUFunctionLibrary::GetPlayerCharacter(World);
 	if (!playerCharacter)
 	{
+		printf_s("playerCharacter is null\n");
+		return info;
+	}
+
+	SDK::APlayerController *playerController = GameplayStatics->GetPlayerController(World, 0);
+	if (!playerController)
+	{
+		printf_s("playerController is null\n");
 		return info;
 	}
 
@@ -37,7 +80,6 @@ extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 	// 获取位置和角度
 	SDK::FVector Location = playerCharacter->K2_GetActorLocation();
 	SDK::FRotator Rotator = playerCharacter->K2_GetActorRotation();
-
 	info.x = Location.X;
 	info.y = Location.Y;
 	info.z = Location.Z;
@@ -45,11 +87,17 @@ extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 	info.angle = Rotator.Yaw;
 
 	info.bIsLocalViewTarget = playerCharacter->bIsLocalViewTarget;
+
+	info.bShowMouseCursor = playerController->bShowMouseCursor;
+
 	return info;
 }
 
 extern "C" __declspec(dllexport) void b1Init()
 {
+	// log init
+	printf_s("b1Init()\n");
+	// 分配控制台并重定向标准输出
 	HMODULE baseModule = GetModuleHandle(NULL);
 	// GObjects
 	uint8_t *GObjectsScanResult = Memory::PatternScan(baseModule, "48 8B ?? ?? ?? ?? ?? 48 8B ?? ?? 48 8D ?? ?? EB ?? 33 ?? 8B ?? ?? C1 ??");

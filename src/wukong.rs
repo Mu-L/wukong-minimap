@@ -1,5 +1,5 @@
 use once_cell::sync::Lazy;
-use std::sync::Mutex;
+use std::{fmt::Display, sync::Mutex};
 
 // 添加静态变量来存储上一次的状态
 static LAST_STATE: Lazy<Mutex<Option<GameState>>> = Lazy::new(|| Mutex::new(None));
@@ -12,6 +12,7 @@ struct PlayerInfo {
     z: f32,
     angle: f32,
     is_local_view_target: u8,
+    b_show_mouse_cursor: u8,
     level_name: [u8; 256],
 }
 
@@ -22,6 +23,10 @@ extern "C" {
 }
 
 extern "C" {
+    fn toggleMouseCursor(show: bool) -> bool;
+}
+
+extern "C" {
     fn b1Init() -> ();
 }
 
@@ -29,6 +34,7 @@ extern "C" {
 pub struct GameState {
     pub level: String,
     pub playing: bool,
+    pub show_mouse_cursor: bool,
     pub x: f32,
     pub y: f32,
     pub z: f32,
@@ -129,12 +135,15 @@ pub fn game_state() -> GameState {
     // 创建新的状态
     let current_state = GameState {
         playing: info.is_local_view_target == 1,
+        show_mouse_cursor: info.b_show_mouse_cursor == 1,
         level: level.clone(),
         angle,
         x: info.x,
         y: info.y,
         z: info.z,
     };
+
+    println!("current_state: {:?}", current_state.clone());
 
     // 检查是否需要使用上一次的状态
     let mut last_state = LAST_STATE.lock().unwrap();
@@ -150,4 +159,8 @@ pub fn game_state() -> GameState {
     *last_state = Some(final_state.clone());
 
     final_state
+}
+
+pub fn toggle_mouse_cursor(show: bool) {
+    unsafe { toggleMouseCursor(show) };
 }
