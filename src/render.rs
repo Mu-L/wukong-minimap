@@ -40,6 +40,7 @@ struct Textures {
     pub logo: ImageTexture,
     pub mapplayer: ImageTexture,
     pub mapwraper: ImageTexture,
+    pub mainwraper: ImageTexture,
 
     // const categories = [
     //     "yaocai",
@@ -113,6 +114,7 @@ impl MiniMap {
             ),
             logo: png_texture!("../includes/logo.png"),
             mapwraper: png_texture!("../includes/mapwraper.png"),
+            mainwraper: png_texture!("../includes/mainwraper.png"),
             mapplayer: png_texture!("../includes/icon_player.png"),
 
             teleport: png_texture!("../includes/icon_teleport.png"),
@@ -265,6 +267,18 @@ impl MiniMap {
             transform(-half, half),  // 左下
         ]
     }
+    fn get_icon_pos_main(&self, pos: Pos2, center: Pos2, view_size: f32) -> Pos2 {
+        let [x_start, y_start, _] = self.map.as_ref().unwrap().range.start;
+        let [x_end, y_end, _] = self.map.as_ref().unwrap().range.end;
+        let x_scale = view_size / ((x_end - x_start).abs());
+        let y_scale = view_size / ((y_end - y_start).abs());
+        let offset_x = center.x - view_size / 2.0;
+        let offset_y = center.y - view_size / 2.0;
+        Pos2::new(
+            offset_x + (pos.x - x_start) * x_scale,
+            offset_y + (pos.y - y_start) * y_scale,
+        )
+    }
     fn render(&mut self, ui: &imgui::Ui) {
         if ui.is_key_pressed_no_repeat(Key::Minus) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size - 0.05).max(0.15);
@@ -318,89 +332,83 @@ impl MiniMap {
             }
         }
 
-        if self.game.playing && self.is_show {
+        if self.game.playing {
             let [screen_width, screen_height] = ui.io().display_size;
-            // let default_window_size = screen_width.min(screen_height) * 0.2;
-            let window_size = screen_width.min(screen_height) * self.size;
-            let map_size: f32 = window_size * 0.947;
-            let map_size_half = map_size / 2.0;
-            let icon_size = screen_width.min(screen_height) * 0.03;
-            let icon_size_half = icon_size / 2.0;
-            let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
-            let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
 
-            ui.window("wukong-minimap")
-                .size([window_size, window_size], Condition::Always)
-                .position([offset_x, offset_y], Condition::Always)
-                .flags(
-                    WindowFlags::NO_DECORATION
-                        | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_INPUTS
-                        | WindowFlags::NO_NAV
-                        | WindowFlags::NO_BACKGROUND,
-                )
-                .build(|| {
-                    ui.set_cursor_pos([0.0, 0.0]);
-                    let draw_list = ui.get_window_draw_list();
+            if self.is_show_main {
+                let window_size = screen_width.min(screen_height) * 0.95;
+                let map_size: f32 = window_size;
+                let icon_size = screen_width.min(screen_height) * 0.03;
+                let icon_size_half = icon_size / 2.0;
+                let [offset_x, offset_y] = [
+                    (screen_width - window_size) / 2.0,
+                    (screen_height - window_size) / 2.0,
+                ];
+                let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
 
-                    if let Some(map) = self.map.as_ref() {
-                        // 绘制地图
-                        let map_image = self.textures.map.id.unwrap();
-                        let map_offset_x = offset_x + (window_size - map_size) / 2.0;
-                        let map_offset_y = offset_y + (window_size - map_size) / 2.0;
-                        let map_uv = self.get_map_uv(Pos2::new(self.game.x, self.game.y));
+                ui.window("wukong-mainmap")
+                    .size([window_size, window_size], Condition::Always)
+                    .position([offset_x, offset_y], Condition::Always)
+                    .flags(
+                        WindowFlags::NO_DECORATION
+                            | WindowFlags::NO_MOVE
+                            | WindowFlags::NO_INPUTS
+                            | WindowFlags::NO_NAV
+                            | WindowFlags::NO_BACKGROUND,
+                    )
+                    .build(|| {
+                        ui.set_cursor_pos([0.0, 0.0]);
+                        let draw_list = ui.get_window_draw_list();
 
-                        draw_list
-                            .add_image_rounded(
-                                map_image,
-                                [map_offset_x, map_offset_y],
-                                [map_offset_x + map_size, map_offset_y + map_size],
-                                map_size / 2.0,
-                            )
-                            .uv_min(map_uv[0])
-                            .uv_max(map_uv[1])
-                            .build();
+                        if let Some(map) = self.map.as_ref() {
+                            // 绘制地图
+                            let map_image = self.textures.map.id.unwrap();
+                            let map_offset_x = offset_x + (window_size - map_size) / 2.0;
+                            let map_offset_y = offset_y + (window_size - map_size) / 2.0;
 
-                        // 绘制地图图标
-                        self.points
-                            .get(map.level.as_str())
-                            .unwrap_or(&vec![])
-                            .iter()
-                            .filter(|point| is_in_map(point, &map))
-                            .for_each(|point| {
-                                let icon_pos = self.get_icon_pos(
-                                    Pos2::new(point.x, point.y),
-                                    Pos2::new(self.game.x, self.game.y),
-                                    center,
-                                    map_size,
-                                );
-                                let icon = match point.category.as_str() {
-                                    "teleport" => self.textures.teleport.id,
-                                    "fan" => self.textures.fan.id,
-                                    "boss" => self.textures.boss.id,
-                                    "toumu" => self.textures.toumu.id,
-                                    "hulu" => self.textures.hulu.id,
-                                    "jiushi" => self.textures.jiushi.id,
-                                    "xiandan" => self.textures.xiandan.id,
-                                    "baoxiang" => self.textures.baoxiang.id,
-                                    "zhenwan" => self.textures.zhenwan.id,
-                                    "fabao" => self.textures.fabao.id,
-                                    "dazuo" => self.textures.dazuo.id,
-                                    "cailiao" => self.textures.cailiao.id,
-                                    "jingpo" => self.textures.jingpo.id,
-                                    "sandongchong" => self.textures.sandongchong.id,
-                                    "luojia" => self.textures.luojia.id,
-                                    "bianhua" => self.textures.bianhua.id,
-                                    "yaojin" => self.textures.yaojin.id,
-                                    _ => None,
-                                };
+                            draw_list
+                                .add_image_rounded(
+                                    map_image,
+                                    [map_offset_x, map_offset_y],
+                                    [map_offset_x + map_size, map_offset_y + map_size],
+                                    8.0,
+                                )
+                                .build();
 
-                                if let Some(id) = icon {
-                                    // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
-                                    let distance = ((icon_pos.x - center.x).powi(2)
-                                        + (icon_pos.y - center.y).powi(2))
-                                    .sqrt();
-                                    if distance <= map_size_half - icon_size_half {
+                            // 绘制地图图标
+                            self.points
+                                .get(map.level.as_str())
+                                .unwrap_or(&vec![])
+                                .iter()
+                                .filter(|point| is_in_map(point, &map))
+                                .for_each(|point| {
+                                    let icon = match point.category.as_str() {
+                                        "teleport" => self.textures.teleport.id,
+                                        "fan" => self.textures.fan.id,
+                                        "boss" => self.textures.boss.id,
+                                        "toumu" => self.textures.toumu.id,
+                                        "hulu" => self.textures.hulu.id,
+                                        "jiushi" => self.textures.jiushi.id,
+                                        "xiandan" => self.textures.xiandan.id,
+                                        "baoxiang" => self.textures.baoxiang.id,
+                                        "zhenwan" => self.textures.zhenwan.id,
+                                        "fabao" => self.textures.fabao.id,
+                                        "dazuo" => self.textures.dazuo.id,
+                                        "cailiao" => self.textures.cailiao.id,
+                                        "jingpo" => self.textures.jingpo.id,
+                                        "sandongchong" => self.textures.sandongchong.id,
+                                        "luojia" => self.textures.luojia.id,
+                                        "bianhua" => self.textures.bianhua.id,
+                                        "yaojin" => self.textures.yaojin.id,
+                                        _ => None,
+                                    };
+
+                                    if let Some(id) = icon {
+                                        let icon_pos = self.get_icon_pos_main(
+                                            Pos2::new(point.x, point.y),
+                                            center,
+                                            map_size,
+                                        );
                                         draw_list
                                             .add_image(
                                                 id,
@@ -415,61 +423,185 @@ impl MiniMap {
                                             )
                                             .build();
                                     }
-                                }
-                            });
+                                });
 
-                        // 绘制玩家角色箭头
-                        let [p0, p1, p2, p3] = self.arrow_to_p4(center, self.game.angle, icon_size);
-                        draw_list
-                            .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
-                            .build();
+                            let player_pos = self.get_icon_pos_main(
+                                Pos2::new(self.game.x, self.game.y),
+                                center,
+                                map_size,
+                            );
+                            // 绘制玩家角色箭头
+                            let [p0, p1, p2, p3] =
+                                self.arrow_to_p4(player_pos, self.game.angle, icon_size);
+                            draw_list
+                                .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
+                                .build();
 
-                        // 绘制外围地图边框
+                            // 绘制外围地图边框
+                            // draw_list
+                            //     .add_image(
+                            //         self.textures.mapwraper.id.unwrap(),
+                            //         [offset_x, offset_y],
+                            //         [offset_x + window_size, offset_y + window_size],
+                            //     )
+                            //     .build();
+                        } else {
+                            debug!("draw_nomap");
+                        }
+                    });
+            }
+            if self.is_show {
+                let window_size = screen_width.min(screen_height) * self.size;
+                let map_size: f32 = window_size * 0.947;
+                let map_size_half = map_size / 2.0;
+                let icon_size = screen_width.min(screen_height) * 0.03;
+                let icon_size_half = icon_size / 2.0;
+                let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
+                let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
+
+                ui.window("wukong-minimap")
+                    .size([window_size, window_size], Condition::Always)
+                    .position([offset_x, offset_y], Condition::Always)
+                    .flags(
+                        WindowFlags::NO_DECORATION
+                            | WindowFlags::NO_MOVE
+                            | WindowFlags::NO_INPUTS
+                            | WindowFlags::NO_NAV
+                            | WindowFlags::NO_BACKGROUND,
+                    )
+                    .build(|| {
+                        ui.set_cursor_pos([0.0, 0.0]);
+                        let draw_list = ui.get_window_draw_list();
+
+                        if let Some(map) = self.map.as_ref() {
+                            // 绘制地图
+                            let map_image = self.textures.map.id.unwrap();
+                            let map_offset_x = offset_x + (window_size - map_size) / 2.0;
+                            let map_offset_y = offset_y + (window_size - map_size) / 2.0;
+                            let map_uv = self.get_map_uv(Pos2::new(self.game.x, self.game.y));
+
+                            draw_list
+                                .add_image_rounded(
+                                    map_image,
+                                    [map_offset_x, map_offset_y],
+                                    [map_offset_x + map_size, map_offset_y + map_size],
+                                    map_size / 2.0,
+                                )
+                                .uv_min(map_uv[0])
+                                .uv_max(map_uv[1])
+                                .build();
+
+                            // 绘制地图图标
+                            self.points
+                                .get(map.level.as_str())
+                                .unwrap_or(&vec![])
+                                .iter()
+                                .filter(|point| is_in_map(point, &map))
+                                .for_each(|point| {
+                                    let icon_pos = self.get_icon_pos(
+                                        Pos2::new(point.x, point.y),
+                                        Pos2::new(self.game.x, self.game.y),
+                                        center,
+                                        map_size,
+                                    );
+                                    let icon = match point.category.as_str() {
+                                        "teleport" => self.textures.teleport.id,
+                                        "fan" => self.textures.fan.id,
+                                        "boss" => self.textures.boss.id,
+                                        "toumu" => self.textures.toumu.id,
+                                        "hulu" => self.textures.hulu.id,
+                                        "jiushi" => self.textures.jiushi.id,
+                                        "xiandan" => self.textures.xiandan.id,
+                                        "baoxiang" => self.textures.baoxiang.id,
+                                        "zhenwan" => self.textures.zhenwan.id,
+                                        "fabao" => self.textures.fabao.id,
+                                        "dazuo" => self.textures.dazuo.id,
+                                        "cailiao" => self.textures.cailiao.id,
+                                        "jingpo" => self.textures.jingpo.id,
+                                        "sandongchong" => self.textures.sandongchong.id,
+                                        "luojia" => self.textures.luojia.id,
+                                        "bianhua" => self.textures.bianhua.id,
+                                        "yaojin" => self.textures.yaojin.id,
+                                        _ => None,
+                                    };
+
+                                    if let Some(id) = icon {
+                                        // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
+                                        let distance = ((icon_pos.x - center.x).powi(2)
+                                            + (icon_pos.y - center.y).powi(2))
+                                        .sqrt();
+                                        if distance <= map_size_half - icon_size_half {
+                                            draw_list
+                                                .add_image(
+                                                    id,
+                                                    [
+                                                        icon_pos.x - icon_size_half,
+                                                        icon_pos.y - icon_size_half,
+                                                    ],
+                                                    [
+                                                        icon_pos.x + icon_size_half,
+                                                        icon_pos.y + icon_size_half,
+                                                    ],
+                                                )
+                                                .build();
+                                        }
+                                    }
+                                });
+
+                            // 绘制玩家角色箭头
+                            let [p0, p1, p2, p3] =
+                                self.arrow_to_p4(center, self.game.angle, icon_size);
+                            draw_list
+                                .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
+                                .build();
+
+                            // 绘制外围地图边框
+                            draw_list
+                                .add_image(
+                                    self.textures.mapwraper.id.unwrap(),
+                                    [offset_x, offset_y],
+                                    [offset_x + window_size, offset_y + window_size],
+                                )
+                                .build();
+                        } else {
+                            debug!("draw_nomap");
+                        }
+                    });
+
+                let logo_width = screen_width.min(screen_height) * 0.065;
+                let logo_height = logo_width * 0.28;
+
+                ui.window("logo")
+                    .position(
+                        [offset_x, offset_y + window_size + logo_height / 4.0],
+                        imgui::Condition::Always,
+                    )
+                    .size([window_size, logo_height], imgui::Condition::Always)
+                    .flags(
+                        WindowFlags::NO_DECORATION
+                            | WindowFlags::NO_MOVE
+                            | WindowFlags::NO_INPUTS
+                            | WindowFlags::NO_NAV
+                            | WindowFlags::NO_BACKGROUND,
+                    )
+                    .build(|| {
+                        let draw_list = ui.get_window_draw_list();
+                        let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
+                        let logo_offset_y = offset_y + window_size + logo_height / 4.0;
+
                         draw_list
                             .add_image(
-                                self.textures.mapwraper.id.unwrap(),
-                                [offset_x, offset_y],
-                                [offset_x + window_size, offset_y + window_size],
+                                self.textures.logo.id.unwrap(),
+                                [logo_offset_x, logo_offset_y],
+                                [logo_offset_x + logo_width, logo_offset_y + logo_height],
                             )
                             .build();
-                    } else {
-                        debug!("draw_nomap");
-                    }
-                });
-
-            let logo_width = screen_width.min(screen_height) * 0.065;
-            let logo_height = logo_width * 0.28;
-
-            ui.window("logo")
-                .position(
-                    [offset_x, offset_y + window_size + logo_height / 4.0],
-                    imgui::Condition::Always,
-                )
-                .size([window_size, logo_height], imgui::Condition::Always)
-                .flags(
-                    WindowFlags::NO_DECORATION
-                        | WindowFlags::NO_MOVE
-                        | WindowFlags::NO_INPUTS
-                        | WindowFlags::NO_NAV
-                        | WindowFlags::NO_BACKGROUND,
-                )
-                .build(|| {
-                    let draw_list = ui.get_window_draw_list();
-                    let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
-                    let logo_offset_y = offset_y + window_size + logo_height / 4.0;
-
-                    draw_list
-                        .add_image(
-                            self.textures.logo.id.unwrap(),
-                            [logo_offset_x, logo_offset_y],
-                            [logo_offset_x + logo_width, logo_offset_y + logo_height],
-                        )
-                        .build();
-                    // Image::new(tex_id, [logo_width, logo_height])
-                    //     .uv0([0.0, 0.0])
-                    //     .uv1([1.0, 1.0])
-                    //     .build(ui);
-                });
+                        // Image::new(tex_id, [logo_width, logo_height])
+                        //     .uv0([0.0, 0.0])
+                        //     .uv1([1.0, 1.0])
+                        //     .build(ui);
+                    });
+            }
         }
     }
 }
@@ -503,9 +635,10 @@ impl ImguiRenderLoop for MiniMap {
 
         // 使用宏加载所有纹理
         load_textures!(
-            mapwraper,
             map,
             mapplayer,
+            mapwraper,
+            mainwraper,
             logo,
             teleport,
             fan,
