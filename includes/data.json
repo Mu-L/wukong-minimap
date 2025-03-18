@@ -2,7 +2,7 @@
   {
     "level": "HFS01_PersistentLevel",
     "key": "img_map_101.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_101.webp",
+    "url": "../maps/img_map_101.webp",
     "scale": 112,
     "range": {
       "start": [-138190.84, -108608.22, -9999999],
@@ -13,7 +13,7 @@
   {
     "level": "HFS01_Old_GYCY_YKX_PersistentLevel",
     "key": "img_map_102.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_102.webp",
+    "url": "../maps/img_map_102.webp",
     "scale": 112,
     "range": {
       "start": [-138190.84, -108608.22, -9999999],
@@ -24,7 +24,7 @@
   {
     "level": "HFM02_PersistentLevel",
     "key": "img_map_201.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_201.webp",
+    "url": "../maps/img_map_201.webp",
     "scale": 116,
     "range": {
       "start": [-199119.808594, -136817.070312, -9999999],
@@ -35,7 +35,7 @@
   {
     "level": "HFM_DuJiaoXian_Persist",
     "key": "img_map_202.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_202.webp",
+    "url": "../maps/img_map_202.webp",
     "scale": 116,
     "range": {
       "start": [-113496.51016800001, -111450.514671, -9999999],
@@ -46,7 +46,7 @@
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_301.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_301.webp",
+    "url": "../maps/img_map_301.webp",
     "scale": 116,
     "range": {
       "start": [171454.596875, -665754.164338, -9999999],
@@ -57,7 +57,7 @@
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_308.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_308.webp",
+    "url": "../maps/img_map_308.webp",
     "scale": 220,
     "range": {
       "start": [-330200.04068700003, -421365.681467, -9999999],
@@ -68,7 +68,7 @@
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_302.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_302.webp",
+    "url": "../maps/img_map_302.webp",
     "scale": 146,
     "range": {
       "start": [-87148.568701, -139610.766665, -29000],
@@ -76,7 +76,7 @@
     },
     "areas": [
       {
-        "start": [-10000.0, -139610.766665, -9999999],
+        "start": [-10000.0, -139610.766665, -29000],
         "end": [211859.431299, 159397.233335, 9999999]
       }
     ]
@@ -84,7 +84,7 @@
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_303.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_303.webp",
+    "url": "../maps/img_map_303.webp",
     "scale": 146,
     "range": {
       "start": [-87148.568701, -139610.766665, -31000],
@@ -92,15 +92,15 @@
     },
     "areas": [
       {
-        "start": [-10000.0, -139610.766665, -9999999],
-        "end": [211859.431299, 159397.233335, 9999999]
+        "start": [-10000.0, -139610.766665, -31000],
+        "end": [211859.431299, 159397.233335, -29000]
       }
     ]
   },
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_304.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_304.webp",
+    "url": "../maps/img_map_304.webp",
     "scale": 146,
     "range": {
       "start": [-87148.568701, -139610.766665, -35000],
@@ -108,15 +108,15 @@
     },
     "areas": [
       {
-        "start": [-10000.0, -139610.766665, -9999999],
-        "end": [211859.431299, 159397.233335, 9999999]
+        "start": [-10000.0, -139610.766665, -35000],
+        "end": [211859.431299, 159397.233335, -31000]
       }
     ]
   },
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_305.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_305.webp",
+    "url": "../maps/img_map_305.webp",
     "scale": 146,
     "range": {
       "start": [-87148.568701, -139610.766665, -38000],
@@ -124,15 +124,15 @@
     },
     "areas": [
       {
-        "start": [-10000.0, -139610.766665, -9999999],
-        "end": [211859.431299, 159397.233335, 9999999]
+        "start": [-10000.0, -139610.766665, -38000],
+        "end": [211859.431299, 159397.233335, -35000]
       }
     ]
   },
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_306.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_306.webp",
+    "url": "../maps/img_map_306.webp",
     "scale": 146,
     "range": {
       "start": [-87148.568701, -139610.766665, -9999999],
@@ -141,14 +141,14 @@
     "areas": [
       {
         "start": [-10000.0, -139610.766665, -9999999],
-        "end": [211859.431299, 159397.233335, 9999999]
+        "end": [211859.431299, 159397.233335, -38000]
       }
     ]
   },
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_307.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_307.webp",
+    "url": "../maps/img_map_307.webp",
     "scale": 146,
     "range": {
       "start": [-139637.115078, -350424.55637899996, -9999999],
@@ -164,7 +164,7 @@
   {
     "level": "LYS_PersistentLevel",
     "key": "img_map_309.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_309.webp",
+    "url": "../maps/img_map_309.webp",
     "scale": 220,
     "range": {
       "start": [-9999999, -9999999, -9999999],
@@ -175,7 +175,7 @@
   {
     "level": "PSD_PersistentLevel",
     "key": "img_map_401.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_401.webp",
+    "url": "../maps/img_map_401.webp",
     "scale": 126,
     "range": {
       "start": [-14729.427777000004, -153441.05533, 20000.0],
@@ -186,7 +186,7 @@
   {
     "level": "PSD_PersistentLevel",
     "key": "img_map_402.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_402.webp",
+    "url": "../maps/img_map_402.webp",
     "scale": 126,
     "range": {
       "start": [-14729.427777000004, -153441.05533, 4000.0],
@@ -197,7 +197,7 @@
   {
     "level": "PSD_PersistentLevel",
     "key": "img_map_404.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_404.webp",
+    "url": "../maps/img_map_404.webp",
     "scale": 126,
     "range": {
       "start": [-14729.427777000004, -153441.05533, -9999999],
@@ -208,7 +208,7 @@
   {
     "level": "PSD_PersistentLevel",
     "key": "img_map_403.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_403.webp",
+    "url": "../maps/img_map_403.webp",
     "scale": 126,
     "range": {
       "start": [-14729.427777000004, -153441.05533, -7500.0],
@@ -219,7 +219,7 @@
   {
     "level": "PSD_PersistentLevel",
     "key": "img_map_405.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_405.webp",
+    "url": "../maps/img_map_405.webp",
     "scale": 127,
     "range": {
       "start": [-28029.919286999997, -32662.249507, -9999999],
@@ -235,7 +235,7 @@
   {
     "level": "ZYS01_persistentlevel",
     "key": "img_map_406.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_406.webp",
+    "url": "../maps/img_map_406.webp",
     "scale": 98,
     "range": {
       "start": [-97180.666226, -103531.111, -9999999],
@@ -246,7 +246,7 @@
   {
     "level": "HYS_PersistentLevel",
     "key": "img_map_501.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_501.webp",
+    "url": "../maps/img_map_501.webp",
     "scale": 200,
     "range": {
       "start": [-167075.13432100002, -193193.4148, -9999999],
@@ -257,7 +257,7 @@
   {
     "level": "HYS_PersistentLevel",
     "key": "img_map_502.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_502.webp",
+    "url": "../maps/img_map_502.webp",
     "scale": 200,
     "range": {
       "start": [-167075.13432100002, -193193.4148, -9999999],
@@ -277,7 +277,7 @@
   {
     "level": "BSD02_persistentlevel",
     "key": "img_map_503.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_503.webp",
+    "url": "../maps/img_map_503.webp",
     "scale": 200,
     "range": {
       "start": [-25300.257007999986, -237095.45151400001, -9999999],
@@ -288,7 +288,7 @@
   {
     "level": "BYS_persistentlevel",
     "key": "img_map_601.webp",
-    "url": "https://wukong.jaskang.me/maps/img_map_601.webp",
+    "url": "../maps/img_map_601.webp",
     "scale": 472,
     "range": {
       "start": [-492786.016555, -350720.034165, -9999999],

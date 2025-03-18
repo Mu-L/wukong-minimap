@@ -149,7 +149,7 @@ impl MiniMap {
             textures,
             map_images,
             zoom: 0.15,
-            size: 0.2,
+            size: 0.25,
             map: None,
             maps,
             points,
@@ -312,14 +312,6 @@ impl MiniMap {
                     let gamepad = gilrs.gamepad(id);
                     if gamepad.is_pressed(gilrs::Button::RightTrigger) {
                         match button {
-                            gilrs::Button::South => {
-                                self.size = (self.size - 0.05).max(0.15);
-                                println!("Button South is pressed");
-                            }
-                            gilrs::Button::East => {
-                                self.size = (self.size + 0.05).min(0.5);
-                                println!("Button East is pressed");
-                            }
                             gilrs::Button::DPadDown => {
                                 self.is_show_main = !self.is_show_main;
                                 wukong::toggle_mouse_cursor(self.is_show_main);
@@ -338,7 +330,7 @@ impl MiniMap {
             if self.is_show_main {
                 let window_size = screen_width.min(screen_height);
                 let map_size: f32 = window_size * 0.95;
-                let icon_size = screen_width.min(screen_height) * 0.03;
+                let icon_size = screen_width.min(screen_height) * 0.02;
                 let icon_size_half = icon_size / 2.0;
                 let [offset_x, offset_y] = [
                     (screen_width - window_size) / 2.0,
@@ -432,7 +424,7 @@ impl MiniMap {
                             );
                             // 绘制玩家角色箭头
                             let [p0, p1, p2, p3] =
-                                self.arrow_to_p4(player_pos, self.game.angle, icon_size);
+                                self.arrow_to_p4(player_pos, self.game.angle, icon_size * 1.5);
                             draw_list
                                 .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
                                 .build();
@@ -454,7 +446,7 @@ impl MiniMap {
                 let window_size = screen_width.min(screen_height) * self.size;
                 let map_size: f32 = window_size * 0.947;
                 let map_size_half = map_size / 2.0;
-                let icon_size = screen_width.min(screen_height) * 0.03;
+                let icon_size = screen_width.min(screen_height) * 0.02;
                 let icon_size_half = icon_size / 2.0;
                 let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
                 let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
@@ -550,7 +542,7 @@ impl MiniMap {
 
                             // 绘制玩家角色箭头
                             let [p0, p1, p2, p3] =
-                                self.arrow_to_p4(center, self.game.angle, icon_size);
+                                self.arrow_to_p4(center, self.game.angle, icon_size * 1.5);
                             draw_list
                                 .add_image_quad(self.textures.mapplayer.id.unwrap(), p0, p1, p2, p3)
                                 .build();
@@ -568,39 +560,35 @@ impl MiniMap {
                         }
                     });
 
-                let logo_width = screen_width.min(screen_height) * 0.065;
-                let logo_height = logo_width * 0.28;
+                // let logo_width = screen_width.min(screen_height) * 0.065;
+                // let logo_height = logo_width * 0.28;
 
-                ui.window("logo")
-                    .position(
-                        [offset_x, offset_y + window_size + logo_height / 4.0],
-                        imgui::Condition::Always,
-                    )
-                    .size([window_size, logo_height], imgui::Condition::Always)
-                    .flags(
-                        WindowFlags::NO_DECORATION
-                            | WindowFlags::NO_MOVE
-                            | WindowFlags::NO_INPUTS
-                            | WindowFlags::NO_NAV
-                            | WindowFlags::NO_BACKGROUND,
-                    )
-                    .build(|| {
-                        let draw_list = ui.get_window_draw_list();
-                        let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
-                        let logo_offset_y = offset_y + window_size + logo_height / 4.0;
+                // ui.window("logo")
+                //     .position(
+                //         [offset_x, offset_y + window_size + logo_height / 4.0],
+                //         imgui::Condition::Always,
+                //     )
+                //     .size([window_size, logo_height], imgui::Condition::Always)
+                //     .flags(
+                //         WindowFlags::NO_DECORATION
+                //             | WindowFlags::NO_MOVE
+                //             | WindowFlags::NO_INPUTS
+                //             | WindowFlags::NO_NAV
+                //             | WindowFlags::NO_BACKGROUND,
+                //     )
+                //     .build(|| {
+                //         let draw_list = ui.get_window_draw_list();
+                //         let logo_offset_x = offset_x + (window_size - logo_width) / 2.0;
+                //         let logo_offset_y = offset_y + window_size + logo_height / 4.0;
 
-                        draw_list
-                            .add_image(
-                                self.textures.logo.id.unwrap(),
-                                [logo_offset_x, logo_offset_y],
-                                [logo_offset_x + logo_width, logo_offset_y + logo_height],
-                            )
-                            .build();
-                        // Image::new(tex_id, [logo_width, logo_height])
-                        //     .uv0([0.0, 0.0])
-                        //     .uv1([1.0, 1.0])
-                        //     .build(ui);
-                    });
+                //         draw_list
+                //             .add_image(
+                //                 self.textures.logo.id.unwrap(),
+                //                 [logo_offset_x, logo_offset_y],
+                //                 [logo_offset_x + logo_width, logo_offset_y + logo_height],
+                //             )
+                //             .build();
+                //     });
             }
         }
     }
