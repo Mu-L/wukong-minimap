@@ -336,8 +336,8 @@ impl MiniMap {
             let [screen_width, screen_height] = ui.io().display_size;
 
             if self.is_show_main {
-                let window_size = screen_width.min(screen_height) * 0.95;
-                let map_size: f32 = window_size;
+                let window_size = screen_width.min(screen_height);
+                let map_size: f32 = window_size * 0.95;
                 let icon_size = screen_width.min(screen_height) * 0.03;
                 let icon_size_half = icon_size / 2.0;
                 let [offset_x, offset_y] = [
@@ -371,7 +371,7 @@ impl MiniMap {
                                     map_image,
                                     [map_offset_x, map_offset_y],
                                     [map_offset_x + map_size, map_offset_y + map_size],
-                                    8.0,
+                                    0.0,
                                 )
                                 .build();
 
@@ -438,13 +438,13 @@ impl MiniMap {
                                 .build();
 
                             // 绘制外围地图边框
-                            // draw_list
-                            //     .add_image(
-                            //         self.textures.mapwraper.id.unwrap(),
-                            //         [offset_x, offset_y],
-                            //         [offset_x + window_size, offset_y + window_size],
-                            //     )
-                            //     .build();
+                            draw_list
+                                .add_image(
+                                    self.textures.mainwraper.id.unwrap(),
+                                    [offset_x, offset_y],
+                                    [offset_x + window_size, offset_y + window_size],
+                                )
+                                .build();
                         } else {
                             debug!("draw_nomap");
                         }
