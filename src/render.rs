@@ -46,7 +46,6 @@ struct Textures {
     //     "yaocai",
     //     "pass-route",
     //     "start",
-    //     "yaojin",
     //     "renwu",
     //     "lingyun",
     //     "zhixian",
@@ -55,7 +54,7 @@ struct Textures {
     //     "comment",
     // ];
     pub teleport: ImageTexture,
-    pub fan: ImageTexture,          // 起点-招魂幡
+    // pub fan: ImageTexture,          // 起点-招魂幡
     pub boss: ImageTexture,         // boss
     pub toumu: ImageTexture,        // 头目
     pub hulu: ImageTexture,         // 葫芦
@@ -118,7 +117,6 @@ impl MiniMap {
             mapplayer: png_texture!("../includes/icon_player.png"),
 
             teleport: png_texture!("../includes/icon_teleport.png"),
-            fan: png_texture!("../includes/icon_fan.png"),
             boss: png_texture!("../includes/icon_boss.png"),
             toumu: png_texture!("../includes/icon_toumu.png"),
             hulu: png_texture!("../includes/icon_hulu.png"),
@@ -330,7 +328,7 @@ impl MiniMap {
             if self.is_show_main {
                 let window_size = screen_width.min(screen_height);
                 let map_size: f32 = window_size * 0.95;
-                let icon_size = screen_width.min(screen_height) * 0.02;
+                let icon_size = screen_width.min(screen_height) * 0.025;
                 let icon_size_half = icon_size / 2.0;
                 let [offset_x, offset_y] = [
                     (screen_width - window_size) / 2.0,
@@ -376,7 +374,6 @@ impl MiniMap {
                                 .for_each(|point| {
                                     let icon = match point.category.as_str() {
                                         "teleport" => self.textures.teleport.id,
-                                        "fan" => self.textures.fan.id,
                                         "boss" => self.textures.boss.id,
                                         "toumu" => self.textures.toumu.id,
                                         "hulu" => self.textures.hulu.id,
@@ -446,7 +443,7 @@ impl MiniMap {
                 let window_size = screen_width.min(screen_height) * self.size;
                 let map_size: f32 = window_size * 0.947;
                 let map_size_half = map_size / 2.0;
-                let icon_size = screen_width.min(screen_height) * 0.02;
+                let icon_size = screen_width.min(screen_height) * 0.025;
                 let icon_size_half = icon_size / 2.0;
                 let [offset_x, offset_y] = [screen_width - window_size - 10.0, 10.0];
                 let center = Pos2::new(offset_x + window_size / 2.0, offset_y + window_size / 2.0);
@@ -498,7 +495,6 @@ impl MiniMap {
                                     );
                                     let icon = match point.category.as_str() {
                                         "teleport" => self.textures.teleport.id,
-                                        "fan" => self.textures.fan.id,
                                         "boss" => self.textures.boss.id,
                                         "toumu" => self.textures.toumu.id,
                                         "hulu" => self.textures.hulu.id,
@@ -629,7 +625,6 @@ impl ImguiRenderLoop for MiniMap {
             mainwraper,
             logo,
             teleport,
-            fan,
             boss,
             toumu,
             hulu,
