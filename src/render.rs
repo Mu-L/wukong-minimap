@@ -341,7 +341,7 @@ impl MiniMap {
                     let map_offset_x = window_offset_x + (window_size - map_size) / 2.0;
                     let map_offset_y = window_offset_y + (window_size - map_size) / 2.0;
                     let map_point =
-                        self.get_map_point(map, Pos2::new(self.game.x, self.game.y), 0.5, map_size);
+                        self.get_map_point(map, Pos2::new(self.game.x, self.game.y), 0.6, map_size);
 
                     let (uv_min, uv_max) = self.get_map_uv(map, &map_point);
 
