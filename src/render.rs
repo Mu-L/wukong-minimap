@@ -10,7 +10,6 @@ use gilrs::{GamepadId, Gilrs};
 use hudhook::imgui::{Image, Key};
 use hudhook::{
     imgui::{self, Condition, Context, WindowFlags},
-    tracing::debug,
     ImguiRenderLoop, RenderContext,
 };
 use image::{EncodableLayout, ImageFormat, RgbaImage};
@@ -341,7 +340,7 @@ impl MiniMap {
                     let map_offset_x = window_offset_x + (window_size - map_size) / 2.0;
                     let map_offset_y = window_offset_y + (window_size - map_size) / 2.0;
                     let map_point =
-                        self.get_map_point(map, Pos2::new(self.game.x, self.game.y), 0.6, map_size);
+                        self.get_map_point(map, Pos2::new(self.game.x, self.game.y), 0.7, map_size);
 
                     let (uv_min, uv_max) = self.get_map_uv(map, &map_point);
 
@@ -384,20 +383,18 @@ impl MiniMap {
                             };
 
                             if let Some(id) = icon {
-                                let center_offset_x = map_offset_x + map_size / 2.0;
-                                let center_offset_y = map_offset_y + map_size / 2.0;
-
                                 let icon_offset = self.get_icon_offset(
                                     Pos2::new(point.x, point.y),
                                     [map_offset_x, map_offset_y],
                                     &map_point,
                                 );
 
-                                // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
-                                let distance = ((icon_offset.x - center_offset_x).powi(2)
-                                    + (icon_offset.y - center_offset_y).powi(2))
-                                .sqrt();
-                                if distance <= map_size / 2.0 - icon_size_half {
+                                // 判断是否在可视区域内
+                                let in_view = point.x > map_point.min_pos.x
+                                    && point.x < map_point.max_pos.x
+                                    && point.y > map_point.min_pos.y
+                                    && point.y < map_point.max_pos.y;
+                                if in_view {
                                     draw_list
                                         .add_image(
                                             id,
@@ -436,7 +433,7 @@ impl MiniMap {
                         )
                         .build();
                 } else {
-                    debug!("draw_nomap");
+                    log::info!("draw_nomap");
                 }
             });
 
@@ -590,26 +587,26 @@ impl MiniMap {
                         )
                         .build();
                 } else {
-                    debug!("draw_nomap");
+                    log::info!("draw_nomap");
                 }
             });
     }
     fn render(&mut self, ui: &imgui::Ui) {
         if ui.is_key_pressed_no_repeat(Key::Minus) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size - 0.05).max(0.15);
-            println!("size: {}", self.size);
+            log::info!("size: {}", self.size);
         }
         if ui.is_key_pressed_no_repeat(Key::Equal) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size + 0.05).min(0.5);
-            println!("size: {}", self.size);
+            log::info!("size: {}", self.size);
         }
         if ui.is_key_pressed_no_repeat(Key::Minus) && ui.is_key_down(Key::LeftShift) {
             self.zoom = (self.zoom - 0.05).max(0.15);
-            println!("zoom: {}", self.zoom);
+            log::info!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Equal) && ui.is_key_down(Key::LeftShift) {
             self.zoom = (self.zoom + 0.05).min(0.5);
-            println!("zoom: {}", self.zoom);
+            log::info!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Alpha0) {
             self.is_show = !self.is_show;
@@ -622,7 +619,7 @@ impl MiniMap {
             // Examine new events
             while let Some(gilrs::Event { id, event, .. }) = gilrs.next_event() {
                 self.current_gamepad = Some(id);
-                println!("gilrs event from {}: {:?}", id, event);
+                log::info!("gilrs event from {}: {:?}", id, event);
                 if let gilrs::EventType::ButtonPressed(button, code) = event {
                     let gamepad = gilrs.gamepad(id);
                     if gamepad.is_pressed(gilrs::Button::RightTrigger) {
@@ -630,7 +627,7 @@ impl MiniMap {
                             gilrs::Button::DPadDown => {
                                 self.is_show_main = !self.is_show_main;
                                 wukong::toggle_mouse_cursor(self.is_show_main);
-                                println!("Button West is pressed");
+                                log::info!("Button West is pressed");
                             }
                             _ => {}
                         }
@@ -710,7 +707,7 @@ impl ImguiRenderLoop for MiniMap {
     ) {
         let map = self.update_map();
         if let Some(map) = map {
-            println!("update map: {:?}", map);
+            log::info!("update map: {:?}", map);
             let map_image = self.map_images.get(map.key.as_str());
             if let Some(map_image) = map_image {
                 let _ = render_context.replace_texture(

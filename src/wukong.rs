@@ -142,9 +142,6 @@ pub fn game_state() -> GameState {
         y: info.y,
         z: info.z,
     };
-
-    println!("current_state: {:?}", current_state.clone());
-
     // 检查是否需要使用上一次的状态
     let mut last_state = LAST_STATE.lock().unwrap();
     let final_state = if !level.is_empty() && info.x == 0.0 && info.y == 0.0 && info.z == 0.0 {

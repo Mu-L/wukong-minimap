@@ -81,7 +81,6 @@ pub fn load_data() -> Vec<MapInfo> {
 pub fn load_points() -> HashMap<String, Vec<Point>> {
     let data = include_str!("./../includes/data_points.json");
     let points: HashMap<String, Vec<Point>> = serde_json::from_str(data).unwrap();
-    // println!("points: {:?}", points);
     points
 }
 

@@ -80,7 +80,6 @@ We then need to define our exported function, paying attention that the calling
 convention is appropriate and making sure to invoke the original function with
 the same parameters, and return its return value.
 
-
 ```rust
 #[no_mangle]
 unsafe extern "stdcall" fn DirectInput8Create(
