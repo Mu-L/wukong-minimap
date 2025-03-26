@@ -417,6 +417,8 @@ impl MiniMap {
                             [window_offset_x + window_size, window_offset_y + window_size],
                         )
                         .build();
+                    ui.set_cursor_pos([40.0, map_size - 40.0]);
+                    ui.text(format!("{:?}", self.game));
                 } else {
                     log::info!("draw_nomap");
                 }
@@ -689,7 +691,7 @@ impl ImguiRenderLoop for MiniMap {
     ) {
         let map = self.update_map();
         if let Some(map) = map {
-            log::info!("update map: {:?}", map);
+            log::info!("update map: {:?} game: {:?}", map, self.game);
             let map_image = self.map_images.get(map.key.as_str());
             if let Some(map_image) = map_image {
                 let _ = render_context.replace_texture(
