@@ -196,23 +196,23 @@
   },
   {
     "level": "PSD_PersistentLevel",
-    "key": "img_map_404.webp",
-    "url": "../maps/img_map_404.webp",
-    "scale": 126,
-    "range": {
-      "start": [-14729.427777000004, -153441.05533, -9999999],
-      "end": [243318.572223, 104606.94467, 4000]
-    },
-    "areas": []
-  },
-  {
-    "level": "PSD_PersistentLevel",
     "key": "img_map_403.webp",
     "url": "../maps/img_map_403.webp",
     "scale": 126,
     "range": {
       "start": [-14729.427777000004, -153441.05533, -7500.0],
       "end": [243318.572223, 104606.94467, 4000.0]
+    },
+    "areas": []
+  },
+  {
+    "level": "PSD_PersistentLevel",
+    "key": "img_map_404.webp",
+    "url": "../maps/img_map_404.webp",
+    "scale": 126,
+    "range": {
+      "start": [-14729.427777000004, -153441.05533, -9999999],
+      "end": [243318.572223, 104606.94467, 4000]
     },
     "areas": []
   },

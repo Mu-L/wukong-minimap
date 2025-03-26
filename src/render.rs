@@ -15,7 +15,7 @@ use hudhook::{
 use image::{EncodableLayout, ImageFormat, RgbaImage};
 
 #[derive(Clone, Debug)]
-pub struct MapPoint {
+pub struct MapView {
     pub center: Pos2,
     pub min_pos: Pos2,
     pub max_pos: Pos2,
@@ -47,7 +47,6 @@ impl ImageTexture {
 
 struct Textures {
     pub map: ImageTexture,
-    pub logo: ImageTexture,
     pub mapplayer: ImageTexture,
     pub mapwraper: ImageTexture,
     pub mainwraper: ImageTexture,
@@ -73,7 +72,6 @@ struct Textures {
     pub xiandan: ImageTexture,      // 仙丹
     pub baoxiang: ImageTexture,     // 宝箱
     pub zhenwan: ImageTexture,      // 珍玩
-    pub fabao: ImageTexture,        // 法宝
     pub dazuo: ImageTexture,        // 打坐点
     pub cailiao: ImageTexture,      // 材料
     pub jingpo: ImageTexture,       // 精魄
@@ -117,7 +115,6 @@ impl MiniMap {
                 include_bytes!("../includes/nomap.webp"),
                 ImageFormat::WebP,
             ),
-            logo: png_texture!("../includes/logo.png"),
             mapwraper: png_texture!("../includes/mapwraper.png"),
             mainwraper: png_texture!("../includes/mainwraper.png"),
             mapplayer: png_texture!("../includes/icon_player.png"),
@@ -131,7 +128,6 @@ impl MiniMap {
             xiandan: png_texture!("../includes/icon_xiandan.png"),
             baoxiang: png_texture!("../includes/icon_baoxiang.png"),
             zhenwan: png_texture!("../includes/icon_zhenwan.png"),
-            fabao: png_texture!("../includes/icon_fabao.png"),
             dazuo: png_texture!("../includes/icon_dazuo.png"),
             yaojin: png_texture!("../includes/icon_yaojin.png"),
             cailiao: png_texture!("../includes/icon_cailiao.png"),
@@ -213,13 +209,7 @@ impl MiniMap {
         }
     }
 
-    fn get_map_point(
-        &self,
-        map: &MapInfo,
-        player_pos: Pos2,
-        zoom: f32,
-        view_size: f32,
-    ) -> MapPoint {
+    fn get_map_view(&self, map: &MapInfo, player_pos: Pos2, zoom: f32, view_size: f32) -> MapView {
         let [x_start, y_start, _] = map.range.start;
         let [x_end, y_end, _] = map.range.end;
         let map_full_width = (x_end - x_start).abs();
@@ -244,7 +234,7 @@ impl MiniMap {
 
         let min_pos = Pos2::new(center_x - map_width / 2.0, center_y - map_height / 2.0);
         let max_pos = Pos2::new(center_x + map_width / 2.0, center_y + map_height / 2.0);
-        MapPoint {
+        MapView {
             center: Pos2::new(center_x, center_y),
             map_full_size: [map_full_width, map_full_height],
             map_size: [map_width, map_height],
@@ -267,24 +257,24 @@ impl MiniMap {
      * 玩家位于小地图的中心，根据 zoom 计算出小地图的uv
      * size 小地图可视区域的比例    
      */
-    fn get_map_uv(&self, map: &MapInfo, map_point: &MapPoint) -> ([f32; 2], [f32; 2]) {
+    fn get_map_uv(&self, map: &MapInfo, map_view: &MapView) -> ([f32; 2], [f32; 2]) {
         let [x_start, y_start, _] = map.range.start;
 
-        let uv_x_start = (map_point.center.x - map_point.map_size[0] / 2.0 - x_start)
-            / map_point.map_full_size[0];
-        let uv_x_end = (map_point.center.x + map_point.map_size[0] / 2.0 - x_start)
-            / map_point.map_full_size[0];
-        let uv_y_start = (map_point.center.y - map_point.map_size[1] / 2.0 - y_start)
-            / map_point.map_full_size[1];
-        let uv_y_end = (map_point.center.y + map_point.map_size[1] / 2.0 - y_start)
-            / map_point.map_full_size[1];
+        let uv_x_start =
+            (map_view.center.x - map_view.map_size[0] / 2.0 - x_start) / map_view.map_full_size[0];
+        let uv_x_end =
+            (map_view.center.x + map_view.map_size[0] / 2.0 - x_start) / map_view.map_full_size[0];
+        let uv_y_start =
+            (map_view.center.y - map_view.map_size[1] / 2.0 - y_start) / map_view.map_full_size[1];
+        let uv_y_end =
+            (map_view.center.y + map_view.map_size[1] / 2.0 - y_start) / map_view.map_full_size[1];
         ([uv_x_start, uv_y_start], [uv_x_end, uv_y_end])
     }
 
-    fn get_icon_offset(&self, pos: Pos2, start_offset: [f32; 2], map_point: &MapPoint) -> Pos2 {
+    fn get_icon_offset(&self, pos: Pos2, start_offset: [f32; 2], map_view: &MapView) -> Pos2 {
         Pos2::new(
-            (pos.x - map_point.min_pos.x) * map_point.scale_x + start_offset[0],
-            (pos.y - map_point.min_pos.y) * map_point.scale_y + start_offset[1],
+            (pos.x - map_view.min_pos.x) * map_view.scale_x + start_offset[0],
+            (pos.y - map_view.min_pos.y) * map_view.scale_y + start_offset[1],
         )
     }
     fn p4_with_angle(&self, location: Pos2, angle: f32, icon_size: f32) -> [[f32; 2]; 4] {
@@ -315,10 +305,6 @@ impl MiniMap {
             (screen_width - window_size) / 2.0,
             (screen_height - window_size) / 2.0,
         ];
-        let center = Pos2::new(
-            window_offset_x + window_size / 2.0,
-            window_offset_y + window_size / 2.0,
-        );
 
         ui.window("wukong-mainmap")
             .size([window_size, window_size], Condition::Always)
@@ -339,10 +325,10 @@ impl MiniMap {
                     let map_image = self.textures.map.id.unwrap();
                     let map_offset_x = window_offset_x + (window_size - map_size) / 2.0;
                     let map_offset_y = window_offset_y + (window_size - map_size) / 2.0;
-                    let map_point =
-                        self.get_map_point(map, Pos2::new(self.game.x, self.game.y), 0.7, map_size);
+                    let map_view =
+                        self.get_map_view(map, Pos2::new(self.game.x, self.game.y), 0.7, map_size);
 
-                    let (uv_min, uv_max) = self.get_map_uv(map, &map_point);
+                    let (uv_min, uv_max) = self.get_map_uv(map, &map_view);
 
                     draw_list
                         .add_image_rounded(
@@ -371,7 +357,6 @@ impl MiniMap {
                                 "xiandan" => self.textures.xiandan.id,
                                 "baoxiang" => self.textures.baoxiang.id,
                                 "zhenwan" => self.textures.zhenwan.id,
-                                "fabao" => self.textures.fabao.id,
                                 "dazuo" => self.textures.dazuo.id,
                                 "cailiao" => self.textures.cailiao.id,
                                 "jingpo" => self.textures.jingpo.id,
@@ -386,14 +371,14 @@ impl MiniMap {
                                 let icon_offset = self.get_icon_offset(
                                     Pos2::new(point.x, point.y),
                                     [map_offset_x, map_offset_y],
-                                    &map_point,
+                                    &map_view,
                                 );
 
                                 // 判断是否在可视区域内
-                                let in_view = point.x > map_point.min_pos.x
-                                    && point.x < map_point.max_pos.x
-                                    && point.y > map_point.min_pos.y
-                                    && point.y < map_point.max_pos.y;
+                                let in_view = point.x > map_view.min_pos.x
+                                    && point.x < map_view.max_pos.x
+                                    && point.y > map_view.min_pos.y
+                                    && point.y < map_view.max_pos.y;
                                 if in_view {
                                     draw_list
                                         .add_image(
@@ -415,7 +400,7 @@ impl MiniMap {
                     let player_offset = self.get_icon_offset(
                         Pos2::new(self.game.x, self.game.y),
                         [map_offset_x, map_offset_y],
-                        &map_point,
+                        &map_view,
                     );
                     // 绘制玩家角色箭头
                     let [p0, p1, p2, p3] =
@@ -493,14 +478,14 @@ impl MiniMap {
                     let map_image = self.textures.map.id.unwrap();
                     let map_offset_x = window_offset_x + (window_size - map_size) / 2.0;
                     let map_offset_y = window_offset_y + (window_size - map_size) / 2.0;
-                    let map_point = self.get_map_point(
+                    let map_view = self.get_map_view(
                         map,
                         Pos2::new(self.game.x, self.game.y),
                         self.zoom,
                         map_size,
                     );
 
-                    let (uv_min, uv_max) = self.get_map_uv(map, &map_point);
+                    let (uv_min, uv_max) = self.get_map_uv(map, &map_view);
 
                     draw_list
                         .add_image_rounded(
@@ -529,7 +514,6 @@ impl MiniMap {
                                 "xiandan" => self.textures.xiandan.id,
                                 "baoxiang" => self.textures.baoxiang.id,
                                 "zhenwan" => self.textures.zhenwan.id,
-                                "fabao" => self.textures.fabao.id,
                                 "dazuo" => self.textures.dazuo.id,
                                 "cailiao" => self.textures.cailiao.id,
                                 "jingpo" => self.textures.jingpo.id,
@@ -547,7 +531,7 @@ impl MiniMap {
                                 let icon_offset = self.get_icon_offset(
                                     Pos2::new(point.x, point.y),
                                     [map_offset_x, map_offset_y],
-                                    &map_point,
+                                    &map_view,
                                 );
                                 // 判断是否在可视区域内, icon_pos 和 center 之间的距离小于 map_size / 2 - icon_size_half
                                 let distance = ((icon_offset.x - center_offset_x).powi(2)
@@ -681,7 +665,6 @@ impl ImguiRenderLoop for MiniMap {
             mapwraper,
             mainwraper,
             tips,
-            logo,
             teleport,
             boss,
             toumu,
@@ -690,7 +673,6 @@ impl ImguiRenderLoop for MiniMap {
             xiandan,
             baoxiang,
             zhenwan,
-            fabao,
             dazuo,
             cailiao,
             jingpo,

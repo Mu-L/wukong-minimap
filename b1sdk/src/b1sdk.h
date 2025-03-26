@@ -9,6 +9,7 @@ extern "C" struct PlayerInfo
   float angle;
   uint8_t bIsLocalViewTarget;
   uint8_t bShowMouseCursor;
+  uint8_t bIsMoveInputIgnored;
   char level[256]; // 固定大小的字符数组替代 std::string
 };
 

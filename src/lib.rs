@@ -53,7 +53,7 @@ pub extern "stdcall" fn DllMain(hmodule: HINSTANCE, reason: u32, _: *mut ffi::c_
 
         thread::spawn(move || {
             // 延迟 10 秒启动
-            thread::sleep(time::Duration::from_secs(5));
+            thread::sleep(time::Duration::from_secs(10));
             if let Err(e) = ::hudhook::Hudhook::builder()
                 .with::<ImguiDx12Hooks>(render::MiniMap::new())
                 .with_hmodule(hmodule)

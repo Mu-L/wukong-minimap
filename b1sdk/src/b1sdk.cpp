@@ -45,6 +45,7 @@ extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 			0.0f,	 // angle
 			0,		 // bIsLocalViewTarget
 			1,		 // bShowMouseCursor
+			1,		 // bIsMoveInputIgnored
 			""};
 
 	SDK::UWorld *World = SDK::UWorld::GetWorld();
@@ -89,6 +90,8 @@ extern "C" __declspec(dllexport) PlayerInfo getPlayerInfo()
 	info.bIsLocalViewTarget = playerCharacter->bIsLocalViewTarget;
 
 	info.bShowMouseCursor = playerController->bShowMouseCursor;
+
+	info.bIsMoveInputIgnored = playerCharacter->IsMoveInputIgnored();
 
 	return info;
 }

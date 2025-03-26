@@ -13,6 +13,7 @@ struct PlayerInfo {
     angle: f32,
     is_local_view_target: u8,
     b_show_mouse_cursor: u8,
+    b_move_input_ignored: u8,
     level_name: [u8; 256],
 }
 
@@ -35,6 +36,7 @@ pub struct GameState {
     pub level: String,
     pub playing: bool,
     pub show_mouse_cursor: bool,
+    pub move_input_ignored: bool,
     pub x: f32,
     pub y: f32,
     pub z: f32,
@@ -136,6 +138,7 @@ pub fn game_state() -> GameState {
     let current_state = GameState {
         playing: info.is_local_view_target == 1,
         show_mouse_cursor: info.b_show_mouse_cursor == 1,
+        move_input_ignored: info.b_move_input_ignored == 1,
         level: level.clone(),
         angle,
         x: info.x,
