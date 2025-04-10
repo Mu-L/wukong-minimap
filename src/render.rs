@@ -7,10 +7,13 @@ use crate::{
     wukong::{self, GameState},
 };
 use gilrs::{GamepadId, Gilrs};
-use hudhook::imgui::{Image, Key};
 use hudhook::{
     imgui::{self, Condition, Context, WindowFlags},
     ImguiRenderLoop, RenderContext,
+};
+use hudhook::{
+    imgui::{Image, Key},
+    tracing,
 };
 use image::{EncodableLayout, ImageFormat, RgbaImage};
 
@@ -418,9 +421,9 @@ impl MiniMap {
                         )
                         .build();
                     ui.set_cursor_pos([40.0, map_size - 40.0]);
-                    ui.text(format!("{:?}", self.game));
+                    // ui.text(format!("{:?}", self.game));
                 } else {
-                    log::info!("draw_nomap");
+                    tracing::info!("draw_nomap");
                 }
             });
 
@@ -573,26 +576,26 @@ impl MiniMap {
                         )
                         .build();
                 } else {
-                    log::info!("draw_nomap");
+                    tracing::info!("draw_nomap");
                 }
             });
     }
     fn render(&mut self, ui: &imgui::Ui) {
         if ui.is_key_pressed_no_repeat(Key::Minus) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size - 0.05).max(0.15);
-            log::info!("size: {}", self.size);
+            tracing::info!("size: {}", self.size);
         }
         if ui.is_key_pressed_no_repeat(Key::Equal) && !ui.is_key_down(Key::LeftShift) {
             self.size = (self.size + 0.05).min(0.5);
-            log::info!("size: {}", self.size);
+            tracing::info!("size: {}", self.size);
         }
         if ui.is_key_pressed_no_repeat(Key::Minus) && ui.is_key_down(Key::LeftShift) {
             self.zoom = (self.zoom - 0.05).max(0.15);
-            log::info!("zoom: {}", self.zoom);
+            tracing::info!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Equal) && ui.is_key_down(Key::LeftShift) {
             self.zoom = (self.zoom + 0.05).min(0.5);
-            log::info!("zoom: {}", self.zoom);
+            tracing::info!("zoom: {}", self.zoom);
         }
         if ui.is_key_pressed_no_repeat(Key::Alpha0) {
             self.is_show = !self.is_show;
@@ -605,7 +608,7 @@ impl MiniMap {
             // Examine new events
             while let Some(gilrs::Event { id, event, .. }) = gilrs.next_event() {
                 self.current_gamepad = Some(id);
-                log::info!("gilrs event from {}: {:?}", id, event);
+                tracing::info!("gilrs event from {}: {:?}", id, event);
                 if let gilrs::EventType::ButtonPressed(button, code) = event {
                     let gamepad = gilrs.gamepad(id);
                     if gamepad.is_pressed(gilrs::Button::RightTrigger) {
@@ -613,7 +616,7 @@ impl MiniMap {
                             gilrs::Button::DPadDown => {
                                 self.is_show_main = !self.is_show_main;
                                 wukong::toggle_mouse_cursor(self.is_show_main);
-                                log::info!("Button West is pressed");
+                                tracing::info!("Button West is pressed");
                             }
                             _ => {}
                         }
@@ -691,7 +694,7 @@ impl ImguiRenderLoop for MiniMap {
     ) {
         let map = self.update_map();
         if let Some(map) = map {
-            log::info!("update map: {:?} game: {:?}", map, self.game);
+            tracing::info!("update map: {:?} game: {:?}", map, self.game);
             let map_image = self.map_images.get(map.key.as_str());
             if let Some(map_image) = map_image {
                 let _ = render_context.replace_texture(

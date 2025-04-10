@@ -1,6 +1,12 @@
+use hudhook::tracing;
 use image::{ImageFormat, ImageReader, RgbaImage};
 use serde::{Deserialize, Serialize};
+use std::fs::{File, OpenOptions};
+use std::sync::Mutex;
 use std::{collections::HashMap, io::Cursor, path::PathBuf};
+use time::{macros::format_description, UtcOffset};
+use tracing_subscriber::fmt::time::OffsetTime;
+use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Pos2 {
@@ -46,10 +52,53 @@ pub fn get_dll_dir() -> PathBuf {
 }
 
 pub fn setup_tracing() {
-    std::env::set_var("RUST_BACKTRACE", "full");
-    std::env::set_var("RUST_LOG", "trace");
-    hudhook::alloc_console().unwrap();
-    hudhook::enable_console_colors();
+    // hudhook::alloc_console().unwrap();
+    // hudhook::enable_console_colors();
+    // dotenv::dotenv().ok();
+    std::env::set_var("RUST_LOG", "debug");
+
+    let log_file = hudhook::util::get_dll_path()
+        .map(|mut path| {
+            path.set_extension("log");
+            path
+        })
+        .and_then(|path| File::create(path).ok())
+        .unwrap();
+
+    // 配置日志时间格式
+    // 配置时区为东8区，
+    let offset = UtcOffset::from_hms(8, 0, 0).unwrap_or(UtcOffset::UTC);
+    // 时间格式为  年-月-日 时:分:秒 格式
+    let logger_time = OffsetTime::new(
+        offset,
+        format_description!("[year]-[month]-[day] [hour]:[minute]:[second]"),
+    );
+
+    tracing_subscriber::registry()
+        .with(
+            fmt::layer().event_format(
+                fmt::format()
+                    .with_timer(logger_time.clone()) //打印时间
+                    .with_level(true)
+                    .with_thread_ids(true)
+                    .with_file(true)
+                    .with_line_number(true)
+                    .with_thread_names(true),
+            ),
+        )
+        .with(
+            fmt::layer()
+                .with_timer(logger_time.clone()) //打印时间
+                .with_thread_ids(true)
+                .with_file(true)
+                .with_line_number(true)
+                .with_thread_names(true)
+                .with_writer(Mutex::new(log_file))
+                .with_ansi(false)
+                .boxed(),
+        )
+        .with(EnvFilter::from_default_env())
+        .init();
 }
 
 pub fn image_with_bytes(bytes: &[u8], format: ImageFormat) -> RgbaImage {

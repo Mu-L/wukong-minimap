@@ -1,6 +1,6 @@
 [package]
 name = "hudhook"
-version = "0.8.0"
+version = "0.8.1"
 edition = "2021"
 description = "A graphics API hook with dear imgui render loop. Supports DirectX 9, 11, 12, and OpenGL 3."
 homepage = "https://github.com/veeenu/hudhook"
@@ -62,8 +62,8 @@ bitflags = "2.5.0"
 imgui = "0.12"
 once_cell = { version = "1.18.0", default-features = false }
 parking_lot = "0.12"
-tracing = { version = "0.1", features = ["log"], default-features = false }
-tracing-subscriber = { version = "0.3", features = [
+tracing = { version = "0.1.41", features = ["log"], default-features = false }
+tracing-subscriber = { version = "0.3.19", features = [
   "env-filter",
 ], default-features = false }
 
@@ -112,4 +112,3 @@ lto = "thin"
 # TODO: remove this once the fix to imgui-rs/imgui-rs#775 gets released.
 [patch.'crates-io']
 imgui = { git = "https://github.com/imgui-rs/imgui-rs", rev = "cb8beeb" }
-imgui-sys = { git = "https://github.com/imgui-rs/imgui-rs", rev = "cb8beeb" }
