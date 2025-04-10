@@ -602,7 +602,7 @@ impl MiniMap {
         }
         if ui.is_key_pressed_no_repeat(Key::Tab) {
             self.is_show_main = !self.is_show_main;
-            wukong::toggle_mouse_cursor(self.is_show_main);
+            // wukong::toggle_mouse_cursor(self.is_show_main);
         }
         if let Ok(mut gilrs) = self.gilrs.lock() {
             // Examine new events
@@ -615,7 +615,7 @@ impl MiniMap {
                         match button {
                             gilrs::Button::DPadDown => {
                                 self.is_show_main = !self.is_show_main;
-                                wukong::toggle_mouse_cursor(self.is_show_main);
+                                // wukong::toggle_mouse_cursor(self.is_show_main);
                                 tracing::info!("Button West is pressed");
                             }
                             _ => {}
